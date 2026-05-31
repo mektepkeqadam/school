@@ -4,396 +4,314 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MektepkeQadam">
 <title>MektepkeQadam</title>
 <style>
-:root{
-  --g:#085041;--gm:#1d9e75;--gl:#e1f5ee;
-  --gold:#ef9f27;--gl2:#fff8e1;
-  --red:#e53935;--rl:#fdecea;
-  --bg:#f5faf8;--w:#fff;--tx:#1a1a1a;--gr:#5f8a7a;
-  --bd:#d0ece4;--r:14px;--sh:0 2px 16px rgba(8,80,65,.10);
-}
+:root{--g:#085041;--gm:#1d9e75;--gl:#e1f5ee;--gold:#ef9f27;--red:#e53935;--rl:#fdecea;--bg:#f5faf8;--w:#fff;--tx:#1a1a1a;--gr:#5f8a7a;--bd:#d0ece4;--r:14px;--sh:0 2px 16px rgba(8,80,65,.10);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
-.scr{display:none;min-height:100vh;flex-direction:column;}
-.scr.on{display:flex;}
-
-/* ── LOGIN ── */
-.lw{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
-.l-logo{width:88px;height:88px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;margin:0 auto 18px;border:4px solid rgba(255,255,255,.2);}
-.l-title{font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;}
-.l-sub{font-size:14px;color:#9fe1cb;margin-bottom:28px;line-height:1.5;}
-.l-inp{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.22);border-radius:var(--r);padding:14px 18px;font-size:16px;color:#fff;width:100%;max-width:320px;outline:none;margin-bottom:12px;}
+.scr{display:none;min-height:100vh;flex-direction:column;}.scr.on{display:flex;}
+/* LANG */
+.lang-w{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;}
+.lang-logo{width:90px;height:90px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#fff;margin:0 auto 18px;border:4px solid rgba(255,255,255,.2);}
+.lang-title{font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;}
+.lang-sub{font-size:14px;color:#9fe1cb;margin-bottom:36px;line-height:1.5;}
+.lang-btn{width:100%;max-width:300px;padding:18px;border-radius:var(--r);border:none;font-size:18px;font-weight:700;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.lang-kk{background:var(--gold);color:#3d2000;}
+.lang-ru{background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.25);}
+/* LOGIN */
+.login-w{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.l-back{color:#9fe1cb;font-size:13px;cursor:pointer;align-self:flex-start;margin-bottom:16px;}
+.l-logo{width:78px;height:78px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin:0 auto 14px;border:3px solid rgba(255,255,255,.2);}
+.l-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:5px;}
+.l-sub{font-size:14px;color:#9fe1cb;margin-bottom:24px;}
+.l-inp{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.2);border-radius:var(--r);padding:13px 16px;font-size:15px;color:#fff;width:100%;max-width:300px;outline:none;margin-bottom:11px;}
 .l-inp::placeholder{color:rgba(255,255,255,.4);}
-.l-btn{background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:16px;font-size:17px;font-weight:700;cursor:pointer;width:100%;max-width:320px;margin-bottom:10px;}
-.l-note{font-size:12px;color:rgba(255,255,255,.35);}
-
-/* ── PROMO ── */
-.pw{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
-.p-icon{font-size:64px;margin-bottom:18px;}
-.p-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:8px;}
-.p-text{font-size:15px;color:#9fe1cb;margin-bottom:16px;line-height:1.6;}
-.p-price{background:var(--gold);color:#3d2000;font-size:22px;font-weight:800;padding:10px 28px;border-radius:30px;display:inline-block;margin-bottom:22px;}
-.p-inp{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.22);border-radius:var(--r);padding:14px 18px;font-size:20px;font-weight:700;color:#fff;text-align:center;width:100%;max-width:300px;letter-spacing:.1em;outline:none;margin-bottom:12px;}
-.p-inp::placeholder{color:rgba(255,255,255,.35);}
-.p-btn{background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:16px;font-size:17px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin-bottom:14px;}
+.l-btn{background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin-bottom:9px;}
+.l-note{font-size:11px;color:rgba(255,255,255,.3);}
+/* PROMO */
+.promo-w{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.p-icon{font-size:60px;margin-bottom:16px;}.p-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:7px;}
+.p-text{font-size:14px;color:#9fe1cb;margin-bottom:14px;line-height:1.6;}
+.p-price{background:var(--gold);color:#3d2000;font-size:21px;font-weight:800;padding:9px 26px;border-radius:28px;display:inline-block;margin-bottom:20px;}
+.p-inp{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.2);border-radius:var(--r);padding:13px 16px;font-size:19px;font-weight:700;color:#fff;text-align:center;width:100%;max-width:290px;letter-spacing:.1em;outline:none;margin-bottom:11px;}
+.p-inp::placeholder{color:rgba(255,255,255,.33);}
+.p-btn{background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:290px;margin-bottom:13px;}
 .p-link{color:#9fe1cb;font-size:13px;text-decoration:underline;cursor:pointer;}
-@keyframes shake{0%,100%{transform:translateX(0);}30%{transform:translateX(-8px);}70%{transform:translateX(8px);}}
-.shake{animation:shake .3s;}
-
-/* ── HERO ── */
-.hero{background:var(--g);padding:20px 18px 24px;text-align:center;}
-.h-av{width:68px;height:68px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin:0 auto 10px;border:3px solid rgba(255,255,255,.2);}
-.h-name{font-size:19px;font-weight:700;color:#fff;margin-bottom:3px;}
-.h-sub{font-size:13px;color:#9fe1cb;margin-bottom:14px;}
-.h-stats{display:flex;align-items:center;justify-content:center;gap:12px;}
-.h-stat{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:20px;padding:7px 13px;}
-.h-sv{font-size:15px;font-weight:700;color:var(--gold);}
-.h-sl{font-size:12px;color:#9fe1cb;}
-
-/* ── CONTENT ── */
-.cont{flex:1;padding:16px;overflow-y:auto;}
-.stitle{font-size:12px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px;margin-top:16px;}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-8px)}70%{transform:translateX(8px)}}.shake{animation:shake .3s;}
+/* HERO */
+.hero{background:var(--g);padding:18px 16px 22px;text-align:center;}
+.h-av{width:64px;height:64px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;color:#fff;margin:0 auto 9px;border:3px solid rgba(255,255,255,.18);}
+.h-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:3px;}
+.h-sub{font-size:12px;color:#9fe1cb;margin-bottom:12px;}
+.h-stats{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;}
+.h-stat{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.11);border-radius:18px;padding:6px 11px;}
+.h-sv{font-size:13px;font-weight:700;color:var(--gold);}
+.h-sl{font-size:11px;color:#9fe1cb;}
+/* CONTENT */
+.cont{flex:1;padding:14px;overflow-y:auto;}
+.stitle{font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:14px;}
 .stitle:first-child{margin-top:0;}
-
-/* ── LVL CARD ── */
-.lvl-card{background:var(--w);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--sh);}
-.lvl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.lvl-name{font-size:14px;font-weight:700;}
-.lvl-xp{font-size:13px;color:var(--gr);}
-.lvl-bg{background:var(--bg);border-radius:5px;height:9px;overflow:hidden;}
+/* LVL */
+.lvl-card{background:var(--w);border-radius:var(--r);padding:13px;margin-bottom:11px;box-shadow:var(--sh);}
+.lvl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.lvl-nm{font-size:13px;font-weight:700;}.lvl-xp{font-size:12px;color:var(--gr);}
+.lvl-bg{background:var(--bg);border-radius:5px;height:8px;overflow:hidden;}
 .lvl-fill{height:100%;background:linear-gradient(90deg,var(--gm),var(--gold));border-radius:5px;transition:width .4s;}
-
-/* ── MODULE CARDS ── */
-.mod{background:var(--w);border-radius:var(--r);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);cursor:pointer;border:1.5px solid transparent;transition:all .15s;-webkit-user-select:none;}
+/* MODULES */
+.mod{background:var(--w);border-radius:var(--r);padding:13px;margin-bottom:9px;display:flex;align-items:center;gap:11px;box-shadow:var(--sh);cursor:pointer;border:1.5px solid transparent;transition:all .15s;}
 .mod:active{border-color:var(--gm);background:var(--gl);}
-.mod-ic{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.mod-ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0;}
 .mod-info{flex:1;min-width:0;}
-.mod-nm{font-size:15px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.mod-ds{font-size:12px;color:var(--gr);margin-top:2px;}
-.mod-pb{margin-top:6px;background:var(--bg);border-radius:4px;height:5px;overflow:hidden;}
+.mod-nm{font-size:14px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.mod-ds{font-size:11px;color:var(--gr);margin-top:2px;}
+.mod-pb{margin-top:5px;background:var(--bg);border-radius:4px;height:4px;overflow:hidden;}
 .mod-pf{height:100%;background:var(--gm);border-radius:4px;transition:width .3s;}
-.mod-xp{font-size:11px;color:var(--gold);font-weight:600;margin-top:4px;}
-.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;}
-.tf{background:#e8f5e9;color:#2e7d32;}
-.tn{background:var(--gl);color:var(--g);}
-.tai{background:#fce4ec;color:#c2185b;}
-
-/* ── STREAK ── */
-.streak{background:var(--w);border-radius:var(--r);padding:15px;box-shadow:var(--sh);display:flex;align-items:center;gap:13px;}
-.st-icon{font-size:38px;}
-.st-title{font-size:15px;font-weight:700;}
-.st-sub{font-size:12px;color:var(--gr);margin-top:2px;}
-.st-days{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
-.st-d{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--gr);}
-.st-d.done{background:var(--gm);color:#fff;}
-.st-d.today{background:var(--gold);color:#fff;}
-
-/* ── BOTTOM NAV ── */
-.bnav{background:var(--w);border-top:1px solid var(--bd);display:flex;padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 6px);position:sticky;bottom:0;z-index:50;}
-.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px;color:var(--gr);font-size:10px;font-weight:600;}
-.bn.on{color:var(--g);}
-.bn-ic{font-size:23px;line-height:1;}
-
-/* ── MODULE DETAIL ── */
-.mdhdr{background:var(--g);padding:18px;text-align:center;}
-.md-back{font-size:13px;color:#9fe1cb;cursor:pointer;text-align:left;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.md-icon{font-size:56px;margin-bottom:8px;}
-.md-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px;}
-.md-sub{font-size:13px;color:#9fe1cb;}
-.les-row{background:var(--w);border-radius:var(--r);padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);cursor:pointer;-webkit-user-select:none;}
-.les-num{width:36px;height:36px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gr);flex-shrink:0;}
-.les-num.done{background:var(--gm);color:#fff;}
-.les-num.cur{background:var(--gold);color:#fff;}
-.les-title{flex:1;font-size:14px;font-weight:600;}
-.les-xp{font-size:11px;color:var(--gold);margin-top:2px;}
-
-/* ── LESSON ── */
-.lhdr{background:var(--g);padding:13px 17px 14px;}
-.lhdr-r{display:flex;align-items:center;gap:10px;}
-.lhdr-x{font-size:20px;color:#9fe1cb;cursor:pointer;padding:4px;}
-.lhdr-n{font-size:14px;font-weight:700;color:#fff;flex:1;}
-.lhdr-xp{font-size:14px;color:var(--gold);font-weight:700;}
-.lpb{background:rgba(255,255,255,.2);border-radius:4px;height:6px;margin-top:9px;overflow:hidden;}
+.mod-xp{font-size:10px;color:var(--gold);font-weight:600;margin-top:3px;}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:7px;}
+.tf{background:#e8f5e9;color:#2e7d32;}.tn{background:var(--gl);color:var(--g);}.tai{background:#fce4ec;color:#c2185b;}
+/* STREAK */
+.streak{background:var(--w);border-radius:var(--r);padding:13px;box-shadow:var(--sh);display:flex;align-items:center;gap:11px;}
+.st-days{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+.st-d{width:28px;height:28px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--gr);}
+.st-d.done{background:var(--gm);color:#fff;}.st-d.today{background:var(--gold);color:#fff;}
+/* FLOAT */
+.float-btns{position:fixed;bottom:75px;right:14px;display:flex;flex-direction:column;gap:9px;z-index:200;}
+.float-btn{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.float-kaspi{background:var(--gold);}.float-wa{background:#25d366;}
+/* BNAV */
+.bnav{background:var(--w);border-top:1px solid var(--bd);display:flex;padding:7px 0 calc(env(safe-area-inset-bottom,0px)+5px);position:sticky;bottom:0;z-index:50;}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px;color:var(--gr);font-size:10px;font-weight:600;}
+.bn.on{color:var(--g);}.bn-ic{font-size:21px;line-height:1;}
+/* MDET */
+.mdhdr{background:var(--g);padding:14px 16px;text-align:center;}
+.md-back{font-size:13px;color:#9fe1cb;cursor:pointer;text-align:left;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.md-icon{font-size:50px;margin-bottom:7px;}.md-title{font-size:19px;font-weight:800;color:#fff;margin-bottom:3px;}.md-sub{font-size:12px;color:#9fe1cb;}
+.les-row{background:var(--w);border-radius:var(--r);padding:12px 13px;margin-bottom:7px;display:flex;align-items:center;gap:11px;box-shadow:var(--sh);cursor:pointer;}
+.les-num{width:34px;height:34px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gr);flex-shrink:0;}
+.les-num.done{background:var(--gm);color:#fff;}.les-num.cur{background:var(--gold);color:#fff;}
+.les-title{flex:1;font-size:13px;font-weight:600;}.les-xp{font-size:10px;color:var(--gold);margin-top:2px;}
+/* LESSON */
+.lhdr{background:var(--g);padding:12px 15px 13px;}
+.lhdr-r{display:flex;align-items:center;gap:9px;}
+.lhdr-x{font-size:19px;color:#9fe1cb;cursor:pointer;padding:3px;}
+.lhdr-n{font-size:13px;font-weight:700;color:#fff;flex:1;}
+.lhdr-xp{font-size:13px;color:var(--gold);font-weight:700;}
+.lpb{background:rgba(255,255,255,.2);border-radius:4px;height:5px;margin-top:7px;overflow:hidden;}
 .lpf{height:100%;background:var(--gold);border-radius:4px;transition:width .4s;}
-.lnum{font-size:12px;color:#9fe1cb;margin-top:5px;}
-.lbody{flex:1;padding:18px 16px;overflow-y:auto;background:var(--bg);}
-.lq{font-size:19px;font-weight:800;color:var(--tx);margin-bottom:8px;text-align:center;line-height:1.3;}
-.limg{font-size:78px;text-align:center;margin:6px 0 4px;line-height:1.2;}
-.lhint{font-size:13px;color:var(--gr);text-align:center;margin-bottom:14px;}
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
-.opt{background:var(--w);border:2.5px solid var(--bd);border-radius:var(--r);padding:15px 12px;font-size:17px;font-weight:700;cursor:pointer;text-align:center;color:var(--tx);transition:all .15s;min-height:58px;display:flex;align-items:center;justify-content:center;}
+.lnum{font-size:11px;color:#9fe1cb;margin-top:4px;}
+.lbody{flex:1;padding:16px 14px;overflow-y:auto;background:var(--bg);}
+.lq{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:7px;text-align:center;line-height:1.3;}
+.limg{font-size:72px;text-align:center;margin:5px 0 3px;line-height:1.2;}
+.lhint{font-size:12px;color:var(--gr);text-align:center;margin-bottom:12px;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:5px;}
+.opt{background:var(--w);border:2.5px solid var(--bd);border-radius:var(--r);padding:14px 10px;font-size:17px;font-weight:700;cursor:pointer;text-align:center;color:var(--tx);transition:all .15s;min-height:56px;display:flex;align-items:center;justify-content:center;}
 .opt:active{background:var(--gl);border-color:var(--gm);}
-/* Диагностикада — басқанда ешқандай визуал өзгеріс жоқ */
-.opt.selected{background:#f0f4f8;border-color:#aaa;}
-/* Қалыпты режим — дұрыс/қате белгісі */
 .opt.correct{background:var(--gl);border-color:var(--gm);color:var(--g);}
 .opt.wrong{background:var(--rl);border-color:var(--red);color:var(--red);}
-.rbar{padding:13px 16px;display:flex;align-items:center;gap:11px;}
-.rbar.ok{background:var(--gl);}
-.rbar.fail{background:var(--rl);}
-.rb-ic{font-size:24px;}
-.rb-tx{flex:1;font-size:14px;font-weight:700;}
-.rb-tx.ok{color:var(--g);}
-.rb-tx.fail{color:var(--red);}
-.nwrap{padding:11px 16px;background:var(--w);}
-.nxt{background:var(--g);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:16px;font-weight:700;cursor:pointer;width:100%;}
+.opt.selected{background:#f0f4f8;border-color:#aaa;}
+.rbar{padding:12px 15px;display:flex;align-items:center;gap:10px;}
+.rbar.ok{background:var(--gl);}.rbar.fail{background:var(--rl);}
+.rb-ic{font-size:22px;}.rb-tx{flex:1;font-size:13px;font-weight:700;}
+.rb-tx.ok{color:var(--g);}.rb-tx.fail{color:var(--red);}
+.nwrap{padding:10px 15px;background:var(--w);}
+.nxt{background:var(--g);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
 .nxt.gold{background:var(--gold);color:#3d2000;}
-
-/* ── INTRO CARD ── */
-.intro{text-align:center;padding:20px 0;}
-.intro-em{font-size:86px;margin-bottom:16px;line-height:1;}
-.intro-t{font-size:22px;font-weight:800;color:var(--tx);margin-bottom:8px;}
-.intro-d{font-size:14px;color:var(--gr);margin-bottom:22px;line-height:1.6;}
-.intro-bs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
-.ibdg{background:var(--gl);color:var(--g);font-size:13px;font-weight:600;padding:6px 13px;border-radius:20px;}
-
-/* ── COMPLETE ── */
-.cw{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px;text-align:center;}
-.c-icon{font-size:86px;margin-bottom:14px;}
-.c-title{font-size:26px;font-weight:800;color:#fff;margin-bottom:8px;}
-.c-xp{font-size:30px;font-weight:800;color:var(--gold);margin-bottom:6px;}
-.c-sub{font-size:14px;color:#9fe1cb;margin-bottom:26px;line-height:1.6;max-width:320px;}
-.c-btn{background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:320px;margin-bottom:11px;}
+/* READING */
+.read-card{background:var(--w);border-radius:var(--r);padding:18px;margin-bottom:9px;box-shadow:var(--sh);text-align:center;}
+.syl-big{font-size:72px;font-weight:800;color:var(--g);letter-spacing:6px;margin-bottom:10px;line-height:1;}
+.syl-parts{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;font-size:22px;font-weight:700;}
+.syl-p{background:var(--gl);color:var(--g);padding:6px 14px;border-radius:10px;}
+.syl-plus{color:var(--gr);}
+/* INTRO */
+.intro-c{text-align:center;padding:18px 0;}
+.intro-em{font-size:82px;margin-bottom:14px;line-height:1;}
+.intro-t{font-size:21px;font-weight:800;color:var(--tx);margin-bottom:7px;}
+.intro-d{font-size:13px;color:var(--gr);margin-bottom:20px;line-height:1.6;}
+.intro-bs{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.ibdg{background:var(--gl);color:var(--g);font-size:12px;font-weight:600;padding:5px 12px;border-radius:18px;}
+/* COMPLETE */
+.cw{background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;text-align:center;}
+.c-icon{font-size:82px;margin-bottom:13px;}.c-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:7px;}
+.c-xp{font-size:28px;font-weight:800;color:var(--gold);margin-bottom:5px;}
+.c-sub{font-size:13px;color:#9fe1cb;margin-bottom:24px;line-height:1.6;max-width:290px;}
+.c-btn{background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:290px;margin-bottom:10px;}
 .c-btn.out{background:transparent;border:2px solid rgba(255,255,255,.3);color:#fff;margin-bottom:0;}
-
-/* ── PROFILE ── */
-.pcard{background:var(--w);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--sh);}
-.p-av{width:66px;height:66px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin-bottom:11px;}
-.p-nm{font-size:19px;font-weight:800;}
-.p-sb{font-size:13px;color:var(--gr);margin-top:2px;}
-.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px;}
-.sitem{background:var(--bg);border-radius:11px;padding:11px;text-align:center;}
-.snum{font-size:21px;font-weight:800;color:var(--g);}
-.slbl{font-size:11px;color:var(--gr);margin-top:2px;}
-.dbar{margin-bottom:10px;}
-.dbar-r{display:flex;justify-content:space-between;font-size:12px;color:var(--gr);margin-bottom:4px;}
-.dbar-bg{background:var(--bg);border-radius:5px;height:9px;overflow:hidden;}
-.dbar-f{height:100%;border-radius:5px;transition:width .5s;}
-
-/* ── DIAG RESULT ── */
-.dr-card{background:var(--w);border-radius:var(--r);padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
-.dr-pct{font-size:52px;font-weight:800;text-align:center;margin-bottom:6px;}
-.dr-label{font-size:16px;font-weight:700;text-align:center;margin-bottom:14px;}
-.dr-adv{background:var(--gl);border-radius:var(--r);padding:15px;}
-.dr-at{font-size:14px;font-weight:700;color:var(--g);margin-bottom:6px;}
-.dr-ax{font-size:13px;color:var(--gr);line-height:1.6;}
-.dr-cats{margin-top:14px;}
-.dr-cat{margin-bottom:8px;}
-.dr-cat-r{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;}
-.dr-cat-bg{background:var(--bg);border-radius:4px;height:8px;overflow:hidden;}
-.dr-cat-f{height:100%;border-radius:4px;transition:width .5s;}
-
-/* HEADER */
-.hdr{background:var(--g);padding:15px 17px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;}
-.hdr-title{font-size:15px;font-weight:700;color:#fff;flex:1;}
-.hdr-back{font-size:22px;color:#9fe1cb;cursor:pointer;padding:2px 6px;}
-
-.hidden{display:none!important;}
-.sp{height:16px;}
+/* PROFILE */
+.pcard{background:var(--w);border-radius:var(--r);padding:16px;margin-bottom:11px;box-shadow:var(--sh);}
+.p-av{width:62px;height:62px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;color:#fff;margin-bottom:9px;}
+.p-nm{font-size:17px;font-weight:800;}.p-sb{font-size:12px;color:var(--gr);margin-top:2px;}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px;}
+.sitem{background:var(--bg);border-radius:10px;padding:10px;text-align:center;}
+.snum{font-size:19px;font-weight:800;color:var(--g);}.slbl{font-size:10px;color:var(--gr);margin-top:2px;}
+.dbar{margin-bottom:9px;}
+.dbar-r{display:flex;justify-content:space-between;font-size:11px;color:var(--gr);margin-bottom:3px;}
+.dbar-bg{background:var(--bg);border-radius:4px;height:8px;overflow:hidden;}
+.dbar-f{height:100%;border-radius:4px;transition:width .5s;}
+/* DIAG */
+.dr-card{background:var(--w);border-radius:var(--r);padding:18px;margin-bottom:11px;box-shadow:var(--sh);}
+.dr-pct{font-size:50px;font-weight:800;text-align:center;margin-bottom:5px;}
+.dr-label{font-size:15px;font-weight:700;text-align:center;margin-bottom:12px;}
+.dr-adv{background:var(--gl);border-radius:var(--r);padding:13px;margin-top:9px;}
+.dr-at{font-size:13px;font-weight:700;color:var(--g);margin-bottom:5px;}
+.dr-ax{font-size:12px;color:var(--gr);line-height:1.6;}
+.hdr{background:var(--g);padding:13px 15px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:100;}
+.hdr-t{font-size:14px;font-weight:700;color:#fff;flex:1;}
+.hidden{display:none!important;}.sp{height:16px;}
 </style>
 </head>
 <body>
 
-<!-- ════ SCREEN: LOGIN ════ -->
-<div id="s-login" class="scr on">
-<div class="lw">
-  <div class="l-logo">MQ</div>
-  <div class="l-title">MektepkeQadam</div>
-  <div class="l-sub">Балаңызды мектепке дайындайтын<br>платформа 🎒</div>
-  <input class="l-inp" id="i-name" type="text" placeholder="Баланың аты" autocapitalize="words">
-  <input class="l-inp" id="i-age" type="number" placeholder="Жасы (5, 6 немесе 7)" min="4" max="8">
-  <button class="l-btn" onclick="doLogin()">Бастау →</button>
-  <div class="l-note">Деректер тек осы құрылғыда сақталады</div>
+<!-- ТІЛ ТАҢДАУ -->
+<div id="s-lang" class="scr on">
+<div class="lang-w">
+  <div class="lang-logo">MQ</div>
+  <div class="lang-title">MektepkeQadam</div>
+  <div class="lang-sub">Мектепке дайындық платформасы<br>Платформа подготовки к школе</div>
+  <button class="lang-btn lang-kk" onclick="setLang('kk')">🇰🇿 Қазақша</button>
+  <button class="lang-btn lang-ru" onclick="setLang('ru')">🇷🇺 Русский</button>
 </div>
 </div>
 
-<!-- ════ SCREEN: PROMO ════ -->
+<!-- КІРУ -->
+<div id="s-login" class="scr">
+<div class="login-w">
+  <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:300px;">
+    <div class="l-back" onclick="showScr('s-lang')">← <span id="back-t">Тілге оралу</span></div>
+    <div class="l-logo">MQ</div>
+    <div class="l-title" id="lt-title">Сәлем!</div>
+    <div class="l-sub" id="lt-sub">Баланың атын енгізіңіз</div>
+    <input class="l-inp" id="i-name" type="text" autocapitalize="words">
+    <input class="l-inp" id="i-age" type="number" min="4" max="8">
+    <button class="l-btn" id="lt-btn" onclick="doLogin()">Бастау →</button>
+    <div class="l-note" id="lt-note">Деректер тек осы құрылғыда сақталады</div>
+  </div>
+</div>
+</div>
+
+<!-- ПРОМОКОД -->
 <div id="s-promo" class="scr">
-<div class="pw">
+<div class="promo-w">
   <div class="p-icon">🔐</div>
-  <div class="p-title">Промокод керек</div>
-  <div class="p-text">Тегін 3 күн аяқталды.<br>Жалғастыру үшін промокод енгізіңіз.</div>
-  <div class="p-price">4 990 ₸ / 3 ай</div>
-  <div style="font-size:13px;color:#9fe1cb;margin-bottom:14px;">📲 Kaspi QR → Промокод → Жалғастыру</div>
+  <div class="p-title" id="pt-title">Промокод керек</div>
+  <div class="p-text" id="pt-text">Тегін 1 күн аяқталды.<br>Жалғастыру үшін промокод енгізіңіз.</div>
+  <div class="p-price" id="pt-price">4 990 ₸ / 3 ай</div>
   <input class="p-inp" id="i-promo" type="text" placeholder="ПРОМОКОД" autocapitalize="characters">
-  <button class="p-btn" onclick="checkPromo()">Белсендіру →</button>
-  <div class="p-link" onclick="goKaspi()">Kaspi QR арқылы сатып алу →</div>
+  <button class="p-btn" id="pt-btn" onclick="checkPromo()">Белсендіру →</button>
+  <div class="p-link" onclick="goKaspi()" id="pt-link">Kaspi QR арқылы сатып алу →</div>
+  <div style="margin-top:14px;color:rgba(255,255,255,.4);font-size:13px;cursor:pointer;" onclick="goHome()">← Басты бетке оралу</div>
 </div>
 </div>
 
-<!-- ════ SCREEN: HOME ════ -->
+<!-- БАСТЫ -->
 <div id="s-home" class="scr">
 <div class="hero">
   <div class="h-av" id="h-av">?</div>
   <div class="h-name" id="h-name">Сәлем!</div>
   <div class="h-sub" id="h-sub">Мектепке дайындық</div>
   <div class="h-stats">
-    <div class="h-stat">⭐ <span class="h-sv" id="h-xp">0</span><span class="h-sl">XP</span></div>
-    <div class="h-stat">🔥 <span class="h-sv" id="h-str">0</span><span class="h-sl">күн</span></div>
-    <div class="h-stat">🏆 <span class="h-sv" id="h-lvl">1</span><span class="h-sl">деңгей</span></div>
+    <div class="h-stat">⭐<span class="h-sv" id="h-xp">0</span><span class="h-sl">XP</span></div>
+    <div class="h-stat">🔥<span class="h-sv" id="h-str">0</span><span class="h-sl" id="h-kun">күн</span></div>
+    <div class="h-stat">🏆<span class="h-sv" id="h-lvl">1</span><span class="h-sl" id="h-den">деңгей</span></div>
   </div>
 </div>
 <div class="cont">
-  <div class="stitle">🏆 Деңгей прогресі</div>
+  <!-- ПРОМОКОД БАННЕР — тек activated емес кезде -->
+<div id="promo-banner" style="background:linear-gradient(135deg,#085041,#1d9e75);border-radius:var(--r);padding:16px;margin-bottom:14px;display:none;">
+  <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;" id="pb-title">🔑 Промокод енгізіңіз</div>
+  <div style="font-size:12px;color:#9fe1cb;margin-bottom:12px;" id="pb-sub">4 990 ₸ / 3 ай · Барлық сабақтар ашылады</div>
+  <div style="display:flex;gap:8px;">
+    <input id="pb-inp" type="text" placeholder="ПРОМОКОД" autocapitalize="characters"
+      style="flex:1;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 14px;font-size:16px;font-weight:700;letter-spacing:.08em;color:#fff;outline:none;text-transform:uppercase;">
+    <button onclick="applyPromoBanner()"
+      style="background:var(--gold);color:#3d2000;border:none;border-radius:10px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;" id="pb-btn">OK</button>
+  </div>
+  <div style="font-size:12px;color:#9fe1cb;margin-top:10px;text-decoration:underline;cursor:pointer;" onclick="goKaspi()" id="pb-link">Kaspi QR арқылы сатып алу →</div>
+</div>
+
+<div class="stitle" id="ht-lvl">🏆 Деңгей</div>
   <div class="lvl-card">
-    <div class="lvl-row">
-      <span class="lvl-name" id="hl-name">🌱 Жаңадан бастаушы</span>
-      <span class="lvl-xp" id="hl-xp">0/100 XP</span>
-    </div>
+    <div class="lvl-row"><span class="lvl-nm" id="hl-nm">🌱</span><span class="lvl-xp" id="hl-xp">0/100 XP</span></div>
     <div class="lvl-bg"><div class="lvl-fill" id="hl-fill" style="width:0%"></div></div>
   </div>
-
-  <div class="stitle">📚 Пәндер</div>
-  <div class="mod" onclick="openMod('alifbe')">
-    <div class="mod-ic" style="background:#e8f5e9">📖</div>
-    <div class="mod-info">
-      <div class="mod-nm">Қазақ Әліппесі <span class="tag tf">Тегін</span></div>
-      <div class="mod-ds">Дыбыс · Сурет · Сөз оқу</div>
-      <div class="mod-pb"><div class="mod-pf" id="mp-alifbe" style="width:0%"></div></div>
-      <div class="mod-xp" id="mx-alifbe">0/100 XP</div>
-    </div>›
-  </div>
-  <div class="mod" onclick="openMod('azbuka')">
-    <div class="mod-ic" style="background:#e3f2fd">🔤</div>
-    <div class="mod-info">
-      <div class="mod-nm">Орыс Азбукасы <span class="tag tn">Жаңа</span></div>
-      <div class="mod-ds">Дыбыс · Сурет · Сөз оқу</div>
-      <div class="mod-pb"><div class="mod-pf" id="mp-azbuka" style="width:0%"></div></div>
-      <div class="mod-xp" id="mx-azbuka">0/100 XP</div>
-    </div>›
-  </div>
-  <div class="mod" onclick="openMod('math')">
-    <div class="mod-ic" style="background:#fff8e1">🔢</div>
-    <div class="mod-info">
-      <div class="mod-nm">Математика</div>
-      <div class="mod-ds">Санау · Есептер · Пішіндер</div>
-      <div class="mod-pb"><div class="mod-pf" id="mp-math" style="width:0%"></div></div>
-      <div class="mod-xp" id="mx-math">0/100 XP</div>
-    </div>›
-  </div>
-  <div class="mod" onclick="openMod('diag')">
-    <div class="mod-ic" style="background:#fce4ec">🩺</div>
-    <div class="mod-info">
-      <div class="mod-nm">Диагностика <span class="tag tai">AI</span></div>
-      <div class="mod-ds">Мектепке дайындық анализі</div>
-      <div class="mod-pb"><div class="mod-pf" id="mp-diag" style="width:0%"></div></div>
-      <div class="mod-xp" id="mx-diag">0/50 XP</div>
-    </div>›
-  </div>
-
-  <div class="stitle">🔥 Белсенділік</div>
+  <div class="stitle" id="ht-mod">📚 Пәндер</div>
+  <div id="home-mods"></div>
+  <div class="stitle" id="ht-str">🔥 Белсенділік</div>
   <div class="streak">
-    <div class="st-icon">🔥</div>
-    <div style="flex:1">
-      <div class="st-title" id="st-t">0 күн қатарынан</div>
-      <div class="st-sub">Күн сайын кіріп жаттық!</div>
+    <div style="font-size:34px;">🔥</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:700;" id="st-t">0 күн</div>
+      <div style="font-size:11px;color:var(--gr);" id="st-s">Күн сайын жаттық!</div>
       <div class="st-days" id="st-days"></div>
     </div>
   </div>
   <div class="sp"></div>
 </div>
+<div class="float-btns" id="float-btns">
+  <button class="float-btn float-kaspi" onclick="goKaspi()">💳</button>
+  <button class="float-btn float-wa" onclick="goWA()">💬</button>
+</div>
 <div class="bnav">
-  <div class="bn on" id="bn-home" onclick="goTab('home')"><div class="bn-ic">🏠</div>Басты</div>
-  <div class="bn" id="bn-lessons" onclick="goTab('lessons')"><div class="bn-ic">📚</div>Сабақтар</div>
-  <div class="bn" id="bn-profile" onclick="goTab('profile')"><div class="bn-ic">👤</div>Профиль</div>
+  <div class="bn on" id="bn-home" onclick="goTab('home')"><div class="bn-ic">🏠</div><span id="nav-h">Басты</span></div>
+  <div class="bn" id="bn-lessons" onclick="goTab('lessons')"><div class="bn-ic">📚</div><span id="nav-l">Сабақтар</span></div>
+  <div class="bn" id="bn-profile" onclick="goTab('profile')"><div class="bn-ic">👤</div><span id="nav-p">Профиль</span></div>
 </div>
 </div>
 
-<!-- ════ SCREEN: LESSONS LIST ════ -->
+<!-- САБАҚТАР ТІЗІМІ -->
 <div id="s-lessons" class="scr">
-<div class="hdr"><div class="hdr-title">📚 Барлық сабақтар</div></div>
-<div class="cont">
-  <div class="stitle">Пәнді таңдаңыз</div>
-  <div class="mod" onclick="openMod('alifbe')">
-    <div class="mod-ic" style="background:#e8f5e9">📖</div>
-    <div class="mod-info">
-      <div class="mod-nm">Қазақ Әліппесі <span class="tag tf">Тегін</span></div>
-      <div class="mod-ds">5 тақырып · 100 XP</div>
-      <div class="mod-pb"><div class="mod-pf" id="lp-alifbe" style="width:0%"></div></div>
-    </div>›
-  </div>
-  <div class="mod" onclick="openMod('azbuka')">
-    <div class="mod-ic" style="background:#e3f2fd">🔤</div>
-    <div class="mod-info">
-      <div class="mod-nm">Орыс Азбукасы</div>
-      <div class="mod-ds">5 тақырып · 100 XP</div>
-      <div class="mod-pb"><div class="mod-pf" id="lp-azbuka" style="width:0%"></div></div>
-    </div>›
-  </div>
-  <div class="mod" onclick="openMod('math')">
-    <div class="mod-ic" style="background:#fff8e1">🔢</div>
-    <div class="mod-info">
-      <div class="mod-nm">Математика</div>
-      <div class="mod-ds">5 тақырып · 100 XP</div>
-      <div class="mod-pb"><div class="mod-pf" id="lp-math" style="width:0%"></div></div>
-    </div>›
-  </div>
-  <div class="mod" onclick="openMod('diag')">
-    <div class="mod-ic" style="background:#fce4ec">🩺</div>
-    <div class="mod-info">
-      <div class="mod-nm">Диагностика <span class="tag tai">AI</span></div>
-      <div class="mod-ds">15 сұрақ · AI анализ · 50 XP</div>
-      <div class="mod-pb"><div class="mod-pf" id="lp-diag" style="width:0%"></div></div>
-    </div>›
-  </div>
-  <div class="sp"></div>
-</div>
+<div class="hdr"><div class="hdr-t" id="les-t">📚 Сабақтар</div></div>
+<div class="cont" id="les-list"></div>
 <div class="bnav">
-  <div class="bn" id="bn2-home" onclick="goTab('home')"><div class="bn-ic">🏠</div>Басты</div>
-  <div class="bn on" id="bn2-lessons" onclick="goTab('lessons')"><div class="bn-ic">📚</div>Сабақтар</div>
-  <div class="bn" id="bn2-profile" onclick="goTab('profile')"><div class="bn-ic">👤</div>Профиль</div>
+  <div class="bn" id="bn2-home" onclick="goTab('home')"><div class="bn-ic">🏠</div><span id="nav2-h">Басты</span></div>
+  <div class="bn on" id="bn2-lessons" onclick="goTab('lessons')"><div class="bn-ic">📚</div><span id="nav2-l">Сабақтар</span></div>
+  <div class="bn" id="bn2-profile" onclick="goTab('profile')"><div class="bn-ic">👤</div><span id="nav2-p">Профиль</span></div>
 </div>
 </div>
 
-<!-- ════ SCREEN: MODULE DETAIL ════ -->
+<!-- МОДУЛЬ ДЕТАЙЛ -->
 <div id="s-mdet" class="scr">
 <div class="mdhdr">
-  <div class="md-back" onclick="backMdet()">← Артқа</div>
+  <div class="md-back" onclick="backMdet()">← <span id="md-back-t">Артқа</span></div>
   <div class="md-icon" id="md-icon">📖</div>
-  <div class="md-title" id="md-title">Әліппе</div>
-  <div class="md-sub" id="md-sub">5 сабақ</div>
+  <div class="md-title" id="md-title">-</div>
+  <div class="md-sub" id="md-sub">-</div>
 </div>
 <div class="cont" id="md-list"></div>
 </div>
 
-<!-- ════ SCREEN: LESSON ════ -->
+<!-- САБАҚ -->
 <div id="s-lesson" class="scr">
 <div class="lhdr">
   <div class="lhdr-r">
     <span class="lhdr-x" onclick="backLesson()">✕</span>
-    <span class="lhdr-n" id="l-name">Әліппе</span>
+    <span class="lhdr-n" id="l-name">-</span>
     <span class="lhdr-xp" id="l-xp">+0 XP</span>
   </div>
   <div class="lpb"><div class="lpf" id="l-pf" style="width:5%"></div></div>
   <div class="lnum" id="l-num">1/10</div>
 </div>
 <div class="lbody" id="l-body"></div>
-<div id="l-rbar" class="rbar hidden">
-  <div class="rb-ic" id="l-ri">✅</div>
-  <div class="rb-tx" id="l-rt">Дұрыс!</div>
-</div>
-<div id="l-nw" class="nwrap hidden">
-  <button class="nxt" onclick="nextQ()">Жалғастыру →</button>
-</div>
+<div id="l-rbar" class="rbar hidden"><div class="rb-ic" id="l-ri">✅</div><div class="rb-tx" id="l-rt">Дұрыс!</div></div>
+<div id="l-nw" class="nwrap hidden"><button class="nxt" onclick="nextQ()"><span id="nxt-t">Жалғастыру →</span></button></div>
 </div>
 
-<!-- ════ SCREEN: COMPLETE ════ -->
+<!-- АЯҚТАЛДЫ -->
 <div id="s-cmp" class="scr">
 <div class="cw">
   <div class="c-icon" id="c-ic">🎉</div>
   <div class="c-title" id="c-ti">Жарайсың!</div>
   <div class="c-xp" id="c-xp">+10 XP</div>
-  <div class="c-sub" id="c-su">Керемет нәтиже!</div>
-  <button class="c-btn" onclick="goHome()">Басты бетке →</button>
-  <button class="c-btn out" onclick="replay()">Қайталау ↺</button>
+  <div class="c-sub" id="c-su">Керемет!</div>
+  <button class="c-btn" onclick="goHome()"><span id="cm-h">Басты бетке →</span></button>
+  <button class="c-btn out" onclick="replay()"><span id="cm-r">Қайталау ↺</span></button>
 </div>
 </div>
 
-<!-- ════ SCREEN: PROFILE ════ -->
+<!-- ПРОФИЛЬ -->
 <div id="s-profile" class="scr">
-<div class="hdr"><div class="hdr-title">👤 Менің профилім</div></div>
+<div class="hdr"><div class="hdr-t" id="pr-t">👤 Профиль</div></div>
 <div class="cont">
   <div class="pcard">
     <div class="p-av" id="pr-av">?</div>
@@ -401,261 +319,612 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
     <div class="p-sb" id="pr-sb">-</div>
     <div class="sgrid">
       <div class="sitem"><div class="snum" id="pr-xp">0</div><div class="slbl">⭐ XP</div></div>
-      <div class="sitem"><div class="snum" id="pr-cr">0</div><div class="slbl">✅ Дұрыс</div></div>
-      <div class="sitem"><div class="snum" id="pr-st">0</div><div class="slbl">🔥 Күн</div></div>
+      <div class="sitem"><div class="snum" id="pr-cr">0</div><div class="slbl" id="pr-cr-l">✅ Дұрыс</div></div>
+      <div class="sitem"><div class="snum" id="pr-st">0</div><div class="slbl" id="pr-st-l">🔥 Күн</div></div>
     </div>
-    <div style="margin-top:13px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-        <span style="font-size:13px;font-weight:700;" id="pr-lvl">🌱 1-деңгей</span>
-        <span style="font-size:12px;color:var(--gr);" id="pr-xpi">0/100 XP</span>
+    <div style="margin-top:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:12px;font-weight:700;" id="pr-lvl">🌱</span>
+        <span style="font-size:11px;color:var(--gr);" id="pr-xpi">0/100 XP</span>
       </div>
       <div class="lvl-bg"><div class="lvl-fill" id="pr-lf" style="width:0%"></div></div>
     </div>
   </div>
-
   <div class="pcard">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px;">📊 Пәндер бойынша прогрес</div>
-    <div class="dbar"><div class="dbar-r"><span>📖 Қазақ Әліппесі</span><span id="pp-a">0%</span></div><div class="dbar-bg"><div class="dbar-f" id="pb-a" style="width:0%;background:var(--gm)"></div></div></div>
-    <div class="dbar"><div class="dbar-r"><span>🔤 Орыс Азбукасы</span><span id="pp-z">0%</span></div><div class="dbar-bg"><div class="dbar-f" id="pb-z" style="width:0%;background:#1976d2"></div></div></div>
-    <div class="dbar"><div class="dbar-r"><span>🔢 Математика</span><span id="pp-m">0%</span></div><div class="dbar-bg"><div class="dbar-f" id="pb-m" style="width:0%;background:var(--gold)"></div></div></div>
-    <div class="dbar"><div class="dbar-r"><span>🩺 Диагностика</span><span id="pp-d">0%</span></div><div class="dbar-bg"><div class="dbar-f" id="pb-d" style="width:0%;background:#e91e63"></div></div></div>
+    <div style="font-size:12px;font-weight:700;margin-bottom:11px;" id="pr-prog-t">📊 Прогрес</div>
+    <div id="pr-bars"></div>
   </div>
-
   <div class="dr-card" id="dr-card" style="display:none">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px;">🩺 Диагностика нәтижесі</div>
+    <div style="font-size:12px;font-weight:700;margin-bottom:11px;">🩺 Диагностика нәтижесі</div>
     <div class="dr-pct" id="dr-pct">-</div>
     <div class="dr-label" id="dr-lbl">-</div>
-    <div class="dr-cats" id="dr-cats"></div>
-    <div class="dr-adv">
-      <div class="dr-at">🤖 AI кеңесі:</div>
-      <div class="dr-ax" id="dr-adv">-</div>
+    <div id="dr-cats"></div>
+    <div class="dr-adv"><div class="dr-at">🤖 AI кеңесі:</div><div class="dr-ax" id="dr-adv">-</div></div>
+  </div>
+  <!-- ПРОМОКОД БЛОГЫ -->
+  <div class="pcard" id="pr-promo-card">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px;">🔑 <span id="pr-promo-t">Промокод</span></div>
+    <div style="font-size:11px;color:var(--gr);margin-bottom:12px;" id="pr-promo-sub">4 990 ₸ / 3 ай · Tolyk kurs</div>
+    <div id="pr-promo-activated" style="display:none;background:var(--gl);border-radius:10px;padding:12px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">✅</div>
+      <div style="font-size:14px;font-weight:700;color:var(--g);" id="pr-act-txt">Белсендірілді!</div>
+    </div>
+    <div id="pr-promo-form">
+      <input id="pr-promo-inp" type="text" placeholder="ПРОМОКОД" autocapitalize="characters"
+        style="background:var(--bg);border:2px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:16px;font-weight:700;letter-spacing:.1em;color:var(--tx);width:100%;outline:none;margin-bottom:10px;text-align:center;">
+      <button onclick="applyPromoFromProfile()"
+        style="background:var(--g);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:14px;font-weight:700;cursor:pointer;width:100%;" id="pr-promo-btn">Белсендіру →</button>
     </div>
   </div>
 
-  <button style="background:var(--rl);color:var(--red);border:none;border-radius:var(--r);padding:13px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-top:4px;" onclick="resetAll()">🚪 Шығу / Деректерді жою</button>
+  <div class="pcard" id="pr-pay-card">
+    <div style="font-size:12px;font-weight:700;margin-bottom:11px;" id="pr-pay-t">💳 Төлем</div>
+    <button style="background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:7px;" onclick="goKaspi()"><span id="pr-kaspi-t">Kaspi QR →</span></button>
+    <button style="background:#25d366;color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;" onclick="goWA()"><span id="pr-wa-t">WhatsApp →</span></button>
+  </div>
+  <button style="background:var(--rl);color:var(--red);border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-top:3px;" onclick="resetAll()" id="pr-reset-t">🚪 Шығу</button>
   <div class="sp"></div>
 </div>
 <div class="bnav">
-  <div class="bn" id="bn3-home" onclick="goTab('home')"><div class="bn-ic">🏠</div>Басты</div>
-  <div class="bn" id="bn3-lessons" onclick="goTab('lessons')"><div class="bn-ic">📚</div>Сабақтар</div>
-  <div class="bn on" id="bn3-profile" onclick="goTab('profile')"><div class="bn-ic">👤</div>Профиль</div>
+  <div class="bn" id="bn3-home" onclick="goTab('home')"><div class="bn-ic">🏠</div><span id="nav3-h">Басты</span></div>
+  <div class="bn" id="bn3-lessons" onclick="goTab('lessons')"><div class="bn-ic">📚</div><span id="nav3-l">Сабақтар</span></div>
+  <div class="bn on" id="bn3-profile" onclick="goTab('profile')"><div class="bn-ic">👤</div><span id="nav3-p">Профиль</span></div>
 </div>
 </div>
 
 <script>
-// ═══ ДЕРЕКТЕР ═══
-const PROMOS_BASE = ['MQ2026','SCHOOL','MEKTEP','QADAM2026','DEMO','KIDSTOPIA'];
-const FREE_DAYS = 3;
-const LEVELS = [
-  {name:'🌱 Жаңадан бастаушы',min:0,max:100},
-  {name:'⭐ Үміткер',min:100,max:250},
-  {name:'📚 Оқушы',min:250,max:500},
-  {name:'🎓 Білімгер',min:500,max:900},
-  {name:'🏆 Чемпион',min:900,max:9999},
-];
-let ST = {
-  name:'',age:6,activated:false,startDate:null,
-  xp:0,streak:0,lastDate:'',done:0,correct:0,
-  prog:{alifbe:0,azbuka:0,math:0,diag:0},
-  xpMod:{alifbe:0,azbuka:0,math:0,diag:0},
-  diagResult:null
+// ═══ АУДАРМАЛАР ═══
+const T={
+  kk:{
+    backLang:'← Тілге оралу',loginTitle:'Сәлем!',loginSub:'Баланың атын енгізіңіз',
+    namePh:'Баланың аты',agePh:'Жасы (5-7)',loginBtn:'Бастау →',loginNote:'Деректер тек осы құрылғыда',
+    promoTitle:'Промокод керек',promoText:'Бұл сабақ жабық. Промокод енгізіңіз.',promoPrice:'4 990 ₸ / 3 ай',
+    promoBtn:'Белсендіру →',promoLink:'Kaspi QR арқылы сатып алу →',
+    greeting:'Сәлем, %s! 👋',sub:'%s жас · Мектепке дайындық',
+    hKun:'күн',hDen:'деңгей',htLvl:'🏆 Деңгей',htMod:'📚 Пәндер',htStr:'🔥 Белсенділік',
+    stTitle:'%s күн қатарынан',stSub:'Күн сайын жаттық!',
+    navH:'Басты',navL:'Сабақтар',navP:'Профиль',
+    lesT:'📚 Барлық сабақтар',mdBackT:'Артқа',nxtT:'Жалғастыру →',
+    cmH:'Басты бетке →',cmR:'Қайталау ↺',
+    prT:'👤 Профиль',prProgT:'📊 Прогрес',prPayT:'💳 Төлем',
+    prKaspiT:'💳 Kaspi QR →',prWaT:'💬 WhatsApp →',prResetT:'🚪 Шығу',
+    prCrL:'✅ Дұрыс',prStL:'🔥 Күн',
+    correct:'Дұрыс! 🎉',wrong:'Дұрыс жауап: ',startBtn:'Бастау →',
+    days:['Жк','Дс','Сс','Ср','Бс','Жм','Сн'],
+    levels:['🌱 Жаңадан бастаушы','⭐ Үміткер','📚 Оқушы','🎓 Білімгер','🏆 Чемпион'],
+    catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология'},
+    mods:{
+      alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
+      math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:false,color:'#fff8e1'},
+      diag:{icon:'🩺',title:'Диагностика',desc:'AI психологиялық анализ',free:false,color:'#fce4ec'},
+    },
+    diagAdvice(pct,c){
+      const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
+      const S=Object.entries(c).filter(([k,v])=>v>=80).map(([k])=>T.kk.catNames[k]).join(', ');
+      if(pct>=85)return{icon:'🏆',title:'Мектепке толық дайын!',color:'#085041',adv:`${S?'Күшті жақтар: '+S+'.':''} Сенімді барыңыз!`};
+      if(pct>=65)return{icon:'⭐',title:'Негізінен дайын',color:'#1d9e75',adv:`${W?'Назар аудару: '+W+'. Күн сайын 10 мин жаттығыңыз.':''}`};
+      if(pct>=45)return{icon:'📚',title:'Дайындалу керек',color:'#ef9f27',adv:`${W?W+' бағыттарына назар аударыңыз.':''} 15 мин/күн жаттықса нәтиже болады.`};
+      return{icon:'💪',title:'Жедел дайындық керек',color:'#e53935',adv:`${W?'Кемшіліктер: '+W+'.':''} Онлайн курсты немесе маман кеңесін қолданыңыз.`};
+    }
+  },
+  ru:{
+    backLang:'← Выбор языка',loginTitle:'Привет!',loginSub:'Введите имя ребёнка',
+    namePh:'Имя ребёнка',agePh:'Возраст (5-7)',loginBtn:'Начать →',loginNote:'Данные хранятся на устройстве',
+    promoTitle:'Нужен промокод',promoText:'Этот урок закрыт. Введите промокод.',promoPrice:'4 990 ₸ / 3 месяца',
+    promoBtn:'Активировать →',promoLink:'Купить через Kaspi QR →',
+    greeting:'Привет, %s! 👋',sub:'%s лет · Подготовка к школе',
+    hKun:'дней',hDen:'уровень',htLvl:'🏆 Уровень',htMod:'📚 Предметы',htStr:'🔥 Активность',
+    stTitle:'%s дней подряд',stSub:'Занимайся каждый день!',
+    navH:'Главная',navL:'Уроки',navP:'Профиль',
+    lesT:'📚 Все уроки',mdBackT:'Назад',nxtT:'Продолжить →',
+    cmH:'На главную →',cmR:'Повторить ↺',
+    prT:'👤 Профиль',prProgT:'📊 Прогресс',prPayT:'💳 Оплата',
+    prKaspiT:'💳 Купить Kaspi →',prWaT:'💬 WhatsApp →',prResetT:'🚪 Выйти',
+    prCrL:'✅ Верно',prStL:'🔥 Дней',
+    correct:'Правильно! 🎉',wrong:'Правильный ответ: ',startBtn:'Начать →',
+    days:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+    levels:['🌱 Новичок','⭐ Претендент','📚 Ученик','🎓 Знаток','🏆 Чемпион'],
+    catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.'},
+    mods:{
+      alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
+      math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:false,color:'#fff8e1'},
+      diag:{icon:'🩺',title:'Диагностика',desc:'AI психологический анализ',free:false,color:'#fce4ec'},
+    },
+    diagAdvice(pct,c){
+      const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
+      const S=Object.entries(c).filter(([k,v])=>v>=80).map(([k])=>T.ru.catNames[k]).join(', ');
+      if(pct>=85)return{icon:'🏆',title:'Полностью готов к школе!',color:'#085041',adv:`${S?'Сильные стороны: '+S+'.':''} Смело идите в школу!`};
+      if(pct>=65)return{icon:'⭐',title:'В основном готов',color:'#1d9e75',adv:`${W?'Уделите внимание: '+W+'.':''}`};
+      if(pct>=45)return{icon:'📚',title:'Нужна подготовка',color:'#ef9f27',adv:`${W?'Обратите внимание: '+W+'.':''} Занимайтесь 15 мин в день.`};
+      return{icon:'💪',title:'Нужна срочная подготовка',color:'#e53935',adv:`${W?'Слабые места: '+W+'.':''} Рекомендуем онлайн-курс.`};
+    }
+  }
 };
 
-// ═══ САБАҚТАР МАЗМҰНЫ ═══
-const MODS = {
-  alifbe:{icon:'📖',title:'Қазақ Әліппесі',sub:'5 тақырып · 100 XP',maxXP:100,
-    lessons:[
-      {t:'Кіріспе',xp:10,diag:false,qs:[
-        {type:'intro',em:'📖',ti:'Қазақ Әліппесі',ds:'42 әріп · Дыбыс + Сурет · Оқу',bs:['42 әріп','5–7 жас','Тегін']}
-      ]},
-      {t:'А, Ә, Б',xp:20,diag:false,qs:[
-        {q:'Алма қандай дыбыстан басталады?',img:'🍎',hint:'Алма — А',ans:'А',opts:['А','Ә','О','Е']},
-        {q:'Ән қандай дыбыстан?',img:'🎵',hint:'Ән — Ә',ans:'Ә',opts:['А','Ә','Е','И']},
-        {q:'Балық — бірінші дыбыс?',img:'🐟',hint:'Балық — Б',ans:'Б',opts:['Б','П','В','М']},
-        {q:'Аю — бірінші дыбыс?',img:'🐻',hint:'Аю — А',ans:'А',opts:['А','Ə','У','О']},
-      ]},
-      {t:'Г, Д, Е, Ж',xp:20,diag:false,qs:[
-        {q:'Гүл — бірінші дыбыс?',img:'🌸',hint:'Гүл — Г',ans:'Г',opts:['Г','К','Қ','Х']},
-        {q:'Жұлдыз — бірінші дыбыс?',img:'⭐',hint:'Жұлдыз — Ж',ans:'Ж',opts:['Ж','З','Ш','С']},
-        {q:'Дала — бірінші дыбыс?',img:'🌾',hint:'Дала — Д',ans:'Д',opts:['Т','Д','Н','Л']},
-        {q:'Ешкі — бірінші дыбыс?',img:'🐐',hint:'Ешкі — Е',ans:'Е',opts:['Е','Э','И','Ы']},
-      ]},
-      {t:'М, Н, О, П',xp:20,diag:false,qs:[
-        {q:'Мысық — бірінші дыбыс?',img:'🐱',hint:'Мысық — М',ans:'М',opts:['М','Н','Б','П']},
-        {q:'Нан — бірінші дыбыс?',img:'🍞',hint:'Нан — Н',ans:'Н',opts:['М','Н','Л','Р']},
-        {q:'Пил — бірінші дыбыс?',img:'🐘',hint:'Пил — П',ans:'П',opts:['Б','П','Ф','В']},
-      ]},
-      {t:'Сөз оқу',xp:30,diag:false,qs:[
-        {q:'Сөзді оқыңыз',img:'🏠',hint:'',ans:'ҮЙ',opts:['ОЙ','АЙ','ҮЙ','ЕЙ']},
-        {q:'Сөзді оқыңыз',img:'🐱',hint:'',ans:'МЫС',opts:['МАС','МЫС','МЕС','МУС']},
-        {q:'Сөзді оқыңыз',img:'🌙',hint:'',ans:'АЙ',opts:['АЙ','ОЙ','ЕЙ','ИЙ']},
-        {q:'Сөзді оқыңыз',img:'🐝',hint:'',ans:'АРА',opts:['ОРА','АРА','ЕРЕ','ІРІ']},
-      ]},
-    ]},
-  azbuka:{icon:'🔤',title:'Орыс Азбукасы',sub:'5 тақырып · 100 XP',maxXP:100,
-    lessons:[
-      {t:'Кіріспе',xp:10,diag:false,qs:[
-        {type:'intro',em:'🔤',ti:'Орыс Азбукасы',ds:'33 әріп · Дыбыс + Сурет · Сөз оқу',bs:['33 әріп','Орысша','Жаңа']}
-      ]},
-      {t:'А, Б, В, Г',xp:20,diag:false,qs:[
-        {q:'Арбуз — бірінші дыбыс?',img:'🍉',hint:'Арбуз — А',ans:'А',opts:['А','О','У','Э']},
-        {q:'Бабочка — бірінші дыбыс?',img:'🦋',hint:'Бабочка — Б',ans:'Б',opts:['Б','П','В','Ф']},
-        {q:'Волк — бірінші дыбыс?',img:'🐺',hint:'Волк — В',ans:'В',opts:['Ф','В','Б','П']},
-        {q:'Гриб — бірінші дыбыс?',img:'🍄',hint:'Гриб — Г',ans:'Г',opts:['К','Г','Х','Ж']},
-      ]},
-      {t:'Д, Е, Ж, З',xp:20,diag:false,qs:[
-        {q:'Дом — бірінші дыбыс?',img:'🏠',hint:'Дом — Д',ans:'Д',opts:['Д','Т','Н','Л']},
-        {q:'Ёжик — бірінші дыбыс?',img:'🦔',hint:'Ёжик — Е',ans:'Е',opts:['Е','Э','И','Ю']},
-        {q:'Зебра — бірінші дыбыс?',img:'🦓',hint:'Зебра — З',ans:'З',opts:['З','Ж','С','Ш']},
-      ]},
-      {t:'К, Л, М, Н',xp:20,diag:false,qs:[
-        {q:'Кот — бірінші дыбыс?',img:'🐱',hint:'Кот — К',ans:'К',opts:['К','Г','Х','Ч']},
-        {q:'Лиса — бірінші дыбыс?',img:'🦊',hint:'Лиса — Л',ans:'Л',opts:['Р','Л','М','Н']},
-        {q:'Медведь — бірінші дыбыс?',img:'🐻',hint:'Медведь — М',ans:'М',opts:['Н','М','Б','П']},
-      ]},
-      {t:'Сөз оқу',xp:30,diag:false,qs:[
-        {q:'Сөзді оқыңыз',img:'🐱',hint:'',ans:'КОТ',opts:['КАТ','КОТ','КУТ','КЕТ']},
-        {q:'Сөзді оқыңыз',img:'🏠',hint:'',ans:'ДОМ',opts:['ДАМ','ДОМ','ДУМ','ДЕМ']},
-        {q:'Сөзді оқыңыз',img:'🌊',hint:'',ans:'МОР',opts:['МАР','МОР','МУР','МЕР']},
-        {q:'Сөзді оқыңыз',img:'🐟',hint:'',ans:'РЫБ',opts:['РЫБ','РАБ','РУБ','РЕБ']},
-      ]},
-    ]},
-  math:{icon:'🔢',title:'Математика',sub:'5 тақырып · 100 XP',maxXP:100,
-    lessons:[
-      {t:'Кіріспе',xp:10,diag:false,qs:[
-        {type:'intro',em:'🔢',ti:'Математика',ds:'Санау · Қосу · Алу · Пішіндер',bs:['1–10','Ойын','Нәтиже']}
-      ]},
-      {t:'1-ден 5-ке',xp:20,diag:false,qs:[
-        {q:'Неше алма бар?',img:'🍎🍎🍎',hint:'',ans:'3',opts:['2','3','4','5']},
-        {q:'Неше жұлдыз?',img:'⭐⭐',hint:'',ans:'2',opts:['1','2','3','4']},
-        {q:'Неше гүл?',img:'🌸🌸🌸🌸🌸',hint:'',ans:'5',opts:['3','4','5','6']},
-        {q:'Неше шар?',img:'🔵🔵🔵🔵',hint:'',ans:'4',opts:['3','4','5','6']},
-      ]},
-      {t:'6-дан 10-ға',xp:20,diag:false,qs:[
-        {q:'Неше лимон?',img:'🍋🍋🍋🍋🍋🍋',hint:'',ans:'6',opts:['5','6','7','8']},
-        {q:'Неше шар?',img:'🔵🔵🔵🔵🔵🔵🔵🔵',hint:'',ans:'8',opts:['7','8','9','10']},
-        {q:'Неше қар?',img:'❄️❄️❄️❄️❄️❄️❄️❄️❄️❄️',hint:'',ans:'10',opts:['8','9','10','11']},
-      ]},
-      {t:'Қосу',xp:20,diag:false,qs:[
-        {q:'2 + 3 = ?',img:'🔢',hint:'',ans:'5',opts:['4','5','6','7']},
-        {q:'4 + 2 = ?',img:'🔢',hint:'',ans:'6',opts:['5','6','7','8']},
-        {q:'3 + 4 = ?',img:'🔢',hint:'',ans:'7',opts:['6','7','8','9']},
-        {q:'5 + 5 = ?',img:'🔢',hint:'',ans:'10',opts:['8','9','10','11']},
-      ]},
-      {t:'Алу + Пішіндер',xp:30,diag:false,qs:[
-        {q:'7 - 4 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
-        {q:'10 - 3 = ?',img:'🔢',hint:'',ans:'7',opts:['6','7','8','9']},
-        {q:'Бұл қандай пішін?',img:'⭕',hint:'',ans:'Шеңбер',opts:['Үшбұрыш','Шеңбер','Квадрат','Тіктөртбұрыш']},
-        {q:'Бұл қандай пішін?',img:'🔷',hint:'',ans:'Ромб',opts:['Квадрат','Ромб','Шеңбер','Үшбұрыш']},
-      ]},
-    ]},
-  diag:{icon:'🩺',title:'Диагностика',sub:'15 сұрақ · AI анализ · 50 XP',maxXP:50,
-    lessons:[
-      {t:'Мектепке дайындық тесті',xp:50,diag:true,qs:[
-        {type:'intro',em:'🩺',ti:'Психологиялық Диагностика',ds:'Балаңыздың мектепке дайындығын жан-жақты тексереміз. 15 сұрақ. Соңында толық AI анализ аласыз.',bs:['15 сұрақ','7 бағыт','AI анализ']},
-        {q:'Балаңыз бір ойынды қанша уақыт ойнайды?',img:'🎮',hint:'',opts:['5 минут','10 минут','20+ минут','1 минут'],cat:'attention',scores:[2,5,10,0]},
-        {q:'Сізге айтқан тапсырманы есте сақтайды ма?',img:'🧠',hint:'',opts:['Иә, жақсы','Кейде','Жиі ұмытады','Жоқ'],cat:'attention',scores:[10,6,3,0]},
-        {q:'Болған оқиғаны толық айтып бере алады ма?',img:'🗣️',hint:'',opts:['Иә, толық','Аздап','Қиналады','Жоқ'],cat:'speech',scores:[10,6,3,0]},
-        {q:'Ертегіні пересказ жасайды ма?',img:'📚',hint:'',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'speech',scores:[10,6,3,0]},
-        {q:'Қарандашты дұрыс ұстайды ма?',img:'✏️',hint:'',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'motor',scores:[10,6,3,0]},
-        {q:'Қайшымен кесе алады ма?',img:'✂️',hint:'',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'motor',scores:[10,6,3,0]},
-        {q:'10-ға дейін санайды ма?',img:'🔢',hint:'',opts:['Иә, оңай','Кейде қателеседі','5-ке дейін','Жоқ'],cat:'math',scores:[10,6,3,0]},
-        {q:'Заттарды санап, жинауы шығара алады ма?',img:'🍎',hint:'',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'math',scores:[10,6,3,0]},
-        {q:'Өзі киінеді/шешінеді ме?',img:'👕',hint:'',opts:['Иә, өзі','Аздап көмек','Жиі көмек','Жоқ'],cat:'self',scores:[10,6,3,0]},
-        {q:'Рюкзагын өзі жинайды ма?',img:'🎒',hint:'',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'self',scores:[10,6,3,0]},
-        {q:'Жаңа балалармен тез тіл табысады ма?',img:'👫',hint:'',opts:['Иә, тез','Бірте-бірте','Қиналады','Жоқ'],cat:'social',scores:[10,6,3,0]},
-        {q:'Сізсіз қала алады ма?',img:'🏫',hint:'',opts:['Иә, жақсы','Аздап қиын','Қиналады','Мүлдем жоқ'],cat:'social',scores:[10,6,3,0]},
-        {q:'Мектепке барғысы келеді ме?',img:'😊',hint:'',opts:['Иә, қуанады','Айтпайды','Қорқады','Барғысы жоқ'],cat:'emotion',scores:[10,6,3,0]},
-        {q:'Жеңілістен кейін тез тынышталады ма?',img:'😢',hint:'',opts:['Иә','2-3 мин','Ұзақ жылайды','Ашуланады'],cat:'emotion',scores:[10,6,3,0]},
-        {q:'Жаңа ережелерге бейімделе алады ма?',img:'📋',hint:'',opts:['Иә, оңай','Бірте-бірте','Қиналады','Жоқ'],cat:'emotion',scores:[10,6,3,0]},
-      ]}
-    ]}
+// ═══ ТОЛЫҚ КУРС МАЗМҰНЫ ═══
+// Google Drive материалдары негізінде жасалған
+const LESSONS={
+  kk:{
+    alifbe:{icon:'📖',maxXP:400,
+      lessons:[
+        {t:'Кіріспе',xp:10,diag:false,qs:[{type:'intro',em:'📖',ti:'Қазақ Әліппесі',ds:'42 әріп · Дыбыс · Буын · Сөз оқу · Толық курс',bs:['42 әріп','5–7 жас','Тегін 1-сабақ']}]},
+        // ТЕГІН — 1 сабақ
+        {t:'А, Ә — Үйрену',xp:20,diag:false,free:true,qs:[
+          {q:'Алма — бірінші дыбыс?',img:'🍎',hint:'А-лма',ans:'А',opts:['А','Ә','О','Е']},
+          {q:'Ән — бірінші дыбыс?',img:'🎵',hint:'Ә-н',ans:'Ә',opts:['А','Ә','Е','И']},
+          {q:'Аю — бірінші дыбыс?',img:'🐻',hint:'А-ю',ans:'А',opts:['А','О','Ы','Ұ']},
+          {q:'Ара — бірінші дыбыс?',img:'🐝',hint:'А-ра',ans:'А',opts:['А','Ә','Э','О']},
+        ]},
+        // ПРОМОКОД КЕЙІН
+        {t:'Б, В, Г, Ғ',xp:20,diag:false,qs:[
+          {q:'Балық — бірінші дыбыс?',img:'🐟',hint:'Б-алық',ans:'Б',opts:['Б','П','В','М']},
+          {q:'Гүл — бірінші дыбыс?',img:'🌸',hint:'Г-үл',ans:'Г',opts:['Г','К','Қ','Х']},
+          {q:'Бұлбұл — бірінші дыбыс?',img:'🐦',hint:'Б-ұлбұл',ans:'Б',opts:['П','Б','М','Н']},
+          {q:'Ғарышкер — бірінші дыбыс?',img:'🚀',hint:'Ғ-арышкер',ans:'Ғ',opts:['Г','К','Ғ','Қ']},
+        ]},
+        {t:'Д, Е, Ж, З',xp:20,diag:false,qs:[
+          {q:'Жұлдыз — бірінші дыбыс?',img:'⭐',hint:'Ж-ұлдыз',ans:'Ж',opts:['Ж','З','Ш','С']},
+          {q:'Дала — бірінші дыбыс?',img:'🌾',hint:'Д-ала',ans:'Д',opts:['Т','Д','Н','Л']},
+          {q:'Ешкі — бірінші дыбыс?',img:'🐐',hint:'Е-шкі',ans:'Е',opts:['Е','Э','И','Ы']},
+          {q:'Зымыран — бірінші дыбыс?',img:'🚂',hint:'З-ымыран',ans:'З',opts:['З','С','Ж','Ш']},
+        ]},
+        {t:'И, Й, К, Қ',xp:20,diag:false,qs:[
+          {q:'Итбалық — бірінші дыбыс?',img:'🦭',hint:'И-тбалық',ans:'И',opts:['И','І','Е','Э']},
+          {q:'Кірпі — бірінші дыбыс?',img:'🦔',hint:'К-ірпі',ans:'К',opts:['К','Қ','Г','Х']},
+          {q:'Қой — бірінші дыбыс?',img:'🐑',hint:'Қ-ой',ans:'Қ',opts:['К','Қ','Х','Ғ']},
+          {q:'Қаз — бірінші дыбыс?',img:'🦢',hint:'Қ-аз',ans:'Қ',opts:['К','Қ','Г','Ж']},
+        ]},
+        {t:'Л, М, Н, Ң',xp:20,diag:false,qs:[
+          {q:'Лала — бірінші дыбыс?',img:'🌷',hint:'Л-ала',ans:'Л',opts:['Л','Р','М','Н']},
+          {q:'Мысық — бірінші дыбыс?',img:'🐱',hint:'М-ысық',ans:'М',opts:['М','Н','Б','П']},
+          {q:'Нан — бірінші дыбыс?',img:'🍞',hint:'Н-ан',ans:'Н',opts:['М','Н','Л','Р']},
+          {q:'Аң — соңғы дыбыс?',img:'🦌',hint:'А-ң',ans:'Ң',opts:['Н','Ң','М','Л']},
+        ]},
+        {t:'О, Ө, П, Р',xp:20,diag:false,qs:[
+          {q:'Ойыншық — бірінші дыбыс?',img:'🧸',hint:'О-йыншық',ans:'О',opts:['О','Ө','Ұ','У']},
+          {q:'Өрік — бірінші дыбыс?',img:'🍑',hint:'Ө-рік',ans:'Ө',opts:['О','Ө','Ұ','Ү']},
+          {q:'Пил — бірінші дыбыс?',img:'🐘',hint:'П-іл',ans:'П',opts:['Б','П','Ф','В']},
+          {q:'Роял — бірінші дыбыс?',img:'🎹',hint:'Р-оял',ans:'Р',opts:['Р','Л','М','Н']},
+        ]},
+        {t:'С, Т, У, Ұ, Ү',xp:20,diag:false,qs:[
+          {q:'Сиыр — бірінші дыбыс?',img:'🐄',hint:'С-иыр',ans:'С',opts:['С','З','Ш','Ж']},
+          {q:'Тиін — бірінші дыбыс?',img:'🐿️',hint:'Т-иін',ans:'Т',opts:['Т','Д','Н','Л']},
+          {q:'Ұшақ — бірінші дыбыс?',img:'✈️',hint:'Ұ-шақ',ans:'Ұ',opts:['У','Ұ','Ү','О']},
+          {q:'Үстел — бірінші дыбыс?',img:'🪑',hint:'Ү-стел',ans:'Ү',opts:['У','Ұ','Ү','Ө']},
+        ]},
+        {t:'Ф, Х, Ш, Ы, І',xp:20,diag:false,qs:[
+          {q:'Фильм — бірінші дыбыс?',img:'🎬',hint:'Ф-ильм',ans:'Ф',opts:['Ф','П','В','Б']},
+          {q:'Хаттама — бірінші дыбыс?',img:'📋',hint:'Х-аттама',ans:'Х',opts:['Х','К','Қ','Г']},
+          {q:'Шаян — бірінші дыбыс?',img:'🦂',hint:'Ш-аян',ans:'Ш',opts:['Ш','С','Ж','З']},
+          {q:'Ысқыш — бірінші дыбыс?',img:'🧲',hint:'Ы-сқыш',ans:'Ы',opts:['Ы','І','И','Е']},
+        ]},
+        // БУЫН ОҚУ — Google Drive материалдарынан
+        {t:'МА, БА, ДА буындары',xp:25,diag:false,reading:true,qs:[
+          {type:'reading',display:'МА',p1:'М',p2:'А',hint:'М + А = МА',q:'Буынды оқыңыз',ans:'МА',opts:['МА','МО','МУ','МЕ']},
+          {type:'reading',display:'БА',p1:'Б',p2:'А',hint:'Б + А = БА',q:'Буынды оқыңыз',ans:'БА',opts:['БА','БО','БУ','БЕ']},
+          {type:'reading',display:'ДА',p1:'Д',p2:'А',hint:'Д + А = ДА',q:'Буынды оқыңыз',ans:'ДА',opts:['ДА','ДО','ДУ','ДЕ']},
+          {type:'reading',display:'КА',p1:'К',p2:'А',hint:'К + А = КА',q:'Буынды оқыңыз',ans:'КА',opts:['КА','КО','КУ','КЕ']},
+        ]},
+        {t:'МО, БО, ТО буындары',xp:25,diag:false,reading:true,qs:[
+          {type:'reading',display:'МО',p1:'М',p2:'О',hint:'М + О = МО',q:'Буынды оқыңыз',ans:'МО',opts:['МА','МО','МУ','МЕ']},
+          {type:'reading',display:'БО',p1:'Б',p2:'О',hint:'Б + О = БО',q:'Буынды оқыңыз',ans:'БО',opts:['БА','БО','БУ','БЕ']},
+          {type:'reading',display:'ТО',p1:'Т',p2:'О',hint:'Т + О = ТО',q:'Буынды оқыңыз',ans:'ТО',opts:['ТА','ТО','ТУ','ТЕ']},
+          {type:'reading',display:'ЖО',p1:'Ж',p2:'О',hint:'Ж + О = ЖО',q:'Буынды оқыңыз',ans:'ЖО',opts:['ЖА','ЖО','ЖУ','ЖЕ']},
+        ]},
+        {t:'МҰЗ, ҚОЛ, ЖОЛ — 3 әріпті сөздер',xp:30,diag:false,qs:[
+          {q:'Сөзді оқыңыз',img:'❄️',hint:'',ans:'МҰЗ',opts:['МАЗ','МҰЗ','МОЗ','МЕЗ']},
+          {q:'Сөзді оқыңыз',img:'✋',hint:'',ans:'ҚОЛ',opts:['КОЛ','ҚОЛ','ҚАЛ','ҚУЛ']},
+          {q:'Сөзді оқыңыз',img:'🛣️',hint:'',ans:'ЖОЛ',opts:['ЖАЛ','ЖОЛ','ЖУЛ','ЖЕЛ']},
+          {q:'Сөзді оқыңыз',img:'❄️',hint:'',ans:'ҚАР',opts:['ҚАР','КАР','ҚОР','ҚУР']},
+        ]},
+        {t:'НАН, ТАС, ЛАҚ — сөз оқу',xp:30,diag:false,qs:[
+          {q:'Сөзді оқыңыз',img:'🍞',hint:'',ans:'НАН',opts:['НАН','НОН','НАМ','НЕН']},
+          {q:'Сөзді оқыңыз',img:'🪨',hint:'',ans:'ТАС',opts:['ТАС','ТОС','ТЕС','ТУС']},
+          {q:'Сөзді оқыңыз',img:'🐑',hint:'',ans:'ЛАҚ',opts:['ЛАК','ЛАҚ','ЛОҚ','ЛЕҚ']},
+          {q:'Сөзді оқыңыз',img:'🦢',hint:'',ans:'ҚАЗ',opts:['КАЗ','ҚАЗ','ҚОЗ','ҚЕЗ']},
+        ]},
+        {t:'БА-ЛА, ДА-ЛА — 4 әріпті сөздер',xp:30,diag:false,qs:[
+          {q:'Сөзді оқыңыз',img:'👶',hint:'',ans:'БА-ЛА',opts:['БА-ЛА','БО-ЛА','БЕ-ЛА','БА-ТА']},
+          {q:'Сөзді оқыңыз',img:'🌾',hint:'',ans:'ДА-ЛА',opts:['ДА-ЛА','ДО-ЛА','ДЕ-ЛА','ДА-НА']},
+          {q:'Сөзді оқыңыз',img:'🏙️',hint:'',ans:'ҚА-ЛА',opts:['КА-ЛА','ҚА-ЛА','ҚО-ЛА','ҚА-НА']},
+          {q:'Сөзді оқыңыз',img:'🐄',hint:'',ans:'БҰ-ҚА',opts:['БА-КА','БҰ-ҚА','БО-КА','БЕ-ҚА']},
+        ]},
+      ]
+    },
+    math:{icon:'🔢',maxXP:250,
+      lessons:[
+        {t:'Кіріспе',xp:10,diag:false,qs:[{type:'intro',em:'🔢',ti:'Математика',ds:'Санау · Қосу · Алу · Пішіндер · Есептер',bs:['1–10','Ойын','Нәтиже']}]},
+        {t:'1-ден 5-ке дейін санау',xp:30,diag:false,qs:[
+          {q:'Неше алма бар?',img:'🍎🍎🍎',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'Неше жұлдыз?',img:'⭐⭐',hint:'',ans:'2',opts:['1','2','3','4']},
+          {q:'Неше гүл?',img:'🌸🌸🌸🌸🌸',hint:'',ans:'5',opts:['3','4','5','6']},
+          {q:'Неше доп?',img:'⚽⚽⚽⚽',hint:'',ans:'4',opts:['3','4','5','6']},
+        ]},
+        {t:'6-дан 10-ға дейін санау',xp:30,diag:false,qs:[
+          {q:'Неше лимон?',img:'🍋🍋🍋🍋🍋🍋',hint:'',ans:'6',opts:['5','6','7','8']},
+          {q:'Неше шар?',img:'🔵🔵🔵🔵🔵🔵🔵🔵',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'Неше қар?',img:'❄️❄️❄️❄️❄️❄️❄️❄️❄️❄️',hint:'',ans:'10',opts:['8','9','10','11']},
+          {q:'Неше алма?',img:'🍎🍎🍎🍎🍎🍎🍎',hint:'',ans:'7',opts:['6','7','8','9']},
+        ]},
+        {t:'Қосу (1-5 аралығында)',xp:30,diag:false,qs:[
+          {q:'1 + 2 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'2 + 3 = ?',img:'🔢',hint:'',ans:'5',opts:['4','5','6','7']},
+          {q:'3 + 1 = ?',img:'🔢',hint:'',ans:'4',opts:['3','4','5','6']},
+          {q:'2 + 2 = ?',img:'🔢',hint:'',ans:'4',opts:['3','4','5','6']},
+        ]},
+        {t:'Қосу (6-10 аралығында)',xp:30,diag:false,qs:[
+          {q:'4 + 2 = ?',img:'🔢',hint:'',ans:'6',opts:['5','6','7','8']},
+          {q:'3 + 4 = ?',img:'🔢',hint:'',ans:'7',opts:['6','7','8','9']},
+          {q:'5 + 3 = ?',img:'🔢',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'5 + 5 = ?',img:'🔢',hint:'',ans:'10',opts:['8','9','10','11']},
+        ]},
+        {t:'Алу',xp:30,diag:false,qs:[
+          {q:'5 - 2 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'7 - 4 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'10 - 3 = ?',img:'🔢',hint:'',ans:'7',opts:['6','7','8','9']},
+          {q:'8 - 5 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+        ]},
+        {t:'Пішіндер',xp:30,diag:false,qs:[
+          {q:'Бұл қандай пішін?',img:'⭕',hint:'',ans:'Шеңбер',opts:['Үшбұрыш','Шеңбер','Квадрат','Тіктөртбұрыш']},
+          {q:'Бұл қандай пішін?',img:'🔷',hint:'',ans:'Ромб',opts:['Квадрат','Ромб','Шеңбер','Үшбұрыш']},
+          {q:'Бұл қандай пішін?',img:'🔺',hint:'',ans:'Үшбұрыш',opts:['Шеңбер','Үшбұрыш','Квадрат','Тіктөртбұрыш']},
+          {q:'Нешінші?',img:'🥇🥈🥉',hint:'',ans:'3-ші',opts:['1-ші','2-ші','3-ші','4-ші']},
+        ]},
+        {t:'Есептер',xp:30,diag:false,qs:[
+          {q:'5 алма + 3 алма = ?',img:'🍎',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'10 қаз - 4 қаз = ?',img:'🦢',hint:'',ans:'6',opts:['5','6','7','8']},
+          {q:'3 + 3 + 2 = ?',img:'🔢',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'Үлкен сан қайсы?',img:'🔢',hint:'',ans:'9',opts:['6','9','3','7']},
+        ]},
+      ]
+    },
+    diag:{icon:'🩺',maxXP:50,
+      lessons:[
+        {t:'Мектепке дайындық тесті',xp:50,diag:true,qs:[
+          {type:'intro',em:'🩺',ti:'Психологиялық Диагностика',ds:'14 сұрақ. Дұрыс/қате жоқ — тек жауап беріңіз. Соңында AI анализ аласыз.',bs:['14 сұрақ','7 бағыт','AI анализ']},
+          {q:'Балаңыз бір ойынды қанша уақыт ойнайды?',img:'🎮',opts:['5 мин','10 мин','20+ мин','1 мин'],cat:'attention',sc:[2,5,10,0]},
+          {q:'Тапсырманы есте сақтайды ма?',img:'🧠',opts:['Иә, жақсы','Кейде','Жиі ұмытады','Жоқ'],cat:'attention',sc:[10,6,3,0]},
+          {q:'Оқиғаны толық айтып бере алады ма?',img:'🗣️',opts:['Иә, толық','Аздап','Қиналады','Жоқ'],cat:'speech',sc:[10,6,3,0]},
+          {q:'Ертегіні пересказ жасайды ма?',img:'📚',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'speech',sc:[10,6,3,0]},
+          {q:'Қарандашты дұрыс ұстайды ма?',img:'✏️',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'motor',sc:[10,6,3,0]},
+          {q:'10-ға дейін санайды ма?',img:'🔢',opts:['Иә, оңай','Кейде қателеседі','5-ке дейін','Жоқ'],cat:'math',sc:[10,6,3,0]},
+          {q:'Санап есептей алады ма?',img:'🍎',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'math',sc:[10,6,3,0]},
+          {q:'Өзі киінеді/шешінеді ме?',img:'👕',opts:['Иә, өзі','Аздап көмек','Жиі көмек','Жоқ'],cat:'self',sc:[10,6,3,0]},
+          {q:'Жаңа балалармен тіл табысады ма?',img:'👫',opts:['Иә, тез','Бірте-бірте','Қиналады','Жоқ'],cat:'social',sc:[10,6,3,0]},
+          {q:'Сізсіз қала алады ма?',img:'🏫',opts:['Иә, жақсы','Аздап қиын','Қиналады','Мүлдем жоқ'],cat:'social',sc:[10,6,3,0]},
+          {q:'Мектепке барғысы келеді ме?',img:'😊',opts:['Иә, қуанады','Айтпайды','Қорқады','Барғысы жоқ'],cat:'emotion',sc:[10,6,3,0]},
+          {q:'Жеңілістен кейін тез тынышталады ма?',img:'😢',opts:['Иә','2-3 мин','Ұзақ жылайды','Ашуланады'],cat:'emotion',sc:[10,6,3,0]},
+          {q:'Жаңа ережелерге бейімделе алады ма?',img:'📋',opts:['Иә, оңай','Бірте-бірте','Қиналады','Жоқ'],cat:'emotion',sc:[10,6,3,0]},
+        ]}
+      ]
+    }
+  },
+  ru:{
+    alifbe:{icon:'📖',maxXP:400,
+      lessons:[
+        {t:'Введение',xp:10,diag:false,qs:[{type:'intro',em:'📖',ti:'Русская Азбука',ds:'33 буквы · Звук · Слоги · Чтение · Полный курс',bs:['33 буквы','5–7 лет','1 урок бесплатно']}]},
+        {t:'А, Б, В — изучение',xp:20,diag:false,free:true,qs:[
+          {q:'Арбуз — первый звук?',img:'🍉',hint:'А-рбуз',ans:'А',opts:['А','О','У','Э']},
+          {q:'Бабочка — первый звук?',img:'🦋',hint:'Б-абочка',ans:'Б',opts:['Б','П','В','Ф']},
+          {q:'Волк — первый звук?',img:'🐺',hint:'В-олк',ans:'В',opts:['Ф','В','Б','П']},
+          {q:'Аист — первый звук?',img:'🦢',hint:'А-ист',ans:'А',opts:['А','Э','О','И']},
+        ]},
+        {t:'Г, Д, Е, Ж',xp:20,diag:false,qs:[
+          {q:'Гриб — первый звук?',img:'🍄',hint:'Г-риб',ans:'Г',opts:['К','Г','Х','Ж']},
+          {q:'Дом — первый звук?',img:'🏠',hint:'Д-ом',ans:'Д',opts:['Д','Т','Н','Л']},
+          {q:'Ёжик — первый звук?',img:'🦔',hint:'Ё-жик',ans:'Е',opts:['Е','Э','И','Ю']},
+          {q:'Жираф — первый звук?',img:'🦒',hint:'Ж-ираф',ans:'Ж',opts:['Ж','З','Ш','С']},
+        ]},
+        {t:'З, И, К, Л',xp:20,diag:false,qs:[
+          {q:'Зебра — первый звук?',img:'🦓',hint:'З-ебра',ans:'З',opts:['З','Ж','С','Ш']},
+          {q:'Индюк — первый звук?',img:'🦃',hint:'И-ндюк',ans:'И',opts:['И','Е','Э','Ю']},
+          {q:'Кот — первый звук?',img:'🐱',hint:'К-от',ans:'К',opts:['К','Г','Х','Ч']},
+          {q:'Лиса — первый звук?',img:'🦊',hint:'Л-иса',ans:'Л',opts:['Р','Л','М','Н']},
+        ]},
+        {t:'М, Н, О, П',xp:20,diag:false,qs:[
+          {q:'Медведь — первый звук?',img:'🐻',hint:'М-едведь',ans:'М',opts:['Н','М','Б','П']},
+          {q:'Носорог — первый звук?',img:'🦏',hint:'Н-осорог',ans:'Н',opts:['М','Н','Л','Р']},
+          {q:'Осёл — первый звук?',img:'🫏',hint:'О-сёл',ans:'О',opts:['О','Ё','У','А']},
+          {q:'Павлин — первый звук?',img:'🦚',hint:'П-авлин',ans:'П',opts:['Б','П','Ф','В']},
+        ]},
+        {t:'Р, С, Т, У, Ф',xp:20,diag:false,qs:[
+          {q:'Роза — первый звук?',img:'🌹',hint:'Р-оза',ans:'Р',opts:['Л','Р','М','Н']},
+          {q:'Собака — первый звук?',img:'🐶',hint:'С-обака',ans:'С',opts:['З','С','Ш','Ж']},
+          {q:'Тигр — первый звук?',img:'🐯',hint:'Т-игр',ans:'Т',opts:['Д','Т','Н','Л']},
+          {q:'Утка — первый звук?',img:'🦆',hint:'У-тка',ans:'У',opts:['У','О','Ю','А']},
+        ]},
+        {t:'Х, Ц, Ч, Ш, Щ',xp:20,diag:false,qs:[
+          {q:'Хомяк — первый звук?',img:'🐹',hint:'Х-омяк',ans:'Х',opts:['К','Х','Г','Ж']},
+          {q:'Цапля — первый звук?',img:'🦩',hint:'Ц-апля',ans:'Ц',opts:['С','Ц','З','Ш']},
+          {q:'Черепаха — первый звук?',img:'🐢',hint:'Ч-ерепаха',ans:'Ч',opts:['Ш','Ч','С','Ц']},
+          {q:'Шакал — первый звук?',img:'🐺',hint:'Ш-акал',ans:'Ш',opts:['С','З','Ш','Ж']},
+        ]},
+        {t:'Э, Ю, Я',xp:20,diag:false,qs:[
+          {q:'Экран — первый звук?',img:'📺',hint:'Э-кран',ans:'Э',opts:['Э','Е','И','А']},
+          {q:'Юла — первый звук?',img:'🌀',hint:'Ю-ла',ans:'Ю',opts:['Ю','Я','Е','И']},
+          {q:'Яблоко — первый звук?',img:'🍎',hint:'Я-блоко',ans:'Я',opts:['Я','А','Е','Ю']},
+          {q:'Ягуар — первый звук?',img:'🐆',hint:'Я-гуар',ans:'Я',opts:['А','Я','Е','И']},
+        ]},
+        {t:'МА, БА, РА — слоги',xp:25,diag:false,reading:true,qs:[
+          {type:'reading',display:'МА',p1:'М',p2:'А',hint:'М + А = МА',q:'Прочитайте слог',ans:'МА',opts:['МА','МО','МУ','МЕ']},
+          {type:'reading',display:'БА',p1:'Б',p2:'А',hint:'Б + А = БА',q:'Прочитайте слог',ans:'БА',opts:['БА','БО','БУ','БЕ']},
+          {type:'reading',display:'РА',p1:'Р',p2:'А',hint:'Р + А = РА',q:'Прочитайте слог',ans:'РА',opts:['РА','РО','РУ','РЕ']},
+          {type:'reading',display:'СА',p1:'С',p2:'А',hint:'С + А = СА',q:'Прочитайте слог',ans:'СА',opts:['СА','СО','СУ','СЕ']},
+        ]},
+        {t:'МО, БО, ДО — слоги',xp:25,diag:false,reading:true,qs:[
+          {type:'reading',display:'МО',p1:'М',p2:'О',hint:'М + О = МО',q:'Прочитайте слог',ans:'МО',opts:['МА','МО','МУ','МЕ']},
+          {type:'reading',display:'ДО',p1:'Д',p2:'О',hint:'Д + О = ДО',q:'Прочитайте слог',ans:'ДО',opts:['ДА','ДО','ДУ','ДЕ']},
+          {type:'reading',display:'КО',p1:'К',p2:'О',hint:'К + О = КО',q:'Прочитайте слог',ans:'КО',opts:['КА','КО','КУ','КЕ']},
+          {type:'reading',display:'ЛО',p1:'Л',p2:'О',hint:'Л + О = ЛО',q:'Прочитайте слог',ans:'ЛО',opts:['ЛА','ЛО','ЛУ','ЛЕ']},
+        ]},
+        {t:'КОТ, ДОМ — 3-буквенные слова',xp:30,diag:false,qs:[
+          {q:'Прочитайте слово',img:'🐱',hint:'',ans:'КОТ',opts:['КАТ','КОТ','КУТ','КЕТ']},
+          {q:'Прочитайте слово',img:'🏠',hint:'',ans:'ДОМ',opts:['ДАМ','ДОМ','ДУМ','ДЕМ']},
+          {q:'Прочитайте слово',img:'🐟',hint:'',ans:'РЫБ',opts:['РЫБ','РАБ','РУБ','РЕБ']},
+          {q:'Прочитайте слово',img:'🌳',hint:'',ans:'ЛЕС',opts:['ЛАС','ЛЕС','ЛОС','ЛУС']},
+        ]},
+        {t:'МА-МА, ПА-ПА — 4-буквенные слова',xp:30,diag:false,qs:[
+          {q:'Прочитайте слово',img:'👩',hint:'',ans:'МА-МА',opts:['МА-МА','МО-МА','МА-ТА','МИ-МА']},
+          {q:'Прочитайте слово',img:'👨',hint:'',ans:'ПА-ПА',opts:['ПА-ПА','ПО-ПА','ПА-ТА','ПИ-ПА']},
+          {q:'Прочитайте слово',img:'🌹',hint:'',ans:'РО-ЗА',opts:['РА-ЗА','РО-ЗА','РУ-ЗА','РЕ-ЗА']},
+          {q:'Прочитайте слово',img:'🤱',hint:'',ans:'КО-ЗА',opts:['КА-ЗА','КО-ЗА','КУ-ЗА','КЕ-ЗА']},
+        ]},
+      ]
+    },
+    math:{icon:'🔢',maxXP:250,
+      lessons:[
+        {t:'Введение',xp:10,diag:false,qs:[{type:'intro',em:'🔢',ti:'Математика',ds:'Счёт · Сложение · Вычитание · Фигуры · Задачи',bs:['1–10','Игра','Результат']}]},
+        {t:'Счёт от 1 до 5',xp:30,diag:false,qs:[
+          {q:'Сколько яблок?',img:'🍎🍎🍎',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'Сколько звёзд?',img:'⭐⭐',hint:'',ans:'2',opts:['1','2','3','4']},
+          {q:'Сколько цветов?',img:'🌸🌸🌸🌸🌸',hint:'',ans:'5',opts:['3','4','5','6']},
+          {q:'Сколько мячей?',img:'⚽⚽⚽⚽',hint:'',ans:'4',opts:['3','4','5','6']},
+        ]},
+        {t:'Счёт от 6 до 10',xp:30,diag:false,qs:[
+          {q:'Сколько лимонов?',img:'🍋🍋🍋🍋🍋🍋',hint:'',ans:'6',opts:['5','6','7','8']},
+          {q:'Сколько шаров?',img:'🔵🔵🔵🔵🔵🔵🔵🔵',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'Сколько снежинок?',img:'❄️❄️❄️❄️❄️❄️❄️❄️❄️❄️',hint:'',ans:'10',opts:['8','9','10','11']},
+          {q:'Сколько яблок?',img:'🍎🍎🍎🍎🍎🍎🍎',hint:'',ans:'7',opts:['6','7','8','9']},
+        ]},
+        {t:'Сложение (1-5)',xp:30,diag:false,qs:[
+          {q:'1 + 2 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'2 + 3 = ?',img:'🔢',hint:'',ans:'5',opts:['4','5','6','7']},
+          {q:'3 + 1 = ?',img:'🔢',hint:'',ans:'4',opts:['3','4','5','6']},
+          {q:'2 + 2 = ?',img:'🔢',hint:'',ans:'4',opts:['3','4','5','6']},
+        ]},
+        {t:'Сложение (6-10)',xp:30,diag:false,qs:[
+          {q:'4 + 2 = ?',img:'🔢',hint:'',ans:'6',opts:['5','6','7','8']},
+          {q:'3 + 4 = ?',img:'🔢',hint:'',ans:'7',opts:['6','7','8','9']},
+          {q:'5 + 3 = ?',img:'🔢',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'5 + 5 = ?',img:'🔢',hint:'',ans:'10',opts:['8','9','10','11']},
+        ]},
+        {t:'Вычитание',xp:30,diag:false,qs:[
+          {q:'5 - 2 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'7 - 4 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+          {q:'10 - 3 = ?',img:'🔢',hint:'',ans:'7',opts:['6','7','8','9']},
+          {q:'8 - 5 = ?',img:'🔢',hint:'',ans:'3',opts:['2','3','4','5']},
+        ]},
+        {t:'Фигуры',xp:30,diag:false,qs:[
+          {q:'Какая фигура?',img:'⭕',hint:'',ans:'Круг',opts:['Треугольник','Круг','Квадрат','Прямоугольник']},
+          {q:'Какая фигура?',img:'🔷',hint:'',ans:'Ромб',opts:['Квадрат','Ромб','Круг','Треугольник']},
+          {q:'Какая фигура?',img:'🔺',hint:'',ans:'Треугольник',opts:['Круг','Треугольник','Квадрат','Прямоугольник']},
+          {q:'Какое число больше?',img:'🔢',hint:'',ans:'9',opts:['6','9','3','7']},
+        ]},
+        {t:'Задачи',xp:30,diag:false,qs:[
+          {q:'5 яблок + 3 яблока = ?',img:'🍎',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'10 гусей - 4 гуся = ?',img:'🦢',hint:'',ans:'6',opts:['5','6','7','8']},
+          {q:'3 + 3 + 2 = ?',img:'🔢',hint:'',ans:'8',opts:['7','8','9','10']},
+          {q:'Какое число больше?',img:'🔢',hint:'',ans:'10',opts:['8','10','6','4']},
+        ]},
+      ]
+    },
+    diag:{icon:'🩺',maxXP:50,
+      lessons:[
+        {t:'Тест готовности к школе',xp:50,diag:true,qs:[
+          {type:'intro',em:'🩺',ti:'Психологическая диагностика',ds:'14 вопросов. Нет правильных/неправильных ответов. В конце получите AI анализ.',bs:['14 вопросов','7 блоков','AI анализ']},
+          {q:'Сколько времени ребёнок играет в одну игру?',img:'🎮',opts:['5 мин','10 мин','20+ мин','1 мин'],cat:'attention',sc:[2,5,10,0]},
+          {q:'Запоминает данные задания?',img:'🧠',opts:['Да, хорошо','Иногда','Часто забывает','Нет'],cat:'attention',sc:[10,6,3,0]},
+          {q:'Может рассказать о событии полностью?',img:'🗣️',opts:['Да, полно','Немного','Затрудняется','Нет'],cat:'speech',sc:[10,6,3,0]},
+          {q:'Пересказывает сказку?',img:'📚',opts:['Да','Иногда','Немного','Нет'],cat:'speech',sc:[10,6,3,0]},
+          {q:'Правильно держит карандаш?',img:'✏️',opts:['Да','Иногда','Затрудняется','Нет'],cat:'motor',sc:[10,6,3,0]},
+          {q:'Считает до 10?',img:'🔢',opts:['Да, легко','Иногда ошибается','До 5','Нет'],cat:'math',sc:[10,6,3,0]},
+          {q:'Считает предметы?',img:'🍎',opts:['Да','Иногда','Затрудняется','Нет'],cat:'math',sc:[10,6,3,0]},
+          {q:'Одевается сам?',img:'👕',opts:['Да, сам','Немного помощи','Часто помощь','Нет'],cat:'self',sc:[10,6,3,0]},
+          {q:'Быстро находит общий язык с детьми?',img:'👫',opts:['Да, быстро','Постепенно','Затрудняется','Нет'],cat:'social',sc:[10,6,3,0]},
+          {q:'Может оставаться без вас?',img:'🏫',opts:['Да, хорошо','Немного сложно','Затрудняется','Совсем нет'],cat:'social',sc:[10,6,3,0]},
+          {q:'Хочет идти в школу?',img:'😊',opts:['Да, радуется','Не говорит','Боится','Не хочет'],cat:'emotion',sc:[10,6,3,0]},
+          {q:'Успокаивается после неудачи?',img:'😢',opts:['Да','2-3 мин','Долго плачет','Злится'],cat:'emotion',sc:[10,6,3,0]},
+          {q:'Адаптируется к новым правилам?',img:'📋',opts:['Да, легко','Постепенно','Затрудняется','Нет'],cat:'emotion',sc:[10,6,3,0]},
+        ]}
+      ]
+    }
+  }
 };
 
-// ═══ ДИАГНОСТИКА ═══
-const CAT_NAMES = {
-  attention:'🧠 Зейін',speech:'🗣️ Тіл/Сөйлеу',motor:'✋ Моторика',
-  math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология'
-};
+// ═══ МЕМЛЕКЕТ ═══
+const PROMOS_BASE=['MQ2026','SCHOOL','MEKTEP','QADAM2026','DEMO','KIDSTOPIA'];
+const FREE_DAYS=1;
+const LVL_XP=[0,100,250,500,900];
+let lang='kk';
+let ST={name:'',age:6,lang:'kk',activated:false,startDate:null,xp:0,streak:0,lastDate:'',done:0,correct:0,prog:{alifbe:0,math:0,diag:0},xpMod:{alifbe:0,math:0,diag:0},diagResult:null};
+let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag=false,prevScr='s-home';
 
-function analyzeDiag(answers){
-  const cats={};const catMax={};
-  answers.forEach(a=>{
-    if(!a.cat)return;
-    if(!cats[a.cat]){cats[a.cat]=0;catMax[a.cat]=0;}
-    cats[a.cat]+=a.score; catMax[a.cat]+=10;
+// ═══ ТІЛ ═══
+function setLang(l){lang=l;updateUI();showScr('s-login');}
+function tx(key){return T[lang][key]||'';}
+
+function updateUI(){
+  const t=T[lang];
+  setT('back-t',t.backLang);setT('lt-title',t.loginTitle);setT('lt-sub',t.loginSub);
+  setP('i-name',t.namePh);setP('i-age',t.agePh);setT('lt-btn',t.loginBtn);setT('lt-note',t.loginNote);
+  setT('pt-title',t.promoTitle);setT('pt-text',t.promoText);setT('pt-price',t.promoPrice);
+  setT('pt-btn',t.promoBtn);setT('pt-link',t.promoLink);
+  setT('h-kun',t.hKun);setT('h-den',t.hDen);
+  setT('ht-lvl',t.htLvl);setT('ht-mod',t.htMod);setT('ht-str',t.htStr);
+  setT('st-s',t.stSub);setT('les-t',t.lesT);setT('md-back-t',t.mdBackT);
+  setT('nxt-t',t.nxtT);setT('cm-h',t.cmH);setT('cm-r',t.cmR);
+  setT('pr-t',t.prT);setT('pr-prog-t',t.prProgT);setT('pr-pay-t',t.prPayT);
+  setT('pr-kaspi-t',t.prKaspiT);setT('pr-wa-t',t.prWaT);setT('pr-reset-t',t.prResetT);
+  setT('pr-cr-l',t.prCrL);setT('pr-st-l',t.prStL);
+  ['h','l','p'].forEach(k=>{
+    const map={h:t.navH,l:t.navL,p:t.navP};
+    [1,2,3].forEach(n=>{const id=`nav${n>1?n:''}-${k}`;const el=document.getElementById(id);if(el)el.textContent=map[k];});
   });
-  let total=0,max=0;
-  Object.keys(cats).forEach(k=>{total+=cats[k];max+=catMax[k];});
-  const pct=max>0?Math.round((total/max)*100):0;
-  const catPcts={};
-  Object.keys(cats).forEach(k=>{catPcts[k]=catMax[k]>0?Math.round((cats[k]/catMax[k])*100):0;});
-  return{pct,catPcts};
+}
+function setT(id,v){const el=document.getElementById(id);if(el)el.textContent=v||'';}
+function setP(id,v){const el=document.getElementById(id);if(el)el.placeholder=v||'';}
+
+// ═══ КІРУ ═══
+function doLogin(){
+  const name=document.getElementById('i-name').value.trim();
+  const age=parseInt(document.getElementById('i-age').value)||6;
+  if(!name){alert(T[lang].namePh);return;}
+  ST.name=name;ST.age=age;ST.lang=lang;
+  if(!ST.startDate)ST.startDate=Date.now();
+  updateStreak();saveState();
+  goHome(); // барлығы басты бетке, промокод сабақтарда көрінеді
 }
 
-function getDiagAdvice(pct, catPcts){
-  const weak=Object.entries(catPcts).filter(([k,v])=>v<60).map(([k])=>CAT_NAMES[k]).join(', ');
-  const strong=Object.entries(catPcts).filter(([k,v])=>v>=80).map(([k])=>CAT_NAMES[k]).join(', ');
-
-  if(pct>=85) return{
-    icon:'🏆',title:'Мектепке толық дайын!',color:'#085041',
-    advice:`Балаңыз 1-сыныпқа жан-жақты дайын. ${strong?'Күшті жақтары: '+strong+'.':''} Мектепке сенімді барыңыз! Қосымша дайындық қажет емес.`
-  };
-  if(pct>=65) return{
-    icon:'⭐',title:'Негізінен дайын',color:'#1d9e75',
-    advice:`Балаңыз мектепке негізінен дайын. ${weak?'Назар аудару керек: '+weak+'. Күн сайын 10 минут осы бағытта жаттығыңыз.':''} 1-2 айда толық дайын болады.`
-  };
-  if(pct>=45) return{
-    icon:'📚',title:'Дайындалу керек',color:'#ef9f27',
-    advice:`Балаңызды мектепке дайындауға уақыт бар. ${weak?'Осы бағыттарға назар аударыңыз: '+weak+'.':''} Күн сайын 15 минут жаттықса, 2-3 айда нәтиже байқайсыз.`
-  };
-  return{
-    icon:'💪',title:'Жедел дайындық керек',color:'#e53935',
-    advice:`Балаңызға мектепке дейін белсенді дайындық қажет. ${weak?'Негізгі кемшіліктер: '+weak+'.':''} Біздің онлайн курсты немесе маман кеңесін қолдануды ұсынамыз.`
-  };
+function checkPromo(){
+  const code=document.getElementById('i-promo').value.trim().toUpperCase();
+  const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
+  if([...PROMOS_BASE,...extras.map(p=>p.code)].includes(code)){
+    ST.activated=true;saveState();goHome();
+  } else {
+    const inp=document.getElementById('i-promo');
+    inp.classList.add('shake');inp.style.borderColor='var(--red)';inp.value='';
+    inp.placeholder='❌ Қате!';
+    setTimeout(()=>{inp.classList.remove('shake');inp.style.borderColor='';inp.placeholder='ПРОМОКОД';},1500);
+  }
+}
+function applyPromoBanner(){
+  const code=document.getElementById('pb-inp').value.trim().toUpperCase();
+  const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
+  if([...PROMOS_BASE,...extras.map(p=>p.code)].includes(code)){
+    ST.activated=true;saveState();
+    const banner=document.getElementById('promo-banner');
+    if(banner){
+      banner.style.background='linear-gradient(135deg,#1b5e20,#2e7d32)';
+      banner.innerHTML='<div style="text-align:center;padding:8px 0;"><div style="font-size:28px;margin-bottom:6px;">🎉</div><div style="font-size:16px;font-weight:700;color:#fff;">'+(lang==="kk"?"Белсендірілді! Барлық сабақтар ашылды!":"Активировано! Все уроки открыты!")+'</div></div>';
+      setTimeout(()=>{banner.style.display='none';initHome();},2500);
+    }
+  } else {
+    const inp=document.getElementById('pb-inp');
+    inp.style.borderColor='var(--red)';inp.value='';
+    inp.placeholder=lang==='kk'?'Қате!':'Неверный!';
+    setTimeout(()=>{inp.style.borderColor='rgba(255,255,255,.25)';inp.placeholder='ПРОМОКОД';},1800);
+  }
 }
 
-// ═══ САБАҚ ЛОГИКАСЫ ═══
-let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag=false;
+function applyPromoFromProfile(){
+  const code=document.getElementById('pr-promo-inp').value.trim().toUpperCase();
+  const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
+  if([...PROMOS_BASE,...extras.map(p=>p.code)].includes(code)){
+    ST.activated=true;saveState();
+    // Форманы жасырып, "белсендірілді" хабарын көрсету
+    document.getElementById('pr-promo-form').style.display='none';
+    document.getElementById('pr-promo-activated').style.display='block';
+    document.getElementById('pr-act-txt').textContent=lang==='kk'?'Белсендірілді! Барлық сабақтар ашылды ✅':'Активировано! Все уроки открыты ✅';
+    // 2 секундтан кейін басты бетке
+    setTimeout(()=>{initHome();showScr('s-home');},2000);
+  } else {
+    const inp=document.getElementById('pr-promo-inp');
+    inp.style.borderColor='var(--red)';inp.value='';
+    inp.placeholder=lang==='kk'?'Қате промокод!':'Неверный промокод!';
+    setTimeout(()=>{inp.style.borderColor='';inp.placeholder='ПРОМОКОД';},2000);
+  }
+}
+
+function showPromoPopup(){
+  // Промокод экранына өту — артқа оралу батырмасымен
+  document.getElementById('i-promo').value='';
+  showScr('s-promo');
+}
+function isFreePeriod(){if(!ST.startDate)return true;return Math.floor((Date.now()-ST.startDate)/86400000)<FREE_DAYS;}
+function goKaspi(){const c=JSON.parse(localStorage.getItem('mq_cfg')||'{}');window.open(c.kaspiUrl||'https://mektepkeqadam.tilda.ws','_blank');}
+function goWA(){const c=JSON.parse(localStorage.getItem('mq_cfg')||'{}');const n=(c.waNumber||'77000000000').replace(/\D/g,'');window.open(`https://wa.me/${n}`,'_blank');}
+
+// ═══ ТЕГІН / PREMIUM ТЕКСЕРУ ═══
+// Тек 0-индекстегі (кіріспе) сабақ тегін.
+// Қалғандары промокод керек.
+function canAccessLesson(lessonIdx){
+  if(ST.activated)return true;   // промокод бар — барлығы ашық
+  return lessonIdx===0;           // промокодсыз тек 1-сабақ (кіріспе)
+}
+
+// ═══ МОДУЛЬДЕР ═══
+function getMods(){
+  const t=T[lang].mods;
+  return Object.entries(t).map(([k,v])=>({key:k,...v}));
+}
+
+function renderModCards(containerId){
+  const cont=document.getElementById(containerId);if(!cont)return;
+  cont.innerHTML='';
+  getMods().forEach(m=>{
+    const pct=ST.prog[m.key]||0;
+    const maxXP=LESSONS[lang][m.key].maxXP;
+    const tag=m.free?`<span class="tag tf">${lang==='kk'?'Тегін':'Бесплатно'}</span>`:'';
+    const div=document.createElement('div');div.className='mod';
+    div.innerHTML=`
+      <div class="mod-ic" style="background:${m.color}">${m.icon}</div>
+      <div class="mod-info">
+        <div class="mod-nm">${m.title} ${tag}</div>
+        <div class="mod-ds">${m.desc}</div>
+        <div class="mod-pb"><div class="mod-pf" style="width:${pct}%"></div></div>
+        <div class="mod-xp">${ST.xpMod[m.key]||0}/${maxXP} XP</div>
+      </div>›`;
+    if(!ST.activated && !m.free){
+      div.querySelector('.mod-nm').innerHTML += ' <span class="tag" style="background:#fce4ec;color:#c2185b">🔒</span>';
+    }
+    div.onclick=()=>openMod(m.key);
+    cont.appendChild(div);
+  });
+}
 
 function openMod(mod){
-  if(!ST.activated&&!isFreePeriod()&&mod!=='alifbe'){showScr('s-promo');return;}
   cMod=mod;
-  const M=MODS[mod];
+  const M=LESSONS[lang][mod];
+  const m=getMods().find(x=>x.key===mod);
   document.getElementById('md-icon').textContent=M.icon;
-  document.getElementById('md-title').textContent=M.title;
-  document.getElementById('md-sub').textContent=M.sub;
-  const list=document.getElementById('md-list');
-  list.innerHTML='';
+  document.getElementById('md-title').textContent=m?.title||'-';
+  document.getElementById('md-sub').textContent=`${M.lessons.length} ${lang==='kk'?'сабақ':'урок'} · ${M.maxXP} XP`;
+  const list=document.getElementById('md-list');list.innerHTML='';
   const doneCount=Math.floor((ST.prog[mod]/100)*M.lessons.length);
   M.lessons.forEach((l,i)=>{
-    const done=i<doneCount;
-    const isCur=i===doneCount;
-    const div=document.createElement('div');
-    div.className='les-row';
+    const done=i<doneCount,isCur=i===doneCount;
+    const canAccess=canAccessLesson(i)||done;
+    const div=document.createElement('div');div.className='les-row';
     div.innerHTML=`
       <div class="les-num ${done?'done':isCur?'cur':''}">${done?'✓':i+1}</div>
       <div class="les-info"><div class="les-title">${l.t}</div><div class="les-xp">+${l.xp} XP</div></div>
-      <div style="font-size:20px">${done?'✅':isCur?'▶️':'🔒'}</div>`;
-    if(done||isCur||i===0) div.onclick=()=>startLesson(mod,i);
+      <div style="font-size:18px">${done?'✅':isCur?'▶️':canAccess?'▶️':'🔒'}</div>`;
+    if(canAccess){
+      div.onclick=()=>startLesson(mod,i);
+    } else {
+      div.style.opacity='0.55';
+      div.onclick=()=>showPromoPopup();
+    }
     list.appendChild(div);
   });
+  prevScr=document.querySelector('.scr.on')?.id||'s-home';
   showScr('s-mdet');
 }
 
+function backMdet(){showScr(prevScr==='s-lessons'?'s-lessons':'s-home');}
+
 function startLesson(mod,li){
   cMod=mod;cLes=li;cQ=0;cScore=0;cTotal=0;cXP=0;answered=false;diagAns=[];
-  isDiag=MODS[mod].lessons[li].diag||false;
-  document.getElementById('l-name').textContent=MODS[mod].title;
+  isDiag=LESSONS[lang][mod].lessons[li].diag||false;
+  const m=getMods().find(x=>x.key===mod);
+  document.getElementById('l-name').textContent=m?.title||'-';
   document.getElementById('l-xp').textContent='+0 XP';
-  showScr('s-lesson');
-  renderQ();
+  showScr('s-lesson');renderQ();
 }
 
 function renderQ(){
-  const qs=MODS[cMod].lessons[cLes].qs;
-  const q=qs[cQ];
-  answered=false;
+  const qs=LESSONS[lang][cMod].lessons[cLes].qs;
+  const q=qs[cQ];answered=false;
   document.getElementById('l-rbar').classList.add('hidden');
   document.getElementById('l-nw').classList.add('hidden');
   const pct=((cQ+1)/qs.length)*100;
@@ -665,18 +934,34 @@ function renderQ(){
   if(q.type==='intro'){
     const bs=(q.bs||[]).map(b=>`<span class="ibdg">${b}</span>`).join('');
     document.getElementById('l-body').innerHTML=`
-      <div class="intro">
+      <div class="intro-c">
         <div class="intro-em">${q.em}</div>
         <div class="intro-t">${q.ti}</div>
         <div class="intro-d">${q.ds}</div>
         <div class="intro-bs">${bs}</div>
-        <button class="nxt gold" onclick="nextQ()" style="border:none;">Бастау →</button>
+        <button class="nxt gold" onclick="nextQ()" style="border:none;">${T[lang].startBtn}</button>
       </div>`;
     return;
   }
 
-  const optsHtml=q.opts.map((o,oi)=>`
-    <button class="opt" onclick="ansQ(this,${oi})">${o}</button>`).join('');
+  if(q.type==='reading'){
+    document.getElementById('l-body').innerHTML=`
+      <div class="lq">${q.q}</div>
+      <div class="read-card">
+        <div class="syl-big">${q.display}</div>
+        <div class="syl-parts">
+          <span class="syl-p">${q.p1}</span>
+          <span class="syl-plus">+</span>
+          <span class="syl-p">${q.p2}</span>
+          <span class="syl-plus">= ${q.display}</span>
+        </div>
+        <div class="lhint">${q.hint}</div>
+      </div>
+      <div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+    return;
+  }
+
+  const optsHtml=q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('');
   document.getElementById('l-body').innerHTML=`
     <div class="lq">${q.q}</div>
     <div class="limg">${q.img}</div>
@@ -685,248 +970,192 @@ function renderQ(){
 }
 
 function ansQ(btn,optIdx){
-  if(answered)return;
-  answered=true;
-  const qs=MODS[cMod].lessons[cLes].qs;
-  const q=qs[cQ];
-  cTotal++;
+  if(answered)return;answered=true;
+  const qs=LESSONS[lang][cMod].lessons[cLes].qs;
+  const q=qs[cQ];cTotal++;
   document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
+  const t=T[lang];
 
   if(isDiag){
-    // Диагностика — тек "таңдалды" белгісі, дұрыс/қате жоқ
     btn.classList.add('selected');
-    diagAns.push({cat:q.cat,score:q.scores[optIdx],optIdx});
+    diagAns.push({cat:q.cat,score:q.sc[optIdx],optIdx});
     cXP+=3;ST.xp+=3;
     document.getElementById('l-xp').textContent=`+${cXP} XP`;
-    // Автоматты жалғастыру 0.6 секунд кейін
-    setTimeout(nextQ,600);
-    return;
+    setTimeout(nextQ,700);return;
   }
 
-  // Қалыпты сабақ — дұрыс/қате көрсету
   const rb=document.getElementById('l-rbar');
   const rt=document.getElementById('l-rt');
   const ri=document.getElementById('l-ri');
-  const correct=q.opts[optIdx]===q.ans;
+  const ok=q.opts[optIdx]===q.ans;
 
-  if(correct){
+  if(ok){
     btn.classList.add('correct');
-    rb.className='rbar ok';
-    rt.className='rb-tx ok';
-    rt.textContent='Дұрыс! 🎉';
-    ri.textContent='✅';
+    rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=t.correct;ri.textContent='✅';
     cScore++;cXP+=10;ST.correct++;ST.xp+=10;
   } else {
     btn.classList.add('wrong');
     document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});
-    rb.className='rbar fail';
-    rt.className='rb-tx fail';
-    rt.textContent=`Дұрыс жауап: ${q.ans}`;
-    ri.textContent='❌';
+    rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=t.wrong+q.ans;ri.textContent='❌';
     cXP+=3;ST.xp+=3;
   }
   ST.done++;
   document.getElementById('l-xp').textContent=`+${cXP} XP`;
   updateStreak();saveState();
-  rb.classList.remove('hidden');
-  document.getElementById('l-nw').classList.remove('hidden');
+  rb.classList.remove('hidden');document.getElementById('l-nw').classList.remove('hidden');
 }
 
 function nextQ(){
-  const qs=MODS[cMod].lessons[cLes].qs;
-  cQ++;
-  if(cQ>=qs.length){finishLesson();}
-  else{renderQ();}
+  const qs=LESSONS[lang][cMod].lessons[cLes].qs;
+  cQ++;if(cQ>=qs.length)finishLesson();else renderQ();
 }
 
 function finishLesson(){
-  const lXP=MODS[cMod].lessons[cLes].xp;
+  const lXP=LESSONS[lang][cMod].lessons[cLes].xp;
   ST.xpMod[cMod]=(ST.xpMod[cMod]||0)+lXP;
-  const maxXP=MODS[cMod].maxXP;
+  const maxXP=LESSONS[lang][cMod].maxXP;
   ST.prog[cMod]=Math.min(100,Math.round((ST.xpMod[cMod]/maxXP)*100));
 
   if(isDiag&&diagAns.length>0){
-    const r=analyzeDiag(diagAns);
-    ST.diagResult=r;
-    saveState();
-    const res=getDiagAdvice(r.pct,r.catPcts);
+    const cats={},catMax={};
+    diagAns.forEach(a=>{if(!a.cat)return;cats[a.cat]=(cats[a.cat]||0)+a.score;catMax[a.cat]=(catMax[a.cat]||0)+10;});
+    let tot=0,mx=0;
+    Object.keys(cats).forEach(k=>{tot+=cats[k];mx+=catMax[k];});
+    const pct=mx>0?Math.round((tot/mx)*100):0;
+    const catPcts={};Object.keys(cats).forEach(k=>{catPcts[k]=catMax[k]>0?Math.round((cats[k]/catMax[k])*100):0;});
+    ST.diagResult={pct,catPcts};saveState();
+    const res=T[lang].diagAdvice(pct,catPcts);
     document.getElementById('c-ic').textContent=res.icon;
     document.getElementById('c-ti').textContent=res.title;
-    document.getElementById('c-xp').textContent=r.pct+'% дайын';
-    document.getElementById('c-su').textContent=res.advice;
-    showScr('s-cmp');
-    return;
+    document.getElementById('c-xp').textContent=pct+'%';
+    document.getElementById('c-su').textContent=res.adv;
+    showScr('s-cmp');return;
   }
 
   const pct=cTotal>0?Math.round((cScore/cTotal)*100):100;
   document.getElementById('c-ic').textContent=pct===100?'🏆':pct>=70?'⭐':'💪';
-  document.getElementById('c-ti').textContent=pct===100?'Мінсіз!':pct>=70?'Жарайсың!':'Жалғастыр!';
+  document.getElementById('c-ti').textContent=pct===100?(lang==='kk'?'Мінсіз!':'Отлично!'):pct>=70?(lang==='kk'?'Жарайсың!':'Молодец!'):lang==='kk'?'Жалғастыр!':'Продолжай!';
   document.getElementById('c-xp').textContent=`+${lXP} XP`;
-  document.getElementById('c-su').textContent=`${cScore}/${cTotal} дұрыс жауап · ${pct}%`;
+  document.getElementById('c-su').textContent=`${cScore}/${cTotal} · ${pct}%`;
   saveState();showScr('s-cmp');
 }
 
 function backLesson(){showScr('s-mdet');}
-function backMdet(){
-  const prev=document.getElementById('s-lessons').classList.contains('on')?'s-lessons':'s-home';
-  showScr(prev);
-}
 function replay(){startLesson(cMod,cLes);}
 
 // ═══ НАВИГАЦИЯ ═══
 function goTab(tab){
   if(tab==='home'){initHome();showScr('s-home');}
-  else if(tab==='lessons'){showScr('s-lessons');updateLessonsPage();}
+  else if(tab==='lessons'){renderModCards('les-list');showScr('s-lessons');}
   else if(tab==='profile'){initProfile();showScr('s-profile');}
-  ['home','lessons','profile'].forEach(t=>{
-    [1,2,3].forEach(n=>{
-      const el=document.getElementById(`bn${n>1?n:''}-${t}`);
+  [1,2,3].forEach(n=>{
+    ['home','lessons','profile'].forEach(t=>{
+      const sfx=n===1?'':n.toString();
+      const el=document.getElementById(`bn${sfx}-${t}`);
       if(el)el.classList.toggle('on',t===tab);
     });
-    const el=document.getElementById('bn-'+t);
-    if(el)el.classList.toggle('on',t===tab);
   });
 }
 function goHome(){initHome();showScr('s-home');}
-function showScr(id){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
 
-// ═══ UI ═══
+// ═══ INIT HOME ═══
 function initHome(){
-  const ini=ST.name?ST.name[0].toUpperCase():'?';
-  document.getElementById('h-av').textContent=ini;
-  document.getElementById('h-name').textContent=`Сәлем, ${ST.name}! 👋`;
-  document.getElementById('h-sub').textContent=`${ST.age} жас · Мектепке дайындық`;
+  const t=T[lang];
+  document.getElementById('h-av').textContent=ST.name?ST.name[0].toUpperCase():'?';
+  document.getElementById('h-name').textContent=t.greeting.replace('%s',ST.name);
+  document.getElementById('h-sub').textContent=t.sub.replace('%s',ST.age);
   document.getElementById('h-xp').textContent=ST.xp;
   document.getElementById('h-str').textContent=ST.streak;
-  const lvl=getLevel();
+  const lvl=getLvl();
   document.getElementById('h-lvl').textContent=lvl.idx+1;
-  document.getElementById('hl-name').textContent=lvl.name;
-  const p=Math.max(0,Math.min(100,Math.round(((ST.xp-lvl.min)/(lvl.max-lvl.min))*100)));
+  document.getElementById('hl-nm').textContent=t.levels[lvl.idx];
+  const nxt=LVL_XP[Math.min(4,lvl.idx+1)];
+  const p=Math.max(0,Math.min(100,Math.round(((ST.xp-LVL_XP[lvl.idx])/(nxt-LVL_XP[lvl.idx]))*100)));
   document.getElementById('hl-fill').style.width=p+'%';
-  document.getElementById('hl-xp').textContent=`${ST.xp}/${lvl.max} XP`;
-  ['alifbe','azbuka','math','diag'].forEach(m=>{
-    document.getElementById(`mp-${m}`).style.width=(ST.prog[m]||0)+'%';
-    document.getElementById(`mx-${m}`).textContent=`${ST.xpMod[m]||0}/${MODS[m].maxXP} XP`;
-  });
-  const days=['Дс','Сс','Ср','Бс','Жм','Сн','Жк'];
-  const today=new Date().getDay();
-  document.getElementById('st-days').innerHTML=days.map((d,i)=>
-    `<div class="st-d ${i===today?'today':i<today?'done':''}">${d}</div>`).join('');
-  document.getElementById('st-t').textContent=`${ST.streak} күн қатарынан`;
-}
-
-function updateLessonsPage(){
-  ['alifbe','azbuka','math','diag'].forEach(m=>{
-    const el=document.getElementById('lp-'+m);
-    if(el)el.style.width=(ST.prog[m]||0)+'%';
-  });
+  document.getElementById('hl-xp').textContent=`${ST.xp}/${nxt} XP`;
+  renderModCards('home-mods');
+  const days=t.days;const today=new Date().getDay();
+  document.getElementById('st-days').innerHTML=days.map((d,i)=>`<div class="st-d ${i===today?'today':i<today?'done':''}">${d}</div>`).join('');
+  document.getElementById('st-t').textContent=t.stTitle.replace('%s',ST.streak);
+  document.getElementById('float-btns').style.display=(!ST.activated&&!isFreePeriod())?'flex':'none';
+  // Промокод баннер
+  const banner=document.getElementById('promo-banner');
+  if(banner) banner.style.display=ST.activated?'none':'block';
+  // Баннер текстін тілге қарай жаңарту
+  const pbTitle=document.getElementById('pb-title');
+  const pbSub=document.getElementById('pb-sub');
+  const pbLink=document.getElementById('pb-link');
+  if(pbTitle) pbTitle.textContent=lang==='kk'?'🔑 Промокод енгізіңіз':'🔑 Введите промокод';
+  if(pbSub) pbSub.textContent=lang==='kk'?'4 990 ₸ / 3 ай · Барлық сабақтар ашылады':'4 990 ₸ / 3 месяца · Все уроки откроются';
+  if(pbLink) pbLink.textContent=lang==='kk'?'Kaspi QR арқылы сатып алу →':'Купить через Kaspi QR →';
 }
 
 function initProfile(){
+  const t=T[lang];
   document.getElementById('pr-av').textContent=ST.name?ST.name[0].toUpperCase():'?';
   document.getElementById('pr-nm').textContent=ST.name;
-  document.getElementById('pr-sb').textContent=`${ST.age} жас · MektepkeQadam`;
+  document.getElementById('pr-sb').textContent=`${ST.age} ${lang==='kk'?'жас':'лет'} · MektepkeQadam`;
   document.getElementById('pr-xp').textContent=ST.xp;
   document.getElementById('pr-cr').textContent=ST.correct;
   document.getElementById('pr-st').textContent=ST.streak;
-  const lvl=getLevel();
-  document.getElementById('pr-lvl').textContent=lvl.name;
-  const p=Math.max(0,Math.min(100,Math.round(((ST.xp-lvl.min)/(lvl.max-lvl.min))*100)));
+  const lvl=getLvl();const nxt=LVL_XP[Math.min(4,lvl.idx+1)];
+  document.getElementById('pr-lvl').textContent=t.levels[lvl.idx];
+  const p=Math.max(0,Math.min(100,Math.round(((ST.xp-LVL_XP[lvl.idx])/(nxt-LVL_XP[lvl.idx]))*100)));
   document.getElementById('pr-lf').style.width=p+'%';
-  document.getElementById('pr-xpi').textContent=`${ST.xp}/${lvl.max} XP`;
-  [['a','alifbe'],['z','azbuka'],['m','math'],['d','diag']].forEach(([k,m])=>{
-    const pct=ST.prog[m]||0;
-    document.getElementById(`pp-${k}`).textContent=pct+'%';
-    document.getElementById(`pb-${k}`).style.width=pct+'%';
+  document.getElementById('pr-xpi').textContent=`${ST.xp}/${nxt} XP`;
+  const bars=document.getElementById('pr-bars');bars.innerHTML='';
+  getMods().forEach((m,i)=>{
+    const pct=ST.prog[m.key]||0;
+    const colors=['var(--gm)','var(--gold)','#e91e63'];
+    bars.innerHTML+=`<div class="dbar"><div class="dbar-r"><span>${m.icon} ${m.title}</span><span>${pct}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${pct}%;background:${colors[i]||'var(--gm)'}"></div></div></div>`;
   });
+  // Промокод блогын жаңарту
+  const promoForm=document.getElementById('pr-promo-form');
+  const promoActivated=document.getElementById('pr-promo-activated');
+  if(promoForm&&promoActivated){
+    if(ST.activated){
+      promoForm.style.display='none';
+      promoActivated.style.display='block';
+      const actTxt=document.getElementById('pr-act-txt');
+      if(actTxt)actTxt.textContent=lang==='kk'?'Белсендірілді! Барлық сабақтар ашылды ✅':'Активировано! Все уроки открыты ✅';
+    } else {
+      promoForm.style.display='block';
+      promoActivated.style.display='none';
+    }
+  }
+
   if(ST.diagResult){
     document.getElementById('dr-card').style.display='block';
-    const r=ST.diagResult;
-    const res=getDiagAdvice(r.pct,r.catPcts);
+    const r=ST.diagResult;const res=T[lang].diagAdvice(r.pct,r.catPcts);
     document.getElementById('dr-pct').textContent=r.pct+'%';
     document.getElementById('dr-pct').style.color=res.color;
     document.getElementById('dr-lbl').textContent=res.icon+' '+res.title;
-    document.getElementById('dr-adv').textContent=res.advice;
-    const catsCont=document.getElementById('dr-cats');
-    catsCont.innerHTML='';
+    document.getElementById('dr-adv').textContent=res.adv;
+    const cc=document.getElementById('dr-cats');cc.innerHTML='';
+    const colors={attention:'#1976d2',speech:'#388e3c',motor:'#f57c00',math:'#7b1fa2',self:'#0097a7',social:'#e91e63',emotion:'#c62828'};
     Object.entries(r.catPcts).forEach(([k,v])=>{
-      const colors={attention:'#1976d2',speech:'#388e3c',motor:'#f57c00',math:'#7b1fa2',self:'#0097a7',social:'#e91e63',emotion:'#c62828'};
-      catsCont.innerHTML+=`
-        <div class="dr-cat">
-          <div class="dr-cat-r"><span>${CAT_NAMES[k]}</span><span style="color:${colors[k]||'#666'}">${v}%</span></div>
-          <div class="dr-cat-bg"><div class="dr-cat-f" style="width:${v}%;background:${colors[k]||'#666'}"></div></div>
-        </div>`;
+      cc.innerHTML+=`<div class="dbar" style="margin-bottom:7px;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${colors[k]||'#666'}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${colors[k]||'#666'}"></div></div></div>`;
     });
   }
 }
 
-// ═══ ДЕҢГЕЙ ═══
-function getLevel(){
-  for(let i=LEVELS.length-1;i>=0;i--){if(ST.xp>=LEVELS[i].min)return{...LEVELS[i],idx:i};}
-  return{...LEVELS[0],idx:0};
-}
-
-// ═══ STREAK ═══
+function getLvl(){for(let i=LVL_XP.length-1;i>=0;i--){if(ST.xp>=LVL_XP[i])return{idx:i};}return{idx:0};}
 function updateStreak(){
   const today=new Date().toDateString();
   if(ST.lastDate!==today){
     const yest=new Date(Date.now()-86400000).toDateString();
-    ST.streak=(ST.lastDate===yest)?ST.streak+1:1;
-    ST.lastDate=today;
+    ST.streak=(ST.lastDate===yest)?ST.streak+1:1;ST.lastDate=today;
   }
 }
-
-// ═══ КІРУ ═══
-function doLogin(){
-  const name=document.getElementById('i-name').value.trim();
-  const age=parseInt(document.getElementById('i-age').value)||6;
-  if(!name){alert('Баланың атын жазыңыз');return;}
-  ST.name=name;ST.age=age;
-  if(!ST.startDate)ST.startDate=Date.now();
-  updateStreak();saveState();initHome();
-  (!ST.activated&&!isFreePeriod())?showScr('s-promo'):showScr('s-home');
-}
-
-function checkPromo(){
-  const code=document.getElementById('i-promo').value.trim().toUpperCase();
-  const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
-  if([...PROMOS_BASE,...extras].includes(code)){
-    ST.activated=true;saveState();goHome();
-  } else {
-    const inp=document.getElementById('i-promo');
-    inp.classList.add('shake');
-    inp.style.borderColor='var(--red)';
-    inp.value='';inp.placeholder='Қате промокод!';
-    setTimeout(()=>{inp.classList.remove('shake');inp.style.borderColor='';inp.placeholder='ПРОМОКОД';},1500);
-  }
-}
-
-function goKaspi(){
-  const cfg=JSON.parse(localStorage.getItem('mq_cfg')||'{}');
-  window.open(cfg.kaspiUrl||'https://mektepkeqadam.tilda.ws','_blank');
-}
-
-function isFreePeriod(){
-  if(!ST.startDate)return true;
-  return Math.floor((Date.now()-ST.startDate)/86400000)<FREE_DAYS;
-}
-function resetAll(){
-  if(confirm('Барлық деректер жойылады. Сенімдісіз бе?')){
-    localStorage.removeItem('mq_v4');location.reload();
-  }
-}
-function saveState(){localStorage.setItem('mq_v4',JSON.stringify(ST));}
-function loadState(){try{const s=localStorage.getItem('mq_v4');if(s)ST={...ST,...JSON.parse(s)};}catch(e){}}
+function resetAll(){if(confirm(lang==='kk'?'Барлық деректер жойылады?':'Все данные будут удалены?')){localStorage.removeItem('mq_v4');location.reload();}}
+function saveState(){localStorage.setItem('mq_v4',JSON.stringify({...ST,lang}));}
+function loadState(){try{const s=localStorage.getItem('mq_v4');if(s){const d=JSON.parse(s);ST={...ST,...d};lang=d.lang||'kk';}}catch(e){}}
 
 window.addEventListener('load',()=>{
   loadState();
-  if(ST.name){
-    updateStreak();initHome();
-    (!ST.activated&&!isFreePeriod())?showScr('s-promo'):showScr('s-home');
-  } else showScr('s-login');
+  if(ST.name){updateUI();initHome();goHome();}
+  else showScr('s-lang');
 });
 </script>
 </body>
