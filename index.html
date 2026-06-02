@@ -386,13 +386,17 @@ const SB_URL='https://nfmdtzgybvbpfurxsyhh.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mbWR0emd5YnZicGZ1cnhzeWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNzI2MjgsImV4cCI6MjA5NTk0ODYyOH0.ob7J6Rz4NDzweEg2VgQO5sJksOCwh0zDp2Da1TKFooE';
 
 async function sbFetch(path,method='GET',body=null){
-  const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
-  if(body)opts.body=JSON.stringify(body);
   try{
+    const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
+    if(body)opts.body=JSON.stringify(body);
     const r=await fetch(SB_URL+'/rest/v1/'+path,opts);
     if(r.ok){const t=await r.text();return t?JSON.parse(t):null;}
     return null;
-  }catch(e){return null;}
+  }catch(e){
+    // Supabase қолжетімсіз — localStorage қолданамыз
+    console.log('Supabase offline, using localStorage');
+    return null;
+  }
 }
 
 async function sbGetStudent(id){return await sbFetch('students?id=eq.'+id+'&select=*');}
@@ -687,16 +691,21 @@ async function doLogin(){
 
 // ═══ ПРОМОКОД ═══
 async function isValidPromo(code){
-  // 1. Supabase-тен тексеру
-  const row=await sbCheckPromo(code);
-  if(row&&!row.is_used)return true;
-  // 2. Base тізімдерден
-  const base=['MQ2026','SCHOOL','MEKTEP','QADAM2026','DEMO','KIDSTOPIA','JK2026','ZA1234'];
+  // 1. Base тізімдерден тексеру (әрдайым жұмыс істейді)
+  const base=['MQ2026','SCHOOL','MEKTEP','QADAM2026','DEMO','KIDSTOPIA',
+              'JK2026','ZA1234','MQWSWQN0','MQWSWQ3L','MQWSWQNL','MQWSWQ0X','MQWSWQB6'];
   if(base.includes(code))return true;
-  // 3. localStorage extra
+  // 2. localStorage extra (admin бен school бір доменде болса)
   try{
     const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
     if(extras.map(p=>p.code).includes(code))return true;
+    const adminPromos=JSON.parse(localStorage.getItem('mq_admin_promos')||'[]');
+    if(adminPromos.map(p=>p.code).includes(code))return true;
+  }catch(e){}
+  // 3. Supabase-тен тексеру (жұмыс істесе)
+  try{
+    const row=await sbCheckPromo(code);
+    if(row&&!row.is_used)return true;
   }catch(e){}
   return false;
 }
