@@ -695,7 +695,18 @@ async function isValidPromo(code){
   const base=['MQ2026','SCHOOL','MEKTEP','QADAM2026','DEMO','KIDSTOPIA',
               'JK2026','ZA1234','MQWSWQN0','MQWSWQ3L','MQWSWQNL','MQWSWQ0X','MQWSWQB6'];
   if(base.includes(code))return true;
-  // 2. localStorage extra (admin бен school бір доменде болса)
+  // 2. Admin промокодтары (бір файлда — бір localStorage)
+  try{
+    const adminP=JSON.parse(localStorage.getItem('mq_admin_promos')||'[]');
+    if(adminP.map(p=>p.code).includes(code)){
+      // Белсендірілді деп белгілеу
+      const updated=adminP.map(p=>p.code===code?{...p,used:true,usedAt:Date.now()}:p);
+      localStorage.setItem('mq_admin_promos',JSON.stringify(updated));
+      localStorage.setItem('mq_extra_promos',JSON.stringify(updated));
+      return true;
+    }
+  }catch(e){}
+  // 3. localStorage extra (admin бен school бір доменде болса)
   try{
     const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
     if(extras.map(p=>p.code).includes(code))return true;
@@ -992,6 +1003,7 @@ async function resetAll(){
 }
 
 window.addEventListener('load',async()=>{
+  if(checkAdminRoute())return;
   // localStorage-дан жылдам жүктеу
   try{const s=localStorage.getItem('mq_v4');if(s){const d=JSON.parse(s);ST={...ST,...d};lang=d.lang||'kk';}}catch(e){}
   if(ST.name){
@@ -1002,5 +1014,111 @@ window.addEventListener('load',async()=>{
   } else showScr('s-lang');
 });
 </script>
+
+<!-- ════ ADMIN LOGIN ════ -->
+<div id="s-admin-login" class="scr">
+<div style="background:var(--g);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;">
+  <div style="font-size:56px;margin-bottom:16px;">⚙️</div>
+  <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;">MQ Admin Panel</div>
+  <div style="font-size:14px;color:#9fe1cb;margin-bottom:28px;">Тек администраторларға арналған</div>
+  <input id="al-login" type="text" placeholder="Логин" autocapitalize="none"
+    style="background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.22);border-radius:var(--r);padding:14px 18px;font-size:16px;color:#fff;width:100%;max-width:320px;outline:none;margin-bottom:12px;">
+  <input id="al-pass" type="password" placeholder="Пароль"
+    style="background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.22);border-radius:var(--r);padding:14px 18px;font-size:16px;color:#fff;width:100%;max-width:320px;outline:none;margin-bottom:12px;">
+  <button onclick="doAdminLogin()"
+    style="background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:320px;margin-bottom:12px;">Кіру →</button>
+  <div style="font-size:13px;color:rgba(255,255,255,.4);cursor:pointer;" onclick="goHome()">← Платформаға оралу</div>
+</div>
+</div>
+
+<!-- ════ ADMIN PANEL ════ -->
+<div id="s-admin-panel" class="scr">
+<div style="background:var(--g);padding:14px 17px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;">
+  <div style="font-size:15px;font-weight:700;color:#fff;flex:1;">⚙️ MQ Admin</div>
+  <div onclick="adminLogout()" style="color:#9fe1cb;font-size:13px;cursor:pointer;padding:4px 10px;border:1px solid rgba(255,255,255,.2);border-radius:8px;">Шығу</div>
+</div>
+<div style="display:flex;background:#fff;border-bottom:1px solid var(--bd);">
+  <div class="adm-tab on" id="at-stat" onclick="setAdminTab('stat')" style="flex:1;padding:12px 8px;font-size:12px;font-weight:600;color:var(--gr);text-align:center;cursor:pointer;border-bottom:2.5px solid transparent;">Статистика</div>
+  <div class="adm-tab" id="at-promo" onclick="setAdminTab('promo')" style="flex:1;padding:12px 8px;font-size:12px;font-weight:600;color:var(--gr);text-align:center;cursor:pointer;border-bottom:2.5px solid transparent;">Промокод</div>
+  <div class="adm-tab" id="at-students" onclick="setAdminTab('students')" style="flex:1;padding:12px 8px;font-size:12px;font-weight:600;color:var(--gr);text-align:center;cursor:pointer;border-bottom:2.5px solid transparent;">Оқушылар</div>
+  <div class="adm-tab" id="at-cfg" onclick="setAdminTab('cfg')" style="flex:1;padding:12px 8px;font-size:12px;font-weight:600;color:var(--gr);text-align:center;cursor:pointer;border-bottom:2.5px solid transparent;">Баптау</div>
+</div>
+
+<!-- STAT TAB -->
+<div id="atp-stat" style="flex:1;padding:16px;overflow-y:auto;">
+  <div style="background:var(--gl);border-radius:var(--r);padding:12px;font-size:13px;color:var(--g);margin-bottom:12px;line-height:1.5;">
+    <strong>Жұмыс принципі:</strong> Admin жасаған промокодтар бір localStorage-да сақталады. School беті де сол деректерді оқиды.
+  </div>
+  <div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh);">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Жалпы статистика</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--g);" id="ast-promos">0</div><div style="font-size:11px;color:var(--gr);">Промокод</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--g);" id="ast-used">0</div><div style="font-size:11px;color:var(--gr);">Белсендірілген</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--g);" id="ast-income">0</div><div style="font-size:11px;color:var(--gr);">Табыс (₸)</div></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--g);" id="ast-students">0</div><div style="font-size:11px;color:var(--gr);">Оқушылар</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMO TAB -->
+<div id="atp-promo" class="hidden" style="flex:1;padding:16px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh);">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Жаңа промокод қосу</div>
+    <input id="anew-promo" type="text" placeholder="Промокод (MQ001)" autocapitalize="characters" maxlength="20"
+      style="background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--tx);width:100%;outline:none;margin-bottom:10px;">
+    <button onclick="adminAddPromo()"
+      style="background:var(--gold);color:#3d2000;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;">Промокод қосу ✓</button>
+    <div style="font-size:12px;color:var(--gr);margin-bottom:8px;">Автоматты жасау:</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="adminGenPromo(1)" style="background:var(--g);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;">1</button>
+      <button onclick="adminGenPromo(5)" style="background:var(--g);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;">5</button>
+      <button onclick="adminGenPromo(10)" style="background:var(--g);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;">10</button>
+      <button onclick="adminGenPromo(20)" style="background:var(--g);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;">20</button>
+    </div>
+  </div>
+  <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh);">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Промокодтар <span id="apc-count" style="background:var(--gl);color:var(--g);font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;">0</span></div>
+    <div style="font-size:12px;color:var(--gr);margin-bottom:10px;">Промокодты басыңыз — көшіріледі</div>
+    <div id="apromo-list"></div>
+  </div>
+</div>
+
+<!-- STUDENTS TAB -->
+<div id="atp-students" class="hidden" style="flex:1;padding:16px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh);">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Оқушылар тізімі <span id="ast-count" style="background:var(--gl);color:var(--g);font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;">0</span></div>
+    <div id="astudents-list"></div>
+  </div>
+</div>
+
+<!-- CFG TAB -->
+<div id="atp-cfg" class="hidden" style="flex:1;padding:16px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh);">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">💳 Kaspi QR + WhatsApp</div>
+    <div style="font-size:12px;color:var(--gr);margin-bottom:6px;">Kaspi Pay сілтемесі:</div>
+    <input id="acfg-kaspi" type="text" placeholder="https://kaspi.kz/pay/..."
+      style="background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--tx);width:100%;outline:none;margin-bottom:10px;">
+    <div style="font-size:12px;color:var(--gr);margin-bottom:6px;">WhatsApp нөмірі:</div>
+    <input id="acfg-wa" type="text" placeholder="+77001234567"
+      style="background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--tx);width:100%;outline:none;margin-bottom:10px;">
+    <div style="font-size:12px;color:var(--gr);margin-bottom:6px;">Платформа бағасы (₸):</div>
+    <input id="acfg-price" type="number" value="4990"
+      style="background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--tx);width:100%;outline:none;margin-bottom:10px;">
+    <button onclick="adminSaveCfg()"
+      style="background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%;">Сақтау ✓</button>
+  </div>
+  <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh);">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">🔐 Пароль өзгерту</div>
+    <input id="acfg-p1" type="password" placeholder="Жаңа пароль"
+      style="background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--tx);width:100%;outline:none;margin-bottom:10px;">
+    <input id="acfg-p2" type="password" placeholder="Қайталаңыз"
+      style="background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--tx);width:100%;outline:none;margin-bottom:10px;">
+    <button onclick="adminChangePass()"
+      style="background:var(--g);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%;">Пароль өзгерту</button>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+</div>
+
 </body>
 </html>
