@@ -1003,6 +1003,7 @@ async function resetAll(){
 }
 
 window.addEventListener('load',async()=>{
+  // Admin route — БАРЛЫҚ УАҚЫТТА тексеру (кіргендер де)
   if(checkAdminRoute())return;
   // localStorage-дан жылдам жүктеу
   try{const s=localStorage.getItem('mq_v4');if(s){const d=JSON.parse(s);ST={...ST,...d};lang=d.lang||'kk';}}catch(e){}
@@ -1013,6 +1014,91 @@ window.addEventListener('load',async()=>{
     goHome();
   } else showScr('s-lang');
 });
+
+// ADMIN JS — келесі жолда
+function checkAdminRoute(){
+  const p=window.location.pathname,h=window.location.hash,s=window.location.search;
+  if(p.endsWith('/admin')||p.endsWith('/admin/')||h.includes('admin')||s.includes('admin')){
+    sessionStorage.getItem('mq_admin')==='1'?(initAdminPanel(),showScr('s-admin-panel')):showScr('s-admin-login');
+    return true;
+  }
+  return false;
+}
+window.addEventListener('hashchange',()=>checkAdminRoute());
+function getAdminCreds(){return JSON.parse(localStorage.getItem('mq_admin_creds')||'{"login":"admin","pass":"mq2026admin"}');}
+function getAdminPromos(){try{return JSON.parse(localStorage.getItem('mq_admin_promos')||'[]');}catch(e){return[];}}
+function saveAdminPromos(p){localStorage.setItem('mq_admin_promos',JSON.stringify(p));localStorage.setItem('mq_extra_promos',JSON.stringify(p));}
+function getAdminCfg(){return JSON.parse(localStorage.getItem('mq_cfg')||'{}');}
+function saveAdminCfgData(cfg){localStorage.setItem('mq_cfg',JSON.stringify(cfg));}
+function doAdminLogin(){
+  const l=document.getElementById('al-login').value.trim(),p=document.getElementById('al-pass').value;
+  const c=getAdminCreds();
+  if(l===c.login&&p===c.pass){sessionStorage.setItem('mq_admin','1');initAdminPanel();showScr('s-admin-panel');}
+  else{const inp=document.getElementById('al-pass');inp.style.borderColor='var(--red)';inp.value='';inp.placeholder='Қате!';setTimeout(()=>{inp.style.borderColor='';inp.placeholder='Пароль';},1500);}
+}
+function adminLogout(){sessionStorage.removeItem('mq_admin');showScr('s-admin-login');}
+function initAdminPanel(){
+  const promos=getAdminPromos(),used=promos.filter(p=>p.used).length,cfg=getAdminCfg(),price=cfg.price||4990;
+  const $=id=>document.getElementById(id);
+  if($('ast-promos'))$('ast-promos').textContent=promos.length;
+  if($('ast-used'))$('ast-used').textContent=used;
+  if($('ast-income'))$('ast-income').textContent=(used*price).toLocaleString();
+  let sc=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('mq_v4'))sc++;}
+  if($('ast-students'))$('ast-students').textContent=sc;
+  if($('acfg-kaspi'))$('acfg-kaspi').value=cfg.kaspiUrl||'';
+  if($('acfg-wa'))$('acfg-wa').value=cfg.waNumber||'';
+  if($('acfg-price'))$('acfg-price').value=cfg.price||4990;
+  renderAdminPromos();renderAdminStudents();setAdminTab('stat');
+}
+function setAdminTab(tab){
+  ['stat','promo','students','cfg'].forEach(t=>{
+    const c=document.getElementById('atp-'+t),te=document.getElementById('at-'+t);
+    if(c)c.classList.toggle('hidden',t!==tab);
+    if(te){te.style.color=t===tab?'var(--g)':'var(--gr)';te.style.borderBottom=t===tab?'2.5px solid var(--g)':'2.5px solid transparent';}
+  });
+}
+function renderAdminPromos(){
+  const p=getAdminPromos(),l=document.getElementById('apromo-list'),c=document.getElementById('apc-count');
+  if(c)c.textContent=p.length;
+  if(!l)return;
+  l.innerHTML=p.length?p.map((x,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;font-family:monospace;">${x.code}</div><div style="font-size:11px;color:var(--gr);">${x.used?'✅ Белсендірілді':'⏳ Күтуде'} · ${new Date(x.created).toLocaleDateString()}</div></div><button onclick="adminCopyCode('${x.code}')" style="background:var(--gl);color:var(--g);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">Көшіру</button><button onclick="adminDelPromo(${i})" style="background:var(--rl);color:var(--red);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">🗑</button></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Промокод жоқ</div>';
+}
+function renderAdminStudents(){
+  const ss=[],l=document.getElementById('astudents-list'),c=document.getElementById('ast-count');
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('mq_v4')){try{const d=JSON.parse(localStorage.getItem(k));if(d&&d.name)ss.push(d);}catch(e){}}}
+  if(c)c.textContent=ss.length;
+  if(!l)return;
+  l.innerHTML=ss.length?ss.map(s=>`<div style="padding:12px;background:var(--bg);border-radius:10px;margin-bottom:8px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><div><div style="font-size:14px;font-weight:700;">${s.name} (${s.age} жас)</div><div style="font-size:11px;color:var(--gr);">${s.lang==='kk'?'Қазақша':'Орысша'} · ${s.activated?'✅ Белсенді':'⏳ Тегін'}</div></div><div style="text-align:right;"><div style="font-size:15px;font-weight:700;color:var(--gold);">${s.xp||0} XP</div><div style="font-size:11px;color:var(--gr);">🔥${s.streak||0} күн</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;color:var(--gr);"><div>📖 ${(s.prog&&s.prog.alifbe)||0}%</div><div>🔢 ${(s.prog&&s.prog.math)||0}%</div><div>🩺 ${(s.prog&&s.prog.diag)||0}%</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Оқушылар жоқ</div>';
+}
+function adminCopyCode(code){navigator.clipboard.writeText(code).catch(()=>{const t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});showToast(code+' көшірілді! ✅');}
+function adminAddPromo(){
+  const code=document.getElementById('anew-promo').value.trim().toUpperCase();
+  if(!code){showToast('Промокод жазыңыз');return;}
+  const p=getAdminPromos();
+  if(p.find(x=>x.code===code)){showToast('Бұл промокод бар!');return;}
+  p.push({code,used:false,created:Date.now()});saveAdminPromos(p);
+  document.getElementById('anew-promo').value='';renderAdminPromos();initAdminPanel();showToast(code+' қосылды! ✅');
+}
+function adminGenPromo(n){
+  const p=getAdminPromos();
+  for(let i=0;i<n;i++){const c='MQ'+Math.random().toString(36).substring(2,6).toUpperCase()+Math.floor(Math.random()*100);p.push({code:c,used:false,created:Date.now()});}
+  saveAdminPromos(p);renderAdminPromos();initAdminPanel();showToast(n+' промокод жасалды! ✅');
+}
+function adminDelPromo(i){
+  if(!confirm('Жоясыз ба?'))return;
+  const p=getAdminPromos();p.splice(i,1);saveAdminPromos(p);renderAdminPromos();initAdminPanel();
+}
+function adminSaveCfg(){
+  saveAdminCfgData({kaspiUrl:document.getElementById('acfg-kaspi').value.trim(),waNumber:document.getElementById('acfg-wa').value.trim(),price:parseInt(document.getElementById('acfg-price').value)||4990});
+  showToast('Сақталды! ✅');
+}
+function adminChangePass(){
+  const p1=document.getElementById('acfg-p1').value,p2=document.getElementById('acfg-p2').value;
+  if(!p1||p1!==p2){showToast('Парольдер сәйкес емес!');return;}
+  const cr=getAdminCreds();cr.pass=p1;localStorage.setItem('mq_admin_creds',JSON.stringify(cr));
+  document.getElementById('acfg-p1').value='';document.getElementById('acfg-p2').value='';
+  showToast('Пароль өзгертілді! ✅');
+}
 </script>
 
 <!-- ════ ADMIN LOGIN ════ -->
