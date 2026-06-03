@@ -581,31 +581,63 @@ let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag
 
 // ═══ SUPABASE SYNC ═══
 let syncTimeout=null;
+
+// localStorage-ға сақтау
+function saveState(){
+  try{ localStorage.setItem('mq_v4', JSON.stringify(ST)); }catch(e){}
+}
+
 function scheduleSave(){
+  saveState(); // Бірден localStorage-ға сақтау
   clearTimeout(syncTimeout);
   syncTimeout=setTimeout(async()=>{
-    saveState();
     // Firebase-ке фондық сақтау
-    try{ await fbSaveStudent(ST); }catch(e){}
-  },3000);
+    try{ await fbSaveStudent(ST); }catch(e){ console.log('Firebase save failed, using localStorage only'); }
+  },2000);
 }
 
 async function saveToServer(){
   if(!ST.id)return;
-  const data={
-    id:ST.id,name:ST.name,age:ST.age,lang:ST.lang,
-    activated:ST.activated,promo_code:ST.promoCode||null,
-    xp:ST.xp,streak:ST.streak,correct:ST.correct,done:ST.done,
-    prog:ST.prog,xp_mod:ST.xpMod,
-    diag_result:ST.diagResult,
-    updated_at:new Date().toISOString()
-  };
-  await sbSaveStudent(data);
+  // 1. localStorage — always first
   localStorage.setItem('mq_v4',JSON.stringify(ST));
+  // 2. Firebase — online save
+  try{ await fbSaveStudent(ST); }catch(e){ console.log('Firebase save failed'); }
+  // 3. Supabase — backup
+  try{
+    const data={id:ST.id,name:ST.name,age:ST.age,lang:ST.lang,
+      activated:ST.activated,promo_code:ST.promoCode||null,
+      xp:ST.xp,streak:ST.streak,correct:ST.correct,done:ST.done,
+      prog:ST.prog,xp_mod:ST.xpMod,
+      diag_result:ST.diagResult,updated_at:new Date().toISOString()};
+    await sbSaveStudent(data);
+  }catch(e){}
 }
 
 async function loadFromServer(id){
   showLoading(lang==='kk'?'Деректер жүктелуде...':'Загрузка данных...');
+  
+  // 1. Firebase-тен жүктеу (бірінші приоритет)
+  try{
+    const fbKey = 'student_' + id.replace('mq_','').replace(/[^a-z0-9_]/g,'_');
+    const fbData = await fbGet('/students/' + fbKey);
+    if(fbData && fbData.name){
+      hideLoading();
+      ST={
+        id:id, name:fbData.name, age:fbData.age||6, lang:fbData.lang||'kk',
+        activated:fbData.activated||false, promoCode:fbData.promoCode||'',
+        xp:fbData.xp||0, streak:fbData.streak||0, lastDate:ST.lastDate,
+        done:fbData.done||0, correct:fbData.correct||0,
+        prog:fbData.prog||{alifbe:0,math:0,diag:0},
+        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0},
+        diagResult:fbData.diagResult||null
+      };
+      lang=ST.lang;
+      localStorage.setItem('mq_v4',JSON.stringify(ST));
+      return true;
+    }
+  }catch(e){ console.log('Firebase load failed, trying Supabase'); }
+  
+  // 2. Supabase-тен жүктеу (backup)
   const rows=await sbGetStudent(id);
   hideLoading();
   if(rows&&rows.length>0){
@@ -622,6 +654,7 @@ async function loadFromServer(id){
     localStorage.setItem('mq_v4',JSON.stringify(ST));
     return true;
   }
+  hideLoading();
   return false;
 }
 
@@ -1010,7 +1043,21 @@ async function resetAll(){
 }
 
 window.addEventListener('load',async()=>{
-  // Admin route — БАРЛЫҚ УАҚЫТТА тексеру (кіргендер де)
+  // Firebase байланысын тексеру
+  try{
+    const testResult = await fbGet('/ping');
+    console.log('Firebase connected ✅');
+  }catch(e){
+    console.log('Firebase offline — localStorage mode');
+  }
+  // Firebase байланысын тексеру
+  try{
+    const testResult = await fbGet('/ping');
+    console.log('Firebase connected');
+  }catch(e){
+    console.log('Firebase offline - localStorage mode');
+  }
+  // Admin route
   if(checkAdminRoute())return;
   // Firebase config жүктеу (Kaspi URL, WhatsApp)
   try{ await fbLoadCfg(); }catch(e){}
@@ -1240,6 +1287,7 @@ async function fbCheckPromo(code){
 
 // ═══ ОҚУШЫ Firebase арқылы ═══
 async function fbSaveStudent(st){
+  if(!st.name) return;
   const key = 'student_' + (st.name||'').toLowerCase().replace(/[^a-z0-9]/g,'_') + '_' + (st.age||6);
   await fbSet('/students/' + key, {
     name: st.name,
@@ -1250,7 +1298,10 @@ async function fbSaveStudent(st){
     correct: st.correct||0,
     done: st.done||0,
     prog: st.prog||{},
+    xpMod: st.xpMod||{},
     activated: st.activated||false,
+    promoCode: st.promoCode||'',
+    diagResult: st.diagResult||null,
     updatedAt: Date.now()
   });
 }
