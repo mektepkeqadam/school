@@ -583,7 +583,11 @@ let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag
 let syncTimeout=null;
 function scheduleSave(){
   clearTimeout(syncTimeout);
-  syncTimeout=setTimeout(()=>saveToServer(),3000);
+  syncTimeout=setTimeout(async()=>{
+    saveState();
+    // Firebase-ке фондық сақтау
+    try{ await fbSaveStudent(ST); }catch(e){}
+  },3000);
 }
 
 async function saveToServer(){
@@ -706,17 +710,17 @@ async function isValidPromo(code){
       return true;
     }
   }catch(e){}
-  // 3. localStorage extra (admin бен school бір доменде болса)
+  // 3. localStorage (жылдам тексеру)
   try{
     const extras=JSON.parse(localStorage.getItem('mq_extra_promos')||'[]');
     if(extras.map(p=>p.code).includes(code))return true;
-    const adminPromos=JSON.parse(localStorage.getItem('mq_admin_promos')||'[]');
-    if(adminPromos.map(p=>p.code).includes(code))return true;
+    const adminP=JSON.parse(localStorage.getItem('mq_admin_promos')||'[]');
+    if(adminP.map(p=>p.code).includes(code))return true;
   }catch(e){}
-  // 3. Supabase-тен тексеру (жұмыс істесе)
+  // 4. Firebase-тен тексеру (онлайн)
   try{
-    const row=await sbCheckPromo(code);
-    if(row&&!row.is_used)return true;
+    const fbPromo = await fbCheckPromo(code);
+    if(fbPromo) return true;
   }catch(e){}
   return false;
 }
@@ -725,8 +729,11 @@ async function activatePromo(code){
   const valid=await isValidPromo(code);
   if(valid){
     ST.activated=true;ST.promoCode=code;
-    await sbMarkPromoUsed(code,ST.id).catch(()=>{});
-    await saveToServer();
+    // Firebase-ке белгілеу
+    try{ await fbMarkPromoUsed(code, ST.name||'unknown'); }catch(e){}
+    saveState();
+    // Firebase-ке оқушы деректерін сақтау
+    try{ await fbSaveStudent(ST); }catch(e){}
     return true;
   }
   return false;
@@ -1005,6 +1012,8 @@ async function resetAll(){
 window.addEventListener('load',async()=>{
   // Admin route — БАРЛЫҚ УАҚЫТТА тексеру (кіргендер де)
   if(checkAdminRoute())return;
+  // Firebase config жүктеу (Kaspi URL, WhatsApp)
+  try{ await fbLoadCfg(); }catch(e){}
   // localStorage-дан жылдам жүктеу
   try{const s=localStorage.getItem('mq_v4');if(s){const d=JSON.parse(s);ST={...ST,...d};lang=d.lang||'kk';}}catch(e){}
   if(ST.name){
@@ -1037,7 +1046,24 @@ function doAdminLogin(){
   else{const inp=document.getElementById('al-pass');inp.style.borderColor='var(--red)';inp.value='';inp.placeholder='Қате!';setTimeout(()=>{inp.style.borderColor='';inp.placeholder='Пароль';},1500);}
 }
 function adminLogout(){sessionStorage.removeItem('mq_admin');showScr('s-admin-login');}
-function initAdminPanel(){
+async function initAdminPanel(){
+  // Firebase-тен промокодтарды жүктеу
+  try{
+    const fbPromos=await fbGetPromos();
+    if(fbPromos&&fbPromos.length>0){
+      saveAdminPromos(fbPromos);
+    }
+    // Config жүктеу
+    await fbLoadCfg();
+    const cfg2=getAdminCfg();
+    const kaspiEl=document.getElementById('acfg-kaspi');
+    const waEl=document.getElementById('acfg-wa');
+    const priceEl=document.getElementById('acfg-price');
+    if(kaspiEl)kaspiEl.value=cfg2.kaspiUrl||'';
+    if(waEl)waEl.value=cfg2.waNumber||'';
+    if(priceEl)priceEl.value=cfg2.price||4990;
+  }catch(e){}
+  
   const promos=getAdminPromos(),used=promos.filter(p=>p.used).length,cfg=getAdminCfg(),price=cfg.price||4990;
   const $=id=>document.getElementById(id);
   if($('ast-promos'))$('ast-promos').textContent=promos.length;
@@ -1063,12 +1089,33 @@ function renderAdminPromos(){
   if(!l)return;
   l.innerHTML=p.length?p.map((x,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;font-family:monospace;">${x.code}</div><div style="font-size:11px;color:var(--gr);">${x.used?'✅ Белсендірілді':'⏳ Күтуде'} · ${new Date(x.created).toLocaleDateString()}</div></div><button onclick="adminCopyCode('${x.code}')" style="background:var(--gl);color:var(--g);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">Көшіру</button><button onclick="adminDelPromo(${i})" style="background:var(--rl);color:var(--red);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">🗑</button></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Промокод жоқ</div>';
 }
-function renderAdminStudents(){
-  const ss=[],l=document.getElementById('astudents-list'),c=document.getElementById('ast-count');
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('mq_v4')){try{const d=JSON.parse(localStorage.getItem(k));if(d&&d.name)ss.push(d);}catch(e){}}}
-  if(c)c.textContent=ss.length;
+async function renderAdminStudents(){
+  const l=document.getElementById('astudents-list'),c=document.getElementById('ast-count');
   if(!l)return;
-  l.innerHTML=ss.length?ss.map(s=>`<div style="padding:12px;background:var(--bg);border-radius:10px;margin-bottom:8px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><div><div style="font-size:14px;font-weight:700;">${s.name} (${s.age} жас)</div><div style="font-size:11px;color:var(--gr);">${s.lang==='kk'?'Қазақша':'Орысша'} · ${s.activated?'✅ Белсенді':'⏳ Тегін'}</div></div><div style="text-align:right;"><div style="font-size:15px;font-weight:700;color:var(--gold);">${s.xp||0} XP</div><div style="font-size:11px;color:var(--gr);">🔥${s.streak||0} күн</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;color:var(--gr);"><div>📖 ${(s.prog&&s.prog.alifbe)||0}%</div><div>🔢 ${(s.prog&&s.prog.math)||0}%</div><div>🩺 ${(s.prog&&s.prog.diag)||0}%</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Оқушылар жоқ</div>';
+  l.innerHTML='<div style="text-align:center;padding:16px;color:var(--gr);">Жүктелуде...</div>';
+  
+  // Firebase-тен жүктеу
+  let ss=[];
+  try{
+    const fbStudents=await fbGetAllStudents();
+    if(fbStudents&&fbStudents.length>0){
+      ss=fbStudents;
+    }
+  }catch(e){}
+  
+  // localStorage-тан да қосу
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('mq_v4')){
+      try{const d=JSON.parse(localStorage.getItem(k));if(d&&d.name&&!ss.find(x=>x.name===d.name))ss.push(d);}catch(e){}
+    }
+  }
+  
+  if(c)c.textContent=ss.length;
+  const astEl=document.getElementById('ast-students');
+  if(astEl)astEl.textContent=ss.length;
+  
+  l.innerHTML=ss.length?ss.map(s=>`<div style="padding:12px;background:var(--bg);border-radius:10px;margin-bottom:8px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><div><div style="font-size:14px;font-weight:700;">${s.name||'-'} (${s.age||'-'} жас)</div><div style="font-size:11px;color:var(--gr);">${(s.lang||'kk')==='kk'?'Қазақша':'Орысша'} · ${s.activated?'✅ Белсенді':'⏳ Тегін'}</div></div><div style="text-align:right;"><div style="font-size:15px;font-weight:700;color:var(--gold);">${s.xp||0} XP</div><div style="font-size:11px;color:var(--gr);">🔥${s.streak||0} күн</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;color:var(--gr);"><div>📖 ${(s.prog&&s.prog.alifbe)||0}%</div><div>🔢 ${(s.prog&&s.prog.math)||0}%</div><div>🩺 ${(s.prog&&s.prog.diag)||0}%</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Оқушылар жоқ</div>';
 }
 function adminCopyCode(code){navigator.clipboard.writeText(code).catch(()=>{const t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});showToast(code+' көшірілді! ✅');}
 function adminAddPromo(){
@@ -1079,14 +1126,27 @@ function adminAddPromo(){
   p.push({code,used:false,created:Date.now()});saveAdminPromos(p);
   document.getElementById('anew-promo').value='';renderAdminPromos();initAdminPanel();showToast(code+' қосылды! ✅');
 }
-function adminGenPromo(n){
+async function adminGenPromo(n){
   const p=getAdminPromos();
-  for(let i=0;i<n;i++){const c='MQ'+Math.random().toString(36).substring(2,6).toUpperCase()+Math.floor(Math.random()*100);p.push({code:c,used:false,created:Date.now()});}
-  saveAdminPromos(p);renderAdminPromos();initAdminPanel();showToast(n+' промокод жасалды! ✅');
+  const newCodes=[];
+  for(let i=0;i<n;i++){
+    const code='MQ'+Math.random().toString(36).substring(2,6).toUpperCase()+Math.floor(Math.random()*100);
+    p.push({code,used:false,created:Date.now()});
+    newCodes.push(code);
+  }
+  saveAdminPromos(p);
+  // Firebase-ке жазу
+  try{ for(const code of newCodes){ await fbAddPromo(code); } }catch(e){}
+  renderAdminPromos();initAdminPanel();showToast(n+' промокод жасалды! ✅');
 }
-function adminDelPromo(i){
+async function adminDelPromo(i){
   if(!confirm('Жоясыз ба?'))return;
-  const p=getAdminPromos();p.splice(i,1);saveAdminPromos(p);renderAdminPromos();initAdminPanel();
+  const p=getAdminPromos();
+  const code=p[i]?.code;
+  p.splice(i,1);saveAdminPromos(p);
+  // Firebase-тен жою
+  if(code){ try{ await fbDeletePromo(code); }catch(e){} }
+  renderAdminPromos();initAdminPanel();
 }
 function adminSaveCfg(){
   saveAdminCfgData({kaspiUrl:document.getElementById('acfg-kaspi').value.trim(),waNumber:document.getElementById('acfg-wa').value.trim(),price:parseInt(document.getElementById('acfg-price').value)||4990});
@@ -1098,6 +1158,124 @@ function adminChangePass(){
   const cr=getAdminCreds();cr.pass=p1;localStorage.setItem('mq_admin_creds',JSON.stringify(cr));
   document.getElementById('acfg-p1').value='';document.getElementById('acfg-p2').value='';
   showToast('Пароль өзгертілді! ✅');
+}
+
+// ═══════════════════════════════════
+// FIREBASE REALTIME DATABASE
+// ═══════════════════════════════════
+const FB_DB = 'https://mektepkeqadam-default-rtdb.firebaseio.com';
+
+async function fbGet(path){
+  try{
+    const r = await fetch(FB_DB + path + '.json');
+    if(r.ok){ const d=await r.json(); return d; }
+    return null;
+  }catch(e){ return null; }
+}
+
+async function fbSet(path, data){
+  try{
+    const r = await fetch(FB_DB + path + '.json', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+async function fbPatch(path, data){
+  try{
+    const r = await fetch(FB_DB + path + '.json', {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+async function fbDelete(path){
+  try{
+    const r = await fetch(FB_DB + path + '.json', {method: 'DELETE'});
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+// ═══ ПРОМОКОД Firebase арқылы ═══
+async function fbGetPromos(){
+  const data = await fbGet('/promos');
+  if(!data) return [];
+  return Object.entries(data).map(([k,v])=>v).filter(Boolean);
+}
+
+async function fbAddPromo(code){
+  const promoKey = code.replace(/[^a-zA-Z0-9]/g,'_');
+  await fbSet('/promos/' + promoKey, {
+    code: code,
+    used: false,
+    created: Date.now()
+  });
+}
+
+async function fbMarkPromoUsed(code, studentName){
+  const promoKey = code.replace(/[^a-zA-Z0-9]/g,'_');
+  await fbPatch('/promos/' + promoKey, {
+    used: true,
+    usedBy: studentName,
+    usedAt: Date.now()
+  });
+}
+
+async function fbDeletePromo(code){
+  const promoKey = code.replace(/[^a-zA-Z0-9]/g,'_');
+  await fbDelete('/promos/' + promoKey);
+}
+
+async function fbCheckPromo(code){
+  const promoKey = code.replace(/[^a-zA-Z0-9]/g,'_');
+  const data = await fbGet('/promos/' + promoKey);
+  return data && !data.used ? data : null;
+}
+
+// ═══ ОҚУШЫ Firebase арқылы ═══
+async function fbSaveStudent(st){
+  const key = 'student_' + (st.name||'').toLowerCase().replace(/[^a-z0-9]/g,'_') + '_' + (st.age||6);
+  await fbSet('/students/' + key, {
+    name: st.name,
+    age: st.age,
+    lang: st.lang,
+    xp: st.xp||0,
+    streak: st.streak||0,
+    correct: st.correct||0,
+    done: st.done||0,
+    prog: st.prog||{},
+    activated: st.activated||false,
+    updatedAt: Date.now()
+  });
+}
+
+async function fbGetAllStudents(){
+  const data = await fbGet('/students');
+  if(!data) return [];
+  return Object.values(data).filter(Boolean);
+}
+
+// ═══ CONFIG Firebase арқылы ═══
+async function fbSaveCfg(cfg){
+  await fbSet('/config', cfg);
+}
+
+async function fbGetCfg(){
+  const data = await fbGet('/config');
+  return data || {};
+}
+
+async function fbLoadCfg(){
+  const cfg = await fbGetCfg();
+  if(cfg && Object.keys(cfg).length > 0){
+    localStorage.setItem('mq_cfg', JSON.stringify(cfg));
+  }
 }
 </script>
 
