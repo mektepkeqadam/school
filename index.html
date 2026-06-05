@@ -161,6 +161,30 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1b5e20;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;font-weight:600;z-index:998;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
 .hidden{display:none!important;}.sp{height:16px;}
+@keyframes bounce2{0%{transform:scale(0);}60%{transform:scale(1.2);}100%{transform:scale(1);}}
+@keyframes sunBob2{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-8px) rotate(5deg);}}
+
+.anima-hero{background:linear-gradient(180deg,#87CEEB 0%,#B3E5FC 55%,#C8E6C9 100%);padding:20px 16px 24px;text-align:center;position:relative;overflow:hidden;}
+.anima-sun{font-size:58px;animation:sunBob2 3s ease-in-out infinite;display:inline-block;margin-bottom:6px;}
+@keyframes sunBob2{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-8px) rotate(5deg);}}
+.anima-title{font-size:21px;font-weight:900;color:var(--g);margin-bottom:3px;}
+.anima-sub{font-size:12px;color:#555;margin-bottom:10px;}
+.anima-streak{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.6);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:800;}
+.av-card{background:var(--w);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);margin-bottom:10px;cursor:pointer;border:2.5px solid transparent;transition:all .15s;}
+.av-card:active{border-color:var(--gm);}
+.av-thumb{position:relative;width:100%;padding-top:56.25%;background:#111;overflow:hidden;}
+.av-thumb img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;}
+.av-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);}
+.av-playbtn{width:52px;height:52px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(239,159,39,.5);}
+.av-today-badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#3d2000;font-size:10px;font-weight:800;padding:3px 9px;border-radius:8px;}
+.av-done-badge{position:absolute;top:8px;right:8px;background:var(--gm);color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:8px;}
+.av-info{padding:10px 13px 12px;}
+.av-ep{display:inline-block;background:var(--gl);color:var(--g);font-size:10px;font-weight:800;padding:2px 9px;border-radius:7px;margin-bottom:5px;}
+.av-ep.today{background:var(--gold);color:#3d2000;}
+.av-title2{font-size:14px;font-weight:800;margin-bottom:4px;}
+.av-meta{font-size:11px;color:var(--gr);display:flex;gap:10px;}
+.anima-lock{opacity:.55;pointer-events:none;}
+
 </style>
 </head>
 <body>
@@ -387,15 +411,13 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 
 async function sbFetch(path,method='GET',body=null){
   try{
-    const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
+    const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},signal:AbortSignal.timeout(4000)};
     if(body)opts.body=JSON.stringify(body);
     const r=await fetch(SB_URL+'/rest/v1/'+path,opts);
     if(r.ok){const t=await r.text();return t?JSON.parse(t):null;}
     return null;
   }catch(e){
-    // Supabase қолжетімсіз — localStorage қолданамыз
-    console.log('Supabase offline, using localStorage');
-    return null;
+    return null; // Supabase offline — тыныш өту
   }
 }
 
@@ -438,6 +460,7 @@ const T={
       alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
       math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:false,color:'#fff8e1'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI психологиялық анализ',free:false,color:'#fce4ec'},
+      animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:false,color:'#FFF3E0'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
@@ -467,6 +490,7 @@ const T={
       alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
       math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:false,color:'#fff8e1'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI психологический анализ',free:false,color:'#fce4ec'},
+      animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:false,color:'#FFF3E0'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
@@ -573,86 +597,78 @@ let ST={
   id:'',name:'',age:6,lang:'kk',
   activated:false,promoCode:'',
   xp:0,streak:0,lastDate:'',done:0,correct:0,
-  prog:{alifbe:0,math:0,diag:0},
-  xpMod:{alifbe:0,math:0,diag:0},
+  prog:{alifbe:0,math:0,diag:0,animasabaq:0},
+  xpMod:{alifbe:0,math:0,diag:0,animasabaq:0},
+  animaDone:[],
   diagResult:null
 };
 let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag=false,prevScr='s-home';
 
 // ═══ SUPABASE SYNC ═══
 let syncTimeout=null;
-
-// localStorage-ға сақтау
 function saveState(){
-  try{ localStorage.setItem('mq_v4', JSON.stringify(ST)); }catch(e){}
+  try{ localStorage.setItem('mq_v4',JSON.stringify(ST)); }catch(e){}
 }
-
 function scheduleSave(){
-  saveState(); // Бірден localStorage-ға сақтау
+  saveState();
   clearTimeout(syncTimeout);
   syncTimeout=setTimeout(async()=>{
-    // Firebase-ке фондық сақтау
-    try{ await fbSaveStudent(ST); }catch(e){ console.log('Firebase save failed, using localStorage only'); }
+    try{ await fbSaveStudent(ST); }catch(e){}
   },2000);
 }
 
 async function saveToServer(){
   if(!ST.id)return;
-  // 1. localStorage — always first
+  const data={
+    id:ST.id,name:ST.name,age:ST.age,lang:ST.lang,
+    activated:ST.activated,promo_code:ST.promoCode||null,
+    xp:ST.xp,streak:ST.streak,correct:ST.correct,done:ST.done,
+    prog:ST.prog,xp_mod:ST.xpMod,
+    diag_result:ST.diagResult,
+    updated_at:new Date().toISOString()
+  };
+  await sbSaveStudent(data);
   localStorage.setItem('mq_v4',JSON.stringify(ST));
-  // 2. Firebase — online save
-  try{ await fbSaveStudent(ST); }catch(e){ console.log('Firebase save failed'); }
-  // 3. Supabase — backup
-  try{
-    const data={id:ST.id,name:ST.name,age:ST.age,lang:ST.lang,
-      activated:ST.activated,promo_code:ST.promoCode||null,
-      xp:ST.xp,streak:ST.streak,correct:ST.correct,done:ST.done,
-      prog:ST.prog,xp_mod:ST.xpMod,
-      diag_result:ST.diagResult,updated_at:new Date().toISOString()};
-    await sbSaveStudent(data);
-  }catch(e){}
 }
 
 async function loadFromServer(id){
-  showLoading(lang==='kk'?'Деректер жүктелуде...':'Загрузка данных...');
-  
-  // 1. Firebase-тен жүктеу (бірінші приоритет)
+  // localStorage-дан бірінші жылдам жүктеу
   try{
-    const fbKey = 'student_' + id.replace('mq_','').replace(/[^a-z0-9_]/g,'_');
-    const fbData = await fbGet('/students/' + fbKey);
-    if(fbData && fbData.name){
-      hideLoading();
+    const cached = localStorage.getItem('mq_v4');
+    if(cached){ const d=JSON.parse(cached); if(d.id===id){ ST={...ST,...d}; lang=ST.lang||'kk'; return true; } }
+  }catch(e){}
+
+  // Онлайн болса — Firebase-тен жүктеу (3 сек timeout)
+  showLoading(lang==='kk'?'Деректер тексерілуде...':'Проверка данных...');
+  try{
+    const fbKey = 'student_' + (id||'').replace('mq_','').replace(/[^a-z0-9]/g,'_');
+    const result = await Promise.race([
+      fbGet('/students/' + fbKey),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),3000))
+    ]);
+    hideLoading();
+    if(result && result.name){
       ST={
-        id:id, name:fbData.name, age:fbData.age||6, lang:fbData.lang||'kk',
-        activated:fbData.activated||false, promoCode:fbData.promoCode||'',
-        xp:fbData.xp||0, streak:fbData.streak||0, lastDate:ST.lastDate,
-        done:fbData.done||0, correct:fbData.correct||0,
-        prog:fbData.prog||{alifbe:0,math:0,diag:0},
-        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0},
-        diagResult:fbData.diagResult||null
+        id:id, name:result.name, age:result.age||6, lang:result.lang||'kk',
+        activated:result.activated||false, promoCode:result.promoCode||'',
+        xp:result.xp||0, streak:result.streak||0, lastDate:ST.lastDate,
+        done:result.done||0, correct:result.correct||0,
+        prog:result.prog||{alifbe:0,math:0,diag:0,animasabaq:0},
+        xpMod:result.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0},
+        animaDone:result.animaDone||[],
+        diagResult:result.diagResult||null
       };
       lang=ST.lang;
       localStorage.setItem('mq_v4',JSON.stringify(ST));
       return true;
     }
-  }catch(e){ console.log('Firebase load failed, trying Supabase'); }
-  
-  // 2. Supabase-тен жүктеу (backup)
-  const rows=await sbGetStudent(id);
-  hideLoading();
-  if(rows&&rows.length>0){
-    const r=rows[0];
-    ST={
-      id:r.id,name:r.name,age:r.age,lang:r.lang||'kk',
-      activated:r.activated||false,promoCode:r.promo_code||'',
-      xp:r.xp||0,streak:r.streak||0,lastDate:ST.lastDate,done:r.done||0,correct:r.correct||0,
-      prog:r.prog||{alifbe:0,math:0,diag:0},
-      xpMod:r.xp_mod||{alifbe:0,math:0,diag:0},
-      diagResult:r.diag_result||null
-    };
-    lang=ST.lang;
-    localStorage.setItem('mq_v4',JSON.stringify(ST));
-    return true;
+  }catch(e){
+    hideLoading();
+    // Офлайн — localStorage-дан жүктеу
+    try{
+      const cached=localStorage.getItem('mq_v4');
+      if(cached){const d=JSON.parse(cached);ST={...ST,...d};lang=ST.lang||'kk';return true;}
+    }catch(e2){}
   }
   hideLoading();
   return false;
@@ -706,24 +722,33 @@ async function doLogin(){
   // ID жасау (аты + жасы негізінде тұрақты)
   const id='mq_'+name.toLowerCase().replace(/\s+/g,'_')+'_'+age+'_'+(lang);
 
-  showLoading(lang==='kk'?'Деректер тексерілуде...':'Проверка данных...');
-  const found=await loadFromServer(id);
-  hideLoading();
+  // localStorage-дан тексеру
+  try{
+    const cached=localStorage.getItem('mq_v4');
+    if(cached){
+      const d=JSON.parse(cached);
+      if(d.name&&d.name.toLowerCase()===name.toLowerCase()){
+        ST={...ST,...d}; lang=ST.lang||lang;
+        updateUI(); updateStreak(); saveState();
+        showToast(lang==='kk'?'Қош қайттыңыз! ✅':'С возвращением! ✅');
+        goHome();
+        // Фондық Firebase sync
+        saveToServer().catch(()=>{});
+        return;
+      }
+    }
+  }catch(e){}
 
-  if(found){
-    // Бұрын кірген — деректер серверден жүктелді
-    lang=ST.lang;updateUI();
-    updateStreak();saveToServer();
-    showToast(lang==='kk'?'Қош қайттыңыз! Деректер жүктелді ✅':'С возвращением! Данные загружены ✅');
-    goHome();
-  } else {
-    // Жаңа оқушы
-    ST.id=id;ST.name=name;ST.age=age;ST.lang=lang;
-    if(!ST.startDate)ST.startDate=Date.now();
-    updateStreak();
-    await saveToServer();
-    goHome();
-  }
+  // Жаңа оқушы
+  ST.id=id; ST.name=name; ST.age=age; ST.lang=lang;
+  ST.prog={alifbe:0,math:0,diag:0,animasabaq:0};
+  ST.xpMod={alifbe:0,math:0,diag:0,animasabaq:0};
+  ST.animaDone=[];
+  if(!ST.startDate)ST.startDate=Date.now();
+  updateStreak(); saveState();
+  goHome();
+  // Фондық Firebase sync
+  saveToServer().catch(()=>{});
 }
 
 // ═══ ПРОМОКОД ═══
@@ -849,6 +874,8 @@ function renderModCards(containerId){
 }
 
 function openMod(mod){
+  // Анимасабақ модулі — арнайы экран
+  if(mod==='animasabaq'){openAnimasabaq();return;}
   cMod=mod;
   const M=LESSONS[lang][mod];
   const m=getMods().find(x=>x.key===mod);
@@ -1009,9 +1036,10 @@ function initProfile(){
   document.getElementById('pr-lf').style.width=p+'%';
   document.getElementById('pr-xpi').textContent=`${ST.xp}/${nxt} XP`;
   const bars=document.getElementById('pr-bars');bars.innerHTML='';
+  const barColors=['var(--gm)','var(--gold)','#e91e63','#FF8C00'];
   getMods().forEach((m,i)=>{
-    const pct=ST.prog[m.key]||0;const colors=['var(--gm)','var(--gold)','#e91e63'];
-    bars.innerHTML+=`<div class="dbar"><div class="dbar-r"><span>${m.icon} ${m.title}</span><span>${pct}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${pct}%;background:${colors[i]||'var(--gm)'}"></div></div></div>`;
+    const pct=ST.prog[m.key]||0;
+    bars.innerHTML+=`<div class="dbar"><div class="dbar-r"><span>${m.icon} ${m.title}</span><span>${pct}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${pct}%;background:${barColors[i]||'var(--gm)'}"></div></div></div>`;
   });
   // Промокод блогы
   const form=document.getElementById('pr-promo-form');
@@ -1043,32 +1071,22 @@ async function resetAll(){
 }
 
 window.addEventListener('load',async()=>{
-  // Firebase байланысын тексеру
-  try{
-    const testResult = await fbGet('/ping');
-    console.log('Firebase connected ✅');
-  }catch(e){
-    console.log('Firebase offline — localStorage mode');
-  }
-  // Firebase байланысын тексеру
-  try{
-    const testResult = await fbGet('/ping');
-    console.log('Firebase connected');
-  }catch(e){
-    console.log('Firebase offline - localStorage mode');
-  }
-  // Admin route
+  // Admin route — БАРЛЫҚ УАҚЫТТА тексеру (кіргендер де)
   if(checkAdminRoute())return;
   // Firebase config жүктеу (Kaspi URL, WhatsApp)
   try{ await fbLoadCfg(); }catch(e){}
   // localStorage-дан жылдам жүктеу
   try{const s=localStorage.getItem('mq_v4');if(s){const d=JSON.parse(s);ST={...ST,...d};lang=d.lang||'kk';}}catch(e){}
   if(ST.name){
-    updateUI();updateStreak();
-    // Серверден синхрондау (фондық)
-    loadFromServer(ST.id).then(found=>{if(found){lang=ST.lang;updateUI();initHome();}});
-    goHome();
-  } else showScr('s-lang');
+    updateUI(); updateStreak();
+    goHome(); // Бірден басты бетке — localStorage-дан жылдам
+    // Фондық синхрондау (тоқтатпайды)
+    loadFromServer(ST.id).then(found=>{
+      if(found){ lang=ST.lang; updateUI(); initHome(); }
+    }).catch(()=>{});
+  } else {
+    showScr('s-lang');
+  }
 });
 
 // ADMIN JS — келесі жолда
@@ -1287,7 +1305,6 @@ async function fbCheckPromo(code){
 
 // ═══ ОҚУШЫ Firebase арқылы ═══
 async function fbSaveStudent(st){
-  if(!st.name) return;
   const key = 'student_' + (st.name||'').toLowerCase().replace(/[^a-z0-9]/g,'_') + '_' + (st.age||6);
   await fbSet('/students/' + key, {
     name: st.name,
@@ -1298,10 +1315,7 @@ async function fbSaveStudent(st){
     correct: st.correct||0,
     done: st.done||0,
     prog: st.prog||{},
-    xpMod: st.xpMod||{},
     activated: st.activated||false,
-    promoCode: st.promoCode||'',
-    diagResult: st.diagResult||null,
     updatedAt: Date.now()
   });
 }
@@ -1328,6 +1342,345 @@ async function fbLoadCfg(){
     localStorage.setItem('mq_cfg', JSON.stringify(cfg));
   }
 }
+
+
+// ══════════════════════════════════════════════
+// 🚀 АНИМАСАБАҚ — JavaScript
+// ══════════════════════════════════════════════
+
+// YouTube видеолары — Tasqyn Studio Күншіктер
+// youtubeId — видео URL-інен: youtube.com/watch?v=XXXXX
+const ANIMA_LESSONS = {
+  kk: [
+    {
+      day:1, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 1-бөлім', ep:'1-бөлім', xp:30,
+      qs:[
+        {em:'☀️',q:'Күншіктер қандай?',opts:[{e:'😡',l:'Ашулы'},{e:'😊',l:'Қуанышты'},{e:'😢',l:'Мұңды'},{e:'😴',l:'Ұйқышыл'}],ans:1},
+        {em:'🎨',q:'Күншіктер қандай түсті?',opts:[{e:'🔵',l:'Көк'},{e:'🔴',l:'Қызыл'},{e:'💛',l:'Сары'},{e:'💚',l:'Жасыл'}],ans:2},
+        {em:'🏡',q:'Олар қайда тұрады?',opts:[{e:'🌊',l:'Теңізде'},{e:'🌻',l:'Даладa'},{e:'🏙️',l:'Қалада'},{e:'❄️',l:'Мұзда'}],ans:1},
+        {em:'❤️',q:'Күншіктер бірін-бірі қалай сүйеді?',opts:[{e:'😤',l:'Ұрысады'},{e:'🤝',l:'Достасады'},{e:'🏃',l:'Қашады'},{e:'😴',l:'Елемейді'}],ans:1},
+      ]
+    },
+    {
+      day:2, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 2-бөлім', ep:'2-бөлім', xp:30,
+      qs:[
+        {em:'🌅',q:'Күншіктер қашан оянады?',opts:[{e:'🌙',l:'Кешке'},{e:'☀️',l:'Таңертең'},{e:'🌧️',l:'Жаңбырда'},{e:'❄️',l:'Қыста'}],ans:1},
+        {em:'🍽️',q:'Таңертең не жейді?',opts:[{e:'🍕',l:'Пицца'},{e:'🥣',l:'Қаша'},{e:'🍔',l:'Бургер'},{e:'🍦',l:'Балмұздақ'}],ans:1},
+        {em:'🎒',q:'Қайда барады?',opts:[{e:'🏖️',l:'Пляжқа'},{e:'🏫',l:'Мектепке'},{e:'🎪',l:'Циркке'},{e:'🏥',l:'Ауруханаға'}],ans:1},
+        {em:'👫',q:'Олар кіммен барады?',opts:[{e:'🐺',l:'Қасқырмен'},{e:'👫',l:'Достарымен'},{e:'🤖',l:'Роботпен'},{e:'👻',l:'Елеспен'}],ans:1},
+      ]
+    },
+    {
+      day:3, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 3-бөлім', ep:'3-бөлім', xp:35,
+      qs:[
+        {em:'🌿',q:'Табиғатта не кездеседі?',opts:[{e:'💻',l:'Компьютер'},{e:'🌸',l:'Гүл'},{e:'📱',l:'Телефон'},{e:'🚗',l:'Машина'}],ans:1},
+        {em:'🦋',q:'Күншіктер не көреді?',opts:[{e:'✈️',l:'Ұшақ'},{e:'🦋',l:'Көбелек'},{e:'🚂',l:'Пойыз'},{e:'⛵',l:'Кеме'}],ans:1},
+        {em:'🌳',q:'Ағаш не береді?',opts:[{e:'🔥',l:'От'},{e:'❄️',l:'Мұз'},{e:'🍎',l:'Жеміс'},{e:'💧',l:'Су'}],ans:2},
+        {em:'🌍',q:'Табиғатты қалай сақтаймыз?',opts:[{e:'🗑️',l:'Қоқыс тастау'},{e:'🌱',l:'Ағаш отырғызу'},{e:'💨',l:'Ластау'},{e:'🔥',l:'Өртеу'}],ans:1},
+      ]
+    },
+    {
+      day:4, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 4-бөлім', ep:'4-бөлім', xp:35,
+      qs:[
+        {em:'🎵',q:'Күншіктер не айтады?',opts:[{e:'😤',l:'Айқайлайды'},{e:'🎵',l:'Ән айтады'},{e:'😴',l:'Үндемейді'},{e:'😭',l:'Жылайды'}],ans:1},
+        {em:'🎸',q:'Қандай аспап ойнайды?',opts:[{e:'🥁',l:'Барабан'},{e:'🎸',l:'Домбыра'},{e:'🎺',l:'Труба'},{e:'🎻',l:'Скрипка'}],ans:1},
+        {em:'👏',q:'Ән тыңдағанда не сезінеді?',opts:[{e:'😡',l:'Ашу'},{e:'😢',l:'Қайғы'},{e:'😊',l:'Қуаныш'},{e:'😴',l:'Ұйқы'}],ans:2},
+        {em:'🎤',q:'Ән айту пайдалы ма?',opts:[{e:'❌',l:'Жоқ'},{e:'🤔',l:'Білмеймін'},{e:'✅',l:'Иә, пайдалы!'},{e:'😐',l:'Маңызды емес'}],ans:2},
+      ]
+    },
+    {
+      day:5, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 5-бөлім', ep:'5-бөлім', xp:40,
+      qs:[
+        {em:'🤝',q:'Дос дегеніміз кім?',opts:[{e:'😠',l:'Ұрысатын'},{e:'🤝',l:'Көмектесетін'},{e:'🏃',l:'Қашатын'},{e:'😴',l:'Елемейтін'}],ans:1},
+        {em:'💝',q:'Досыңа қалай қарайсың?',opts:[{e:'😤',l:'Ренжітемін'},{e:'❤️',l:'Жақсы көремін'},{e:'🏃',l:'Қашамын'},{e:'😴',l:'Елемеймін'}],ans:1},
+        {em:'🎁',q:'Досыңның туған күнінде не жасайсың?',opts:[{e:'😴',l:'Ұйықтаймын'},{e:'🎁',l:'Сыйлық беремін'},{e:'😡',l:'Ашуланамын'},{e:'🏃',l:'Кетемін'}],ans:1},
+        {em:'😢',q:'Досың жыласа не жасайсың?',opts:[{e:'😂',l:'Күлемін'},{e:'🏃',l:'Кетемін'},{e:'🤗',l:'Жұбатамын'},{e:'😴',l:'Елемеймін'}],ans:2},
+      ]
+    },
+    {
+      day:6, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 6-бөлім', ep:'6-бөлім', xp:35,
+      qs:[
+        {em:'🏫',q:'Мектепте не үйренеміз?',opts:[{e:'😴',l:'Ұйықтауды'},{e:'📚',l:'Оқуды'},{e:'🎮',l:'Ойнауды'},{e:'🍔',l:'Тамақ жеуді'}],ans:1},
+        {em:'✏️',q:'Сабақта не керек?',opts:[{e:'🎮',l:'Ойыншық'},{e:'✏️',l:'Қарандаш'},{e:'🍕',l:'Тамақ'},{e:'📱',l:'Телефон'}],ans:1},
+        {em:'👩‍🏫',q:'Мұғалім кім?',opts:[{e:'👨‍⚕️',l:'Дәрігер'},{e:'👮',l:'Полиция'},{e:'👩‍🏫',l:'Сабақ береді'},{e:'👨‍🍳',l:'Аспазшы'}],ans:2},
+        {em:'🎒',q:'Мектепке не алып барамыз?',opts:[{e:'🎮',l:'Ойыншық'},{e:'🎒',l:'Сөмке'},{e:'🛏️',l:'Жастық'},{e:'🍕',l:'Пицца'}],ans:1},
+      ]
+    },
+    {
+      day:7, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — 7-бөлім', ep:'7-бөлім', xp:40,
+      qs:[
+        {em:'🧠',q:'Ойын ойнасақ не болады?',opts:[{e:'😴',l:'Ұйқы келеді'},{e:'🧠',l:'Ақыл ашылады'},{e:'😡',l:'Ашуланамыз'},{e:'🏃',l:'Шаршаймыз'}],ans:1},
+        {em:'🎯',q:'Жаттығу не береді?',opts:[{e:'❌',l:'Ештеңе'},{e:'🎯',l:'Шеберлік'},{e:'😴',l:'Ұйқы'},{e:'😢',l:'Қайғы'}],ans:1},
+        {em:'💪',q:'Күн сайын жаттықсақ не болады?',opts:[{e:'😴',l:'Шаршаймыз'},{e:'💪',l:'Күшті боламыз'},{e:'😡',l:'Ашуланамыз'},{e:'😭',l:'Жылаймыз'}],ans:1},
+        {em:'🌟',q:'Күншіктерден не үйрендік?',opts:[{e:'😤',l:'Ұрысуды'},{e:'🌟',l:'Достықты'},{e:'🏃',l:'Қашуды'},{e:'😴',l:'Ұйықтауды'}],ans:1},
+      ]
+    },
+  ],
+  ru: [
+    {
+      day:1, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 1', ep:'Серия 1', xp:30,
+      qs:[
+        {em:'☀️',q:'Какие Күншіктер?',opts:[{e:'😡',l:'Злые'},{e:'😊',l:'Радостные'},{e:'😢',l:'Грустные'},{e:'😴',l:'Сонные'}],ans:1},
+        {em:'🎨',q:'Какого цвета Күншіктер?',opts:[{e:'🔵',l:'Синие'},{e:'🔴',l:'Красные'},{e:'💛',l:'Жёлтые'},{e:'💚',l:'Зелёные'}],ans:2},
+        {em:'🏡',q:'Где они живут?',opts:[{e:'🌊',l:'В море'},{e:'🌻',l:'В степи'},{e:'🏙️',l:'В городе'},{e:'❄️',l:'Во льду'}],ans:1},
+        {em:'❤️',q:'Как они относятся друг к другу?',opts:[{e:'😤',l:'Ругаются'},{e:'🤝',l:'Дружат'},{e:'🏃',l:'Убегают'},{e:'😴',l:'Игнорируют'}],ans:1},
+      ]
+    },
+    {
+      day:2, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 2', ep:'Серия 2', xp:30,
+      qs:[
+        {em:'🌅',q:'Когда просыпаются Күншіктер?',opts:[{e:'🌙',l:'Вечером'},{e:'☀️',l:'Утром'},{e:'🌧️',l:'В дождь'},{e:'❄️',l:'Зимой'}],ans:1},
+        {em:'🍽️',q:'Что едят утром?',opts:[{e:'🍕',l:'Пицца'},{e:'🥣',l:'Кашу'},{e:'🍔',l:'Бургер'},{e:'🍦',l:'Мороженое'}],ans:1},
+        {em:'🎒',q:'Куда они идут?',opts:[{e:'🏖️',l:'На пляж'},{e:'🏫',l:'В школу'},{e:'🎪',l:'В цирк'},{e:'🏥',l:'В больницу'}],ans:1},
+        {em:'👫',q:'С кем они идут?',opts:[{e:'🐺',l:'С волком'},{e:'👫',l:'С друзьями'},{e:'🤖',l:'С роботом'},{e:'👻',l:'С призраком'}],ans:1},
+      ]
+    },
+    {
+      day:3, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 3', ep:'Серия 3', xp:35,
+      qs:[
+        {em:'🌿',q:'Что есть в природе?',opts:[{e:'💻',l:'Компьютер'},{e:'🌸',l:'Цветы'},{e:'📱',l:'Телефон'},{e:'🚗',l:'Машина'}],ans:1},
+        {em:'🦋',q:'Кого видят Күншіктер?',opts:[{e:'✈️',l:'Самолёт'},{e:'🦋',l:'Бабочку'},{e:'🚂',l:'Поезд'},{e:'⛵',l:'Лодку'}],ans:1},
+        {em:'🌳',q:'Что даёт дерево?',opts:[{e:'🔥',l:'Огонь'},{e:'❄️',l:'Лёд'},{e:'🍎',l:'Фрукты'},{e:'💧',l:'Воду'}],ans:2},
+        {em:'🌍',q:'Как беречь природу?',opts:[{e:'🗑️',l:'Мусорить'},{e:'🌱',l:'Сажать деревья'},{e:'💨',l:'Загрязнять'},{e:'🔥',l:'Жечь'}],ans:1},
+      ]
+    },
+    {
+      day:4, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 4', ep:'Серия 4', xp:35,
+      qs:[
+        {em:'🎵',q:'Что делают Күншіктер?',opts:[{e:'😤',l:'Кричат'},{e:'🎵',l:'Поют'},{e:'😴',l:'Молчат'},{e:'😭',l:'Плачут'}],ans:1},
+        {em:'🎸',q:'На чём играют?',opts:[{e:'🥁',l:'Барабан'},{e:'🎸',l:'Домбыра'},{e:'🎺',l:'Труба'},{e:'🎻',l:'Скрипка'}],ans:1},
+        {em:'👏',q:'Что чувствуем слушая песню?',opts:[{e:'😡',l:'Злость'},{e:'😢',l:'Грусть'},{e:'😊',l:'Радость'},{e:'😴',l:'Сон'}],ans:2},
+        {em:'🎤',q:'Петь — полезно?',opts:[{e:'❌',l:'Нет'},{e:'🤔',l:'Не знаю'},{e:'✅',l:'Да, полезно!'},{e:'😐',l:'Неважно'}],ans:2},
+      ]
+    },
+    {
+      day:5, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 5', ep:'Серия 5', xp:40,
+      qs:[
+        {em:'🤝',q:'Кто такой друг?',opts:[{e:'😠',l:'Кто ругается'},{e:'🤝',l:'Кто помогает'},{e:'🏃',l:'Кто убегает'},{e:'😴',l:'Кто игнорирует'}],ans:1},
+        {em:'💝',q:'Как относиться к другу?',opts:[{e:'😤',l:'Обижать'},{e:'❤️',l:'Любить'},{e:'🏃',l:'Убегать'},{e:'😴',l:'Игнорировать'}],ans:1},
+        {em:'🎁',q:'В день рождения друга что делаешь?',opts:[{e:'😴',l:'Сплю'},{e:'🎁',l:'Дарю подарок'},{e:'😡',l:'Злюсь'},{e:'🏃',l:'Ухожу'}],ans:1},
+        {em:'😢',q:'Если друг плачет что делаешь?',opts:[{e:'😂',l:'Смеюсь'},{e:'🏃',l:'Ухожу'},{e:'🤗',l:'Утешаю'},{e:'😴',l:'Игнорирую'}],ans:2},
+      ]
+    },
+    {
+      day:6, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 6', ep:'Серия 6', xp:35,
+      qs:[
+        {em:'🏫',q:'Чему учимся в школе?',opts:[{e:'😴',l:'Спать'},{e:'📚',l:'Читать'},{e:'🎮',l:'Играть'},{e:'🍔',l:'Есть'}],ans:1},
+        {em:'✏️',q:'Что нужно на уроке?',opts:[{e:'🎮',l:'Игрушка'},{e:'✏️',l:'Карандаш'},{e:'🍕',l:'Еда'},{e:'📱',l:'Телефон'}],ans:1},
+        {em:'👩‍🏫',q:'Учитель — кто это?',opts:[{e:'👨‍⚕️',l:'Врач'},{e:'👮',l:'Полиция'},{e:'👩‍🏫',l:'Учит нас'},{e:'👨‍🍳',l:'Повар'}],ans:2},
+        {em:'🎒',q:'Что берём в школу?',opts:[{e:'🎮',l:'Игрушку'},{e:'🎒',l:'Рюкзак'},{e:'🛏️',l:'Подушку'},{e:'🍕',l:'Пиццу'}],ans:1},
+      ]
+    },
+    {
+      day:7, youtubeId:'dYALq5iCvxw',
+      title:'Күншіктер — серия 7', ep:'Серия 7', xp:40,
+      qs:[
+        {em:'🧠',q:'Что даёт игра?',opts:[{e:'😴',l:'Сон'},{e:'🧠',l:'Ум развивает'},{e:'😡',l:'Злость'},{e:'🏃',l:'Усталость'}],ans:1},
+        {em:'🎯',q:'Что даёт тренировка?',opts:[{e:'❌',l:'Ничего'},{e:'🎯',l:'Мастерство'},{e:'😴',l:'Сон'},{e:'😢',l:'Грусть'}],ans:1},
+        {em:'💪',q:'Если заниматься каждый день?',opts:[{e:'😴',l:'Устанем'},{e:'💪',l:'Станем сильными'},{e:'😡',l:'Разозлимся'},{e:'😭',l:'Заплачем'}],ans:1},
+        {em:'🌟',q:'Что мы узнали от Күншіктер?',opts:[{e:'😤',l:'Ссориться'},{e:'🌟',l:'Дружить'},{e:'🏃',l:'Убегать'},{e:'😴',l:'Спать'}],ans:1},
+      ]
+    },
+  ]
+};
+
+let animaCurLesson = null;
+let animaQAnswered = [];
+let animaEarnedXP = 0;
+
+function openAnimasabaq(){
+  // Промокод тексеру
+  if(!ST.activated){showScr('s-promo');return;}
+  renderAnimaMain();
+  showScr('s-anima');
+}
+
+function renderAnimaMain(){
+  const t = T[lang];
+  document.getElementById('an-streak').textContent = ST.streak;
+  document.getElementById('an-streak-l').textContent = lang==='kk'?'күн':'дней';
+  document.getElementById('an-title').textContent = lang==='kk'?'🚀 Анимасабақ':'🚀 АнимаУрок';
+  document.getElementById('an-sub').textContent = lang==='kk'?'Видео көр · Сұрақтарға жауап бер · XP жина':'Смотри видео · Отвечай · Зарабатывай XP';
+  document.getElementById('an-today-t').textContent = lang==='kk'?'📅 Бүгінгі сабақ':'📅 Сегодняшний урок';
+  document.getElementById('an-all-t').textContent = lang==='kk'?'📚 Барлық сабақтар':'📚 Все уроки';
+  document.getElementById('an-nav-h').textContent = t.navH;
+  document.getElementById('an-nav-l').textContent = t.navL;
+  document.getElementById('an-nav-p').textContent = t.navP;
+
+  const lessons = ANIMA_LESSONS[lang] || ANIMA_LESSONS.kk;
+  const done = ST.animaDone || [];
+  const todayIdx = done.length % lessons.length;
+  const todayLesson = lessons[todayIdx];
+
+  document.getElementById('an-today-card').innerHTML = renderAnimaCard(todayLesson, true, done);
+  document.getElementById('an-all-cards').innerHTML = lessons.map(l => renderAnimaCard(l, false, done)).join('');
+}
+
+function renderAnimaCard(l, isToday, done){
+  const isDone = done.includes(l.day);
+  const thumbUrl = `https://img.youtube.com/vi/${l.youtubeId}/hqdefault.jpg`;
+  return `
+  <div onclick="openAnimaLesson(${l.day})"
+    style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.09);margin-bottom:10px;cursor:pointer;border:2.5px solid ${isToday?'var(--gold)':isDone?'var(--gm)':'transparent'};transition:all .15s;">
+    <div style="position:relative;width:100%;padding-top:56.25%;background:#111;overflow:hidden;">
+      <img src="${thumbUrl}" alt="${l.title}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#085041'">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);">
+        <div style="width:50px;height:50px;background:${isToday?'var(--gold)':'rgba(255,255,255,.9)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 14px rgba(0,0,0,.25);">${isDone?'✅':'▶️'}</div>
+      </div>
+      ${isToday?'<div style="position:absolute;top:8px;left:8px;background:var(--gold);color:#3d2000;font-size:10px;font-weight:800;padding:3px 9px;border-radius:7px;">📅 '+(lang==='kk'?'БҮГІН':'СЕГОДНЯ')+'</div>':''}
+      ${isDone?'<div style="position:absolute;top:8px;right:8px;background:var(--gm);color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:7px;">✅ '+(lang==='kk'?'Дайын':'Готово')+'</div>':''}
+    </div>
+    <div style="padding:10px 13px 12px;">
+      <span style="background:${isToday?'var(--gold)':'var(--gl)'};color:${isToday?'#3d2000':'var(--g)'};font-size:10px;font-weight:800;padding:2px 9px;border-radius:7px;">${l.ep}</span>
+      <div style="font-size:14px;font-weight:800;margin-top:5px;margin-bottom:4px;">${l.title}</div>
+      <div style="font-size:11px;color:var(--gr);display:flex;gap:10px;">
+        <span>❓ ${l.qs.length} ${lang==='kk'?'сұрақ':'вопроса'}</span>
+        <span>⭐ +${l.xp} XP</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openAnimaLesson(dayNum){
+  const lessons = ANIMA_LESSONS[lang] || ANIMA_LESSONS.kk;
+  animaCurLesson = lessons.find(l => l.day === dayNum);
+  if(!animaCurLesson) return;
+  animaQAnswered = new Array(animaCurLesson.qs.length).fill(null);
+  animaEarnedXP = 0;
+
+  document.getElementById('aln-title').textContent = animaCurLesson.title;
+  document.getElementById('aln-day').textContent = animaCurLesson.day + (lang==='kk'?'-күн':'-й день');
+  document.getElementById('aln-ep').textContent = animaCurLesson.ep;
+  document.getElementById('aln-vtitle').textContent = animaCurLesson.title;
+  document.getElementById('aln-vdesc').textContent = lang==='kk'?'Видеоны көр, содан кейін сұрақтарға жауап бер!':'Посмотри видео, затем ответь на вопросы!';
+  document.getElementById('aln-q-title').textContent = lang==='kk'?'Сұрақтарға жауап бер!':'Ответь на вопросы!';
+  document.getElementById('aln-finish-t').textContent = lang==='kk'?'Аяқтау →':'Завершить →';
+  document.getElementById('aln-prog-lbl').textContent = `0/${animaCurLesson.qs.length}`;
+  document.getElementById('aln-prog-fill').style.width = '0%';
+  document.getElementById('aln-xp-earned').textContent = '+0 XP';
+  document.getElementById('aln-finish-btn').style.display = 'none';
+
+  // YouTube embed
+  const vWrap = document.getElementById('aln-video-wrap');
+  vWrap.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${animaCurLesson.youtubeId}?rel=0&modestbranding=1&playsinline=1" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+
+  // Сұрақтар
+  const qsCont = document.getElementById('aln-qs');
+  qsCont.innerHTML = animaCurLesson.qs.map((q, qi) => `
+    <div id="aqcard-${qi}" style="background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.07);border:2.5px solid transparent;transition:all .2s;">
+      <div style="font-size:38px;text-align:center;margin-bottom:7px;">${q.em}</div>
+      <div style="font-size:15px;font-weight:800;text-align:center;margin-bottom:12px;line-height:1.35;">${q.q}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${q.opts.map((o,oi)=>`
+          <button id="aqopt-${qi}-${oi}" onclick="answerAnima(${qi},${oi})"
+            style="background:#f5f5f5;border:2.5px solid #e0e0e0;border-radius:13px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:60px;justify-content:center;transition:all .15s;font-family:inherit;">
+            <span style="font-size:26px;">${o.e}</span>
+            <span style="font-size:11px;font-weight:700;color:#555;">${o.l}</span>
+          </button>`).join('')}
+      </div>
+      <div id="aqres-${qi}" style="display:none;margin-top:9px;padding:9px 12px;border-radius:11px;font-size:13px;font-weight:700;text-align:center;"></div>
+    </div>`).join('');
+
+  showScr('s-anima-lesson');
+  document.querySelector('#s-anima-lesson > div:last-child').scrollTop = 0;
+}
+
+function answerAnima(qi, oi){
+  if(animaQAnswered[qi] !== null) return;
+  const q = animaCurLesson.qs[qi];
+  animaQAnswered[qi] = oi;
+  const isOk = oi === q.ans;
+
+  const card = document.getElementById('aqcard-' + qi);
+  const res = document.getElementById('aqres-' + qi);
+
+  for(let i = 0; i < q.opts.length; i++){
+    const btn = document.getElementById(`aqopt-${qi}-${i}`);
+    btn.style.pointerEvents = 'none';
+    if(i === q.ans) btn.style.background = '#e1f5ee', btn.style.borderColor = 'var(--gm)';
+  }
+  const chosen = document.getElementById(`aqopt-${qi}-${oi}`);
+
+  if(isOk){
+    chosen.style.background = '#e1f5ee'; chosen.style.borderColor = 'var(--gm)';
+    card.style.borderColor = 'var(--gm)'; card.style.background = '#f8fffe';
+    res.style.display = 'block'; res.style.background = 'var(--gm)'; res.style.color = '#fff';
+    res.textContent = (lang==='kk'?'🎉 Дұрыс! +10 XP':'🎉 Правильно! +10 XP');
+    animaEarnedXP += 10; ST.correct++;
+  } else {
+    chosen.style.background = '#fdecea'; chosen.style.borderColor = 'var(--red)';
+    card.style.borderColor = 'var(--red)'; card.style.background = '#fffafa';
+    res.style.display = 'block'; res.style.background = 'var(--red)'; res.style.color = '#fff';
+    res.textContent = (lang==='kk'?'❌ Дұрыс жауап: ':'❌ Правильный ответ: ') + q.opts[q.ans].l;
+    animaEarnedXP += 3;
+  }
+
+  ST.xp += isOk ? 10 : 3; ST.done++;
+  const answered = animaQAnswered.filter(x => x !== null).length;
+  const total = animaCurLesson.qs.length;
+  document.getElementById('aln-prog-lbl').textContent = `${answered}/${total}`;
+  document.getElementById('aln-prog-fill').style.width = (answered/total*100) + '%';
+  document.getElementById('aln-xp-earned').textContent = `+${animaEarnedXP} XP`;
+
+  if(answered === total){
+    document.getElementById('aln-finish-btn').style.display = 'block';
+    setTimeout(()=>document.getElementById('aln-finish-btn').scrollIntoView({behavior:'smooth',block:'center'}), 400);
+  }
+  updateStreak(); scheduleSave();
+}
+
+function finishAnima(){
+  const l = animaCurLesson;
+  const correct = animaQAnswered.filter((a,i) => a === l.qs[i].ans).length;
+  const total = l.qs.length;
+  const pct = Math.round(correct/total*100);
+
+  ST.xp += l.xp;
+  if(!ST.animaDone) ST.animaDone = [];
+  if(!ST.animaDone.includes(l.day)) ST.animaDone.push(l.day);
+  ST.xpMod.animasabaq = (ST.xpMod.animasabaq||0) + l.xp;
+  ST.prog.animasabaq = Math.min(100, Math.round((ST.xpMod.animasabaq / 250) * 100));
+  updateStreak(); scheduleSave();
+
+  let icon,title,stars;
+  if(pct===100){icon='🏆';title=lang==='kk'?'Мінсіз!':'Отлично!';stars='⭐⭐⭐';}
+  else if(pct>=75){icon='🌟';title=lang==='kk'?'Жарайсың!':'Молодец!';stars='⭐⭐⭐';}
+  else if(pct>=50){icon='😊';title=lang==='kk'?'Жақсы!':'Хорошо!';stars='⭐⭐';}
+  else{icon='💪';title=lang==='kk'?'Тырыс!':'Старайся!';stars='⭐';}
+
+  document.getElementById('ar-icon').textContent = icon;
+  document.getElementById('ar-title').textContent = title;
+  document.getElementById('ar-score').textContent = `${correct}/${total}`;
+  document.getElementById('ar-stars').textContent = stars;
+  document.getElementById('ar-sub').textContent = `+${l.xp} XP · ${lang==='kk'?'Жалпы':'Итого'}: ${ST.xp} XP · 🔥 ${ST.streak} ${lang==='kk'?'күн':'дней'}`;
+  document.getElementById('ar-home-btn').textContent = lang==='kk'?'🏠 Басты бетке →':'🏠 На главную →';
+  document.getElementById('ar-replay-btn').textContent = lang==='kk'?'↺ Қайталау':'↺ Повторить';
+
+  showScr('s-anima-result');
+}
+
+function backAnima(){
+  renderAnimaMain();
+  showScr('s-anima');
+}
+
+function replayAnima(){
+  if(animaCurLesson) openAnimaLesson(animaCurLesson.day);
+}
+
 </script>
 
 <!-- ════ ADMIN LOGIN ════ -->
@@ -1434,6 +1787,88 @@ async function fbLoadCfg(){
   <div style="height:20px;"></div>
 </div>
 </div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- 🚀 АНИМАСАБАҚ ЭКРАНДАРЫ               -->
+<!-- ══════════════════════════════════════ -->
+
+<!-- АНИМАСАБАҚ БАСТЫ -->
+<div id="s-anima" class="scr">
+
+<div class="anima-hero">
+  <div class="anima-sun">☀️</div>
+  <div class="anima-title" id="an-title">🚀 Анимасабақ</div>
+  <div class="anima-sub" id="an-sub">Видео көр · Сұрақтарға жауап бер · XP жина</div>
+  <div class="anima-streak">🔥 <span id="an-streak">0</span> <span id="an-streak-l">күн</span></div>
+</div>
+<div style="padding:0 14px 4px;margin-top:12px;">
+  <div style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;" id="an-today-t">📅 Бүгінгі сабақ</div>
+  <div id="an-today-card"></div>
+  <div style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:14px;" id="an-all-t">📚 Барлық сабақтар</div>
+  <div id="an-all-cards"></div>
+  <div style="height:20px;"></div>
+</div>
+<div class="bnav">
+  <div class="bn" onclick="goTab('home')"><div class="bn-ic">🏠</div><span id="an-nav-h">Басты</span></div>
+  <div class="bn" onclick="goTab('lessons')"><div class="bn-ic">📚</div><span id="an-nav-l">Сабақтар</span></div>
+  <div class="bn" onclick="goTab('profile')"><div class="bn-ic">👤</div><span id="an-nav-p">Профиль</span></div>
+</div>
+</div>
+
+<!-- АНИМАСАБАҚ САБАҚ ЭКРАНЫ -->
+<div id="s-anima-lesson" class="scr">
+<div style="background:var(--g);padding:12px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;">
+  <span style="font-size:20px;color:#9fe1cb;cursor:pointer;" onclick="backAnima()">←</span>
+  <span style="font-size:14px;font-weight:800;color:#fff;flex:1;" id="aln-title">-</span>
+  <span style="background:var(--gold);color:#3d2000;font-size:11px;font-weight:800;padding:4px 11px;border-radius:12px;" id="aln-day">1-күн</span>
+</div>
+<!-- Прогресс -->
+<div style="background:#fff;padding:10px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd);">
+  <span style="font-size:12px;font-weight:700;color:var(--g);white-space:nowrap;" id="aln-prog-lbl">0/4</span>
+  <div style="flex:1;background:#f0f0f0;border-radius:6px;height:7px;overflow:hidden;">
+    <div id="aln-prog-fill" style="height:100%;background:linear-gradient(90deg,var(--gm),var(--gold));border-radius:6px;transition:width .4s;width:0%;"></div>
+  </div>
+  <span style="font-size:12px;font-weight:800;color:var(--gold);white-space:nowrap;" id="aln-xp-earned">+0 XP</span>
+</div>
+<div style="flex:1;overflow-y:auto;background:var(--bg);">
+  <!-- Видео блогы -->
+  <div style="padding:14px 14px 0;">
+    <div style="background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);margin-bottom:12px;">
+      <div style="position:relative;width:100%;padding-top:56.25%;background:#000;" id="aln-video-wrap"></div>
+      <div style="padding:10px 13px 13px;">
+        <span style="background:var(--gold);color:#3d2000;font-size:10px;font-weight:800;padding:2px 9px;border-radius:7px;" id="aln-ep">-</span>
+        <div style="font-size:14px;font-weight:800;margin-top:6px;" id="aln-vtitle">-</div>
+        <div style="font-size:11px;color:var(--gr);margin-top:3px;" id="aln-vdesc">Видеоны көр, содан кейін сұрақтарға жауап бер!</div>
+      </div>
+    </div>
+  </div>
+  <!-- Сұрақтар -->
+  <div style="padding:0 14px 14px;">
+    <div style="font-size:13px;font-weight:800;color:var(--g);margin-bottom:10px;">🤔 <span id="aln-q-title">Сұрақтарға жауап бер!</span></div>
+    <div id="aln-qs"></div>
+    <button id="aln-finish-btn" onclick="finishAnima()"
+      style="display:none;background:var(--g);color:#fff;border:none;border-radius:var(--r);padding:15px;font-size:15px;font-weight:800;cursor:pointer;width:100%;margin-top:6px;font-family:inherit;">
+      ✅ <span id="aln-finish-t">Аяқтау →</span>
+    </button>
+    <div style="height:20px;"></div>
+  </div>
+</div>
+</div>
+
+<!-- АНИМАСАБАҚ НӘТИЖЕ -->
+<div id="s-anima-result" class="scr">
+<div style="background:linear-gradient(135deg,var(--g),var(--gm));flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;">
+  <div style="font-size:88px;animation:bounce2 .6s ease;margin-bottom:12px;" id="ar-icon">🏆</div>
+  <div style="font-size:25px;font-weight:900;color:#fff;margin-bottom:6px;" id="ar-title">Жарайсың!</div>
+  <div style="font-size:46px;font-weight:900;color:var(--gold);margin-bottom:6px;" id="ar-score">4/4</div>
+  <div style="font-size:34px;letter-spacing:4px;margin-bottom:16px;" id="ar-stars">⭐⭐⭐</div>
+  <div style="font-size:13px;color:#9fe1cb;margin-bottom:28px;line-height:1.6;" id="ar-sub">Керемет!</div>
+  <button onclick="backAnima()" style="background:var(--gold);color:#3d2000;border:none;border-radius:var(--r);padding:15px 32px;font-size:15px;font-weight:800;cursor:pointer;width:100%;max-width:290px;margin-bottom:10px;font-family:inherit;" id="ar-home-btn">🏠 Басты бетке →</button>
+  <button onclick="replayAnima()" style="background:transparent;border:2px solid rgba(255,255,255,.35);color:#fff;border-radius:var(--r);padding:15px;font-size:14px;font-weight:700;cursor:pointer;width:100%;max-width:290px;font-family:inherit;" id="ar-replay-btn">↺ Қайталау</button>
+</div>
+</div>
+
 
 </body>
 </html>
