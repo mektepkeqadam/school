@@ -458,9 +458,9 @@ const T={
     catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология'},
     mods:{
       alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
-      math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:false,color:'#fff8e1'},
-      diag:{icon:'🩺',title:'Диагностика',desc:'AI психологиялық анализ',free:false,color:'#fce4ec'},
-      animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:false,color:'#FFF3E0'},
+      math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:true,color:'#fff8e1'},
+      diag:{icon:'🩺',title:'Диагностика',desc:'AI психологиялық анализ',free:true,color:'#fce4ec'},
+      animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
@@ -488,9 +488,9 @@ const T={
     catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.'},
     mods:{
       alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
-      math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:false,color:'#fff8e1'},
-      diag:{icon:'🩺',title:'Диагностика',desc:'AI психологический анализ',free:false,color:'#fce4ec'},
-      animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:false,color:'#FFF3E0'},
+      math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:true,color:'#fff8e1'},
+      diag:{icon:'🩺',title:'Диагностика',desc:'AI психологический анализ',free:true,color:'#fce4ec'},
+      animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
@@ -852,7 +852,7 @@ function goKaspi(){const c=JSON.parse(localStorage.getItem('mq_cfg')||'{}');wind
 function goWA(){const c=JSON.parse(localStorage.getItem('mq_cfg')||'{}');const n=(c.waNumber||'77000000000').replace(/\D/g,'');window.open(`https://wa.me/${n}`,'_blank');}
 
 // ═══ САБАҚ ЛОГИКАСЫ ═══
-function canAccessLesson(idx){return ST.activated||idx===0;}
+function canAccessLesson(idx){return true;} // Барлығы тегін ашық
 
 function getMods(){
   return Object.entries(T[lang].mods).map(([k,v])=>({key:k,...v}));
@@ -863,11 +863,17 @@ function renderModCards(containerId){
   cont.innerHTML='';
   getMods().forEach(m=>{
     const pct=ST.prog[m.key]||0;
-    const maxXP=LESSONS[lang][m.key].maxXP;
-    const lockTag=!ST.activated&&!m.free?'<span class="tag" style="background:#fce4ec;color:#c2185b">🔒</span>':'';
-    const freeTag=m.free?`<span class="tag tf">${lang==='kk'?'Тегін':'Бесплатно'}</span>`:'';
+    // animasabaq — LESSONS-та жоқ, ANIMA_LESSONS-тан алу
+    const maxXP = m.key==='animasabaq' ? 250 : (LESSONS[lang][m.key]?LESSONS[lang][m.key].maxXP:100);
+    // Барлығы тегін (free:true) немесе activated болса 🔒 жоқ
+    const locked = !ST.activated && !m.free;
+    const lockTag = locked ? '<span class="tag" style="background:#fce4ec;color:#c2185b">🔒</span>' : '';
+    const freeTag = m.free ? `<span class="tag tf">${lang==='kk'?'Тегін':'Бесплатно'}</span>` : '';
+    // Анимасабақ — арнайы NEW белгісі
+    const newTag = m.key==='animasabaq' ? `<span class="tag" style="background:#FF8C00;color:#fff">🆕 ЖАҢА</span>` : '';
     const div=document.createElement('div');div.className='mod';
-    div.innerHTML=`<div class="mod-ic" style="background:${m.color}">${m.icon}</div><div class="mod-info"><div class="mod-nm">${m.title} ${freeTag}${lockTag}</div><div class="mod-ds">${m.desc}</div><div class="mod-pb"><div class="mod-pf" style="width:${pct}%"></div></div><div class="mod-xp">${ST.xpMod[m.key]||0}/${maxXP} XP</div></div>›`;
+    if(locked) div.style.opacity='0.75';
+    div.innerHTML=`<div class="mod-ic" style="background:${m.color}">${m.icon}</div><div class="mod-info"><div class="mod-nm">${m.title} ${freeTag}${newTag}${lockTag}</div><div class="mod-ds">${m.desc}</div><div class="mod-pb"><div class="mod-pf" style="width:${pct}%"></div></div><div class="mod-xp">${ST.xpMod[m.key]||0}/${maxXP} XP</div></div>›`;
     div.onclick=()=>openMod(m.key);
     cont.appendChild(div);
   });
@@ -1014,12 +1020,12 @@ function initHome(){
   document.getElementById('st-t').textContent=t.stTitle.replace('%s',ST.streak);
   // Баннер
   const banner=document.getElementById('promo-banner');
-  if(banner)banner.classList.toggle('hidden',ST.activated);
+  if(banner)banner.classList.add('hidden'); // Барлығы тегін — баннер жоқ
   const pbTitle=document.getElementById('pb-title');const pbSub=document.getElementById('pb-sub');const pbLink=document.getElementById('pb-link');
   if(pbTitle)pbTitle.textContent=lang==='kk'?'🔑 Промокод енгізіңіз':'🔑 Введите промокод';
   if(pbSub)pbSub.textContent=lang==='kk'?'4 990 ₸ / 3 ай · Барлық сабақтар ашылады':'4 990 ₸ / 3 месяца · Все уроки откроются';
   if(pbLink)pbLink.textContent=lang==='kk'?'Kaspi QR арқылы сатып алу →':'Купить через Kaspi QR →';
-  document.getElementById('float-btns').style.display=ST.activated?'none':'flex';
+  document.getElementById('float-btns').style.display='none'; // Барлығы тегін — промо батырмасы жоқ
 }
 
 function initProfile(){
@@ -1502,8 +1508,6 @@ let animaQAnswered = [];
 let animaEarnedXP = 0;
 
 function openAnimasabaq(){
-  // Промокод тексеру
-  if(!ST.activated){showScr('s-promo');return;}
   renderAnimaMain();
   showScr('s-anima');
 }
