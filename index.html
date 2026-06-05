@@ -218,6 +218,7 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
     <input class="l-inp" id="i-age" type="number" min="4" max="8">
     <button class="l-btn" id="lt-btn" onclick="doLogin()">Бастау →</button>
     <div class="l-note" id="lt-note">Деректер серверде сенімді сақталады</div>
+    <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.4);line-height:1.5;" id="lt-tip">💡 Бір аты + жасты барлық құрылғыда қолданыңыз — деректер автоматты синхрондалады</div>
   </div>
 </div>
 </div>
@@ -441,8 +442,8 @@ async function sbMarkPromoUsed(code,studentId){
 // ═══ АУДАРМАЛАР ═══
 const T={
   kk:{
-    backLang:'← Тілге оралу',loginTitle:'Сәлем!',loginSub:'Баланың атын енгізіңіз',
-    namePh:'Баланың аты',agePh:'Жасы (5-7)',loginBtn:'Бастау →',loginNote:'Деректер серверде сенімді сақталады',
+    backLang:'← Тілге оралу',loginTitle:'Сәлем!',loginSub:'Аты + Жасы = сіздің аккаунт',
+    namePh:'Баланың аты (мысалы: Арман)',agePh:'Жасы (5-7)',loginBtn:'Бастау →',loginNote:'Деректер серверде сенімді сақталады',
     promoTitle:'Промокод керек',promoText:'Бұл сабақ жабық.\nПромокод енгізіңіз.',promoPrice:'4 990 ₸ / 3 ай',
     promoBtn:'Белсендіру →',promoLink:'Kaspi QR арқылы сатып алу →',
     greeting:'Сәлем, %s! 👋',sub:'%s жас · Мектепке дайындық',
@@ -471,8 +472,8 @@ const T={
     }
   },
   ru:{
-    backLang:'← Выбор языка',loginTitle:'Привет!',loginSub:'Введите имя ребёнка',
-    namePh:'Имя ребёнка',agePh:'Возраст (5-7)',loginBtn:'Начать →',loginNote:'Данные надёжно сохраняются на сервере',
+    backLang:'← Выбор языка',loginTitle:'Привет!',loginSub:'Имя + Возраст = ваш аккаунт',
+    namePh:'Имя ребёнка (напр: Арман)',agePh:'Возраст (5-7)',loginBtn:'Начать →',loginNote:'Данные надёжно сохраняются на сервере',
     promoTitle:'Нужен промокод',promoText:'Этот урок закрыт.\nВведите промокод.',promoPrice:'4 990 ₸ / 3 месяца',
     promoBtn:'Активировать →',promoLink:'Купить через Kaspi QR →',
     greeting:'Привет, %s! 👋',sub:'%s лет · Подготовка к школе',
@@ -719,27 +720,53 @@ async function doLogin(){
   const age=parseInt(document.getElementById('i-age').value)||6;
   if(!name){alert(T[lang].namePh);return;}
 
-  // ID жасау (аты + жасы негізінде тұрақты)
-  const id='mq_'+name.toLowerCase().replace(/\s+/g,'_')+'_'+age+'_'+(lang);
+  // ID жасау — аты + жасы (тілге байланысты емес, кез-келген құрылғыда бірдей)
+  const id='mq_'+name.toLowerCase().replace(/[^a-zа-яёәіңғүұқөһ0-9]/gi,'_').replace(/_+/g,'_').replace(/^_|_$/g,'')+'_'+age;
 
-  // localStorage-дан тексеру
+  // 1. localStorage-дан тексеру (жылдам)
   try{
     const cached=localStorage.getItem('mq_v4');
     if(cached){
       const d=JSON.parse(cached);
       if(d.name&&d.name.toLowerCase()===name.toLowerCase()){
-        ST={...ST,...d}; lang=ST.lang||lang;
+        ST={...ST,...d,id}; lang=ST.lang||lang;
         updateUI(); updateStreak(); saveState();
         showToast(lang==='kk'?'Қош қайттыңыз! ✅':'С возвращением! ✅');
         goHome();
-        // Фондық Firebase sync
         saveToServer().catch(()=>{});
         return;
       }
     }
   }catch(e){}
 
-  // Жаңа оқушы
+  // 2. Firebase-тен іздеу (басқа құрылғыдан кірсе)
+  showLoading(lang==='kk'?'Деректер тексерілуде...':'Проверка данных...');
+  try{
+    const fbKey='student_'+name.toLowerCase().replace(/[^a-zа-яёәіңғүұқөһ0-9]/gi,'_')+'_'+age;
+    const fbData = await Promise.race([
+      fbGet('/students/'+fbKey),
+      new Promise((_,rej)=>setTimeout(()=>rej('timeout'),3000))
+    ]);
+    hideLoading();
+    if(fbData&&fbData.name){
+      ST={
+        id, name:fbData.name, age:fbData.age||age, lang:fbData.lang||lang,
+        activated:fbData.activated||false, promoCode:fbData.promoCode||'',
+        xp:fbData.xp||0, streak:fbData.streak||0, lastDate:'',
+        done:fbData.done||0, correct:fbData.correct||0,
+        prog:fbData.prog||{alifbe:0,math:0,diag:0,animasabaq:0},
+        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0},
+        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null
+      };
+      lang=ST.lang;
+      updateUI(); updateStreak(); saveState();
+      showToast(lang==='kk'?'Деректер жүктелді! ✅':'Данные загружены! ✅');
+      goHome();
+      return;
+    }
+  }catch(e){ hideLoading(); }
+
+  // 3. Жаңа оқушы
   ST.id=id; ST.name=name; ST.age=age; ST.lang=lang;
   ST.prog={alifbe:0,math:0,diag:0,animasabaq:0};
   ST.xpMod={alifbe:0,math:0,diag:0,animasabaq:0};
@@ -747,7 +774,6 @@ async function doLogin(){
   if(!ST.startDate)ST.startDate=Date.now();
   updateStreak(); saveState();
   goHome();
-  // Фондық Firebase sync
   saveToServer().catch(()=>{});
 }
 
@@ -1161,32 +1187,128 @@ function renderAdminPromos(){
   l.innerHTML=p.length?p.map((x,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;font-family:monospace;">${x.code}</div><div style="font-size:11px;color:var(--gr);">${x.used?'✅ Белсендірілді':'⏳ Күтуде'} · ${new Date(x.created).toLocaleDateString()}</div></div><button onclick="adminCopyCode('${x.code}')" style="background:var(--gl);color:var(--g);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">Көшіру</button><button onclick="adminDelPromo(${i})" style="background:var(--rl);color:var(--red);border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">🗑</button></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Промокод жоқ</div>';
 }
 async function renderAdminStudents(){
-  const l=document.getElementById('astudents-list'),c=document.getElementById('ast-count');
+  const l=document.getElementById('astudents-list'), c=document.getElementById('ast-count');
   if(!l)return;
-  l.innerHTML='<div style="text-align:center;padding:16px;color:var(--gr);">Жүктелуде...</div>';
-  
-  // Firebase-тен жүктеу
+  l.innerHTML='<div style="text-align:center;padding:16px;color:var(--gr);">🔄 Жүктелуде...</div>';
+
   let ss=[];
+  // Firebase-тен жүктеу
   try{
-    const fbStudents=await fbGetAllStudents();
-    if(fbStudents&&fbStudents.length>0){
-      ss=fbStudents;
-    }
+    const fbStudents = await fbGetAllStudents();
+    if(fbStudents && fbStudents.length>0) ss = fbStudents;
   }catch(e){}
-  
-  // localStorage-тан да қосу
+
+  // localStorage-тан қосу (Firebase-те жоқтар)
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
     if(k&&k.startsWith('mq_v4')){
-      try{const d=JSON.parse(localStorage.getItem(k));if(d&&d.name&&!ss.find(x=>x.name===d.name))ss.push(d);}catch(e){}
+      try{
+        const d=JSON.parse(localStorage.getItem(k));
+        if(d&&d.name&&!ss.find(x=>x.name===d.name)){
+          ss.push({...d, _localKey:k});
+        }
+      }catch(e){}
     }
   }
-  
+
   if(c)c.textContent=ss.length;
   const astEl=document.getElementById('ast-students');
   if(astEl)astEl.textContent=ss.length;
-  
-  l.innerHTML=ss.length?ss.map(s=>`<div style="padding:12px;background:var(--bg);border-radius:10px;margin-bottom:8px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><div><div style="font-size:14px;font-weight:700;">${s.name||'-'} (${s.age||'-'} жас)</div><div style="font-size:11px;color:var(--gr);">${(s.lang||'kk')==='kk'?'Қазақша':'Орысша'} · ${s.activated?'✅ Белсенді':'⏳ Тегін'}</div></div><div style="text-align:right;"><div style="font-size:15px;font-weight:700;color:var(--gold);">${s.xp||0} XP</div><div style="font-size:11px;color:var(--gr);">🔥${s.streak||0} күн</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;color:var(--gr);"><div>📖 ${(s.prog&&s.prog.alifbe)||0}%</div><div>🔢 ${(s.prog&&s.prog.math)||0}%</div><div>🩺 ${(s.prog&&s.prog.diag)||0}%</div></div></div>`).join(''):'<div style="font-size:13px;color:var(--gr);text-align:center;padding:12px;">Оқушылар жоқ</div>';
+
+  if(!ss.length){
+    l.innerHTML='<div style="font-size:13px;color:var(--gr);text-align:center;padding:16px;">Оқушылар жоқ</div>';
+    return;
+  }
+
+  l.innerHTML = ss.map((s,i)=>`
+    <div id="scard-${i}" style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:8px;border:1.5px solid transparent;transition:all .2s;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:800;">${s.name||'-'} <span style="font-size:12px;color:var(--gr);font-weight:600;">(${s.age||'-'} жас)</span></div>
+          <div style="font-size:11px;color:var(--gr);margin-top:2px;">
+            ${(s.lang||'kk')==='kk'?'🇰🇿 Қазақша':'🇷🇺 Орысша'} · 
+            ${s.activated?'<span style="color:var(--gm);font-weight:700;">✅ Белсенді</span>':'<span style="color:var(--gr);">⏳ Тегін</span>'}
+          </div>
+          <div style="font-size:11px;color:var(--gr);margin-top:2px;font-family:monospace;">
+            🆔 ${s.id||('mq_'+(s.name||'').toLowerCase()+'_'+(s.age||6))}
+          </div>
+        </div>
+        <div style="text-align:right;margin-left:8px;">
+          <div style="font-size:16px;font-weight:800;color:var(--gold);">${s.xp||0} XP</div>
+          <div style="font-size:11px;color:var(--gr);">🔥${s.streak||0} күн</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;font-size:11px;margin-bottom:8px;">
+        <div style="background:#fff;border-radius:7px;padding:5px;text-align:center;">📖<br><b>${(s.prog&&s.prog.alifbe)||0}%</b></div>
+        <div style="background:#fff;border-radius:7px;padding:5px;text-align:center;">🔢<br><b>${(s.prog&&s.prog.math)||0}%</b></div>
+        <div style="background:#fff;border-radius:7px;padding:5px;text-align:center;">🩺<br><b>${(s.prog&&s.prog.diag)||0}%</b></div>
+        <div style="background:#fff;border-radius:7px;padding:5px;text-align:center;">🚀<br><b>${(s.prog&&s.prog.animasabaq)||0}%</b></div>
+      </div>
+      <div style="display:flex;gap:7px;">
+        <button onclick="adminResetStudent(${i})" 
+          style="flex:1;background:#fff3e0;color:#e65100;border:none;border-radius:9px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;">
+          🔄 Прогресті тазалау
+        </button>
+        <button onclick="adminDeleteStudent(${i})"
+          style="flex:1;background:var(--rl);color:var(--red);border:none;border-radius:9px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;">
+          🗑️ Жою
+        </button>
+      </div>
+    </div>`).join('');
+
+  // Оқушылар деректерін window-ға сақтау (жою үшін)
+  window._adminStudents = ss;
+}
+
+async function adminDeleteStudent(idx){
+  const s = window._adminStudents && window._adminStudents[idx];
+  if(!s){showToast('Оқушы табылмады');return;}
+  if(!confirm(`"${s.name}" оқушысын жоясыз ба? Барлық деректер жойылады!`))return;
+
+  showLoading('Жойылуда...');
+  // Firebase-тен жою
+  if(s._fbKey){
+    try{ await fbDeleteStudent(s._fbKey); }catch(e){}
+  }
+  // localStorage-тан жою
+  if(s._localKey){
+    localStorage.removeItem(s._localKey);
+  } else {
+    // ID-мен іздеу
+    const possibleKey = 'mq_v4';
+    const cached = localStorage.getItem(possibleKey);
+    if(cached){
+      try{
+        const d = JSON.parse(cached);
+        if(d.name === s.name) localStorage.removeItem(possibleKey);
+      }catch(e){}
+    }
+  }
+  hideLoading();
+  showToast(`"${s.name}" жойылды! ✅`);
+  await renderAdminStudents();
+  initAdminPanel();
+}
+
+async function adminResetStudent(idx){
+  const s = window._adminStudents && window._adminStudents[idx];
+  if(!s){showToast('Оқушы табылмады');return;}
+  if(!confirm(`"${s.name}" прогресін тазалайсыз ба?`))return;
+
+  const resetData = {
+    ...s,
+    xp:0, streak:0, correct:0, done:0,
+    prog:{alifbe:0,math:0,diag:0,animasabaq:0},
+    xpMod:{alifbe:0,math:0,diag:0,animasabaq:0},
+    animaDone:[], diagResult:null,
+    updatedAt: Date.now()
+  };
+
+  if(s._fbKey){
+    try{ await fbSet('/students/'+s._fbKey, resetData); }catch(e){}
+  }
+  showToast(`"${s.name}" прогресі тазаланды! ✅`);
+  await renderAdminStudents();
 }
 function adminCopyCode(code){navigator.clipboard.writeText(code).catch(()=>{const t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});showToast(code+' көшірілді! ✅');}
 function adminAddPromo(){
@@ -1329,7 +1451,14 @@ async function fbSaveStudent(st){
 async function fbGetAllStudents(){
   const data = await fbGet('/students');
   if(!data) return [];
-  return Object.values(data).filter(Boolean);
+  // key-ді де сақтаймыз (жою үшін керек)
+  return Object.entries(data)
+    .filter(([k,v])=>v&&v.name)
+    .map(([k,v])=>({...v, _fbKey:k}));
+}
+
+async function fbDeleteStudent(fbKey){
+  return await fbDelete('/students/' + fbKey);
 }
 
 // ═══ CONFIG Firebase арқылы ═══
@@ -1359,145 +1488,245 @@ async function fbLoadCfg(){
 const ANIMA_LESSONS = {
   kk: [
     {
-      day:1, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 1-бөлім', ep:'1-бөлім', xp:30,
+      day:1, youtubeId:'-XwMY9MUFqU',
+      title:'Күншіктер — 1-серия', ep:'2-маусым · 1-бөлім', xp:30,
       qs:[
-        {em:'☀️',q:'Күншіктер қандай?',opts:[{e:'😡',l:'Ашулы'},{e:'😊',l:'Қуанышты'},{e:'😢',l:'Мұңды'},{e:'😴',l:'Ұйқышыл'}],ans:1},
-        {em:'🎨',q:'Күншіктер қандай түсті?',opts:[{e:'🔵',l:'Көк'},{e:'🔴',l:'Қызыл'},{e:'💛',l:'Сары'},{e:'💚',l:'Жасыл'}],ans:2},
-        {em:'🏡',q:'Олар қайда тұрады?',opts:[{e:'🌊',l:'Теңізде'},{e:'🌻',l:'Даладa'},{e:'🏙️',l:'Қалада'},{e:'❄️',l:'Мұзда'}],ans:1},
-        {em:'❤️',q:'Күншіктер бірін-бірі қалай сүйеді?',opts:[{e:'😤',l:'Ұрысады'},{e:'🤝',l:'Достасады'},{e:'🏃',l:'Қашады'},{e:'😴',l:'Елемейді'}],ans:1},
+        {em:'🐾',q:'Күншіктер кімдер?',opts:[{e:'🐱',l:'Мысықтар'},{e:'🐶',l:'Күшіктер'},{e:'🐰',l:'Қояндар'},{e:'🐸',l:'Бақалар'}],ans:1},
+        {em:'👫',q:'Олардың арасында не бар?',opts:[{e:'😤',l:'Ұрыс'},{e:'❤️',l:'Достық'},{e:'😴',l:'Ешнәрсе'},{e:'😢',l:'Жылау'}],ans:1},
+        {em:'🏡',q:'Күншіктер қайда өседі?',opts:[{e:'🏙️',l:'Үлкен қалада'},{e:'🌻',l:'Жылы үйде'},{e:'🌊',l:'Теңіз жағасында'},{e:'❄️',l:'Солтүстікте'}],ans:1},
+        {em:'🌟',q:'Бұл мультфильм не туралы?',opts:[{e:'😠',l:'Ұрыс-керіс'},{e:'🌟',l:'Достық пен қызықты оқиға'},{e:'😴',l:'Ұйықтау'},{e:'🏃',l:'Жарыс'}],ans:1},
       ]
     },
     {
-      day:2, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 2-бөлім', ep:'2-бөлім', xp:30,
+      day:2, youtubeId:'eWFfBoLVbv4',
+      title:'Күншіктер — 2-серия', ep:'2-маусым · 2-бөлім', xp:30,
       qs:[
-        {em:'🌅',q:'Күншіктер қашан оянады?',opts:[{e:'🌙',l:'Кешке'},{e:'☀️',l:'Таңертең'},{e:'🌧️',l:'Жаңбырда'},{e:'❄️',l:'Қыста'}],ans:1},
-        {em:'🍽️',q:'Таңертең не жейді?',opts:[{e:'🍕',l:'Пицца'},{e:'🥣',l:'Қаша'},{e:'🍔',l:'Бургер'},{e:'🍦',l:'Балмұздақ'}],ans:1},
-        {em:'🎒',q:'Қайда барады?',opts:[{e:'🏖️',l:'Пляжқа'},{e:'🏫',l:'Мектепке'},{e:'🎪',l:'Циркке'},{e:'🏥',l:'Ауруханаға'}],ans:1},
-        {em:'👫',q:'Олар кіммен барады?',opts:[{e:'🐺',l:'Қасқырмен'},{e:'👫',l:'Достарымен'},{e:'🤖',l:'Роботпен'},{e:'👻',l:'Елеспен'}],ans:1},
+        {em:'🎮',q:'Балалар не ойнайды?',opts:[{e:'📚',l:'Кітап оқиды'},{e:'🎮',l:'Бірге ойнайды'},{e:'😴',l:'Ұйықтайды'},{e:'🏃',l:'Жүгіреді'}],ans:1},
+        {em:'🤝',q:'Дос болу үшін не керек?',opts:[{e:'💰',l:'Ақша'},{e:'🤝',l:'Сенім мен сыйластық'},{e:'🏆',l:'Жеңіс'},{e:'😤',l:'Күш'}],ans:1},
+        {em:'😊',q:'Күншіктер бір-біріне қалай қарайды?',opts:[{e:'😤',l:'Ренжітеді'},{e:'😊',l:'Жақсы көреді'},{e:'😴',l:'Елемейді'},{e:'😡',l:'Ашуланады'}],ans:1},
+        {em:'🌈',q:'Достармен бірге болу қалай?',opts:[{e:'😢',l:'Жаман'},{e:'😴',l:'Тіпті жоқ'},{e:'🌈',l:'Қуанышты'},{e:'😡',l:'Ашуланды'}],ans:2},
       ]
     },
     {
-      day:3, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 3-бөлім', ep:'3-бөлім', xp:35,
+      day:3, youtubeId:'XKqGaA0KtOI',
+      title:'Ой-Қарағайда', ep:'2-маусым · 10-12-бөлім жинағы', xp:35,
       qs:[
-        {em:'🌿',q:'Табиғатта не кездеседі?',opts:[{e:'💻',l:'Компьютер'},{e:'🌸',l:'Гүл'},{e:'📱',l:'Телефон'},{e:'🚗',l:'Машина'}],ans:1},
-        {em:'🦋',q:'Күншіктер не көреді?',opts:[{e:'✈️',l:'Ұшақ'},{e:'🦋',l:'Көбелек'},{e:'🚂',l:'Пойыз'},{e:'⛵',l:'Кеме'}],ans:1},
-        {em:'🌳',q:'Ағаш не береді?',opts:[{e:'🔥',l:'От'},{e:'❄️',l:'Мұз'},{e:'🍎',l:'Жеміс'},{e:'💧',l:'Су'}],ans:2},
-        {em:'🌍',q:'Табиғатты қалай сақтаймыз?',opts:[{e:'🗑️',l:'Қоқыс тастау'},{e:'🌱',l:'Ағаш отырғызу'},{e:'💨',l:'Ластау'},{e:'🔥',l:'Өртеу'}],ans:1},
+        {em:'🏔️',q:'Күншіктер қайда барады?',opts:[{e:'🏖️',l:'Теңізге'},{e:'🏔️',l:'Ой-Қарағайға'},{e:'🏙️',l:'Қалаға'},{e:'🌊',l:'Өзенге'}],ans:1},
+        {em:'☃️',q:'Ой-Қарағайда қандай ауа-райы?',opts:[{e:'☀️',l:'Ыстық'},{e:'🌧️',l:'Жаңбырлы'},{e:'☃️',l:'Қарлы, суық'},{e:'🌪️',l:'Боранды'}],ans:2},
+        {em:'👨‍👩‍👧‍👦',q:'Сапарда олармен кім бірге?',opts:[{e:'🤖',l:'Робот'},{e:'👨‍👩‍👧‍👦',l:'Бота мен Аля әпке'},{e:'🦁',l:'Арыстан'},{e:'👻',l:'Елес'}],ans:1},
+        {em:'❄️',q:'Қар жауғанда не жасайды?',opts:[{e:'😢',l:'Жылайды'},{e:'🏠',l:'Үйде отырады'},{e:'❄️',l:'Қарда ойнайды'},{e:'😴',l:'Ұйықтайды'}],ans:2},
       ]
     },
     {
-      day:4, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 4-бөлім', ep:'4-бөлім', xp:35,
+      day:4, youtubeId:'Z2aKZL5cjLI',
+      title:'Күншіктер — 4-серия', ep:'2-маусым · 4-бөлім', xp:30,
       qs:[
-        {em:'🎵',q:'Күншіктер не айтады?',opts:[{e:'😤',l:'Айқайлайды'},{e:'🎵',l:'Ән айтады'},{e:'😴',l:'Үндемейді'},{e:'😭',l:'Жылайды'}],ans:1},
-        {em:'🎸',q:'Қандай аспап ойнайды?',opts:[{e:'🥁',l:'Барабан'},{e:'🎸',l:'Домбыра'},{e:'🎺',l:'Труба'},{e:'🎻',l:'Скрипка'}],ans:1},
-        {em:'👏',q:'Ән тыңдағанда не сезінеді?',opts:[{e:'😡',l:'Ашу'},{e:'😢',l:'Қайғы'},{e:'😊',l:'Қуаныш'},{e:'😴',l:'Ұйқы'}],ans:2},
-        {em:'🎤',q:'Ән айту пайдалы ма?',opts:[{e:'❌',l:'Жоқ'},{e:'🤔',l:'Білмеймін'},{e:'✅',l:'Иә, пайдалы!'},{e:'😐',l:'Маңызды емес'}],ans:2},
+        {em:'🌅',q:'Таңертең не жасайды?',opts:[{e:'😴',l:'Ұйықтай береді'},{e:'🌅',l:'Оянып, дайындалады'},{e:'😡',l:'Ашуланады'},{e:'🏃',l:'Қашады'}],ans:1},
+        {em:'🍽️',q:'Таңертеңгілікке не жейді?',opts:[{e:'🍕',l:'Пицца'},{e:'🥣',l:'Пайдалы тамақ'},{e:'🍦',l:'Балмұздақ'},{e:'🍫',l:'Шоколад'}],ans:1},
+        {em:'💪',q:'Күн сайын дайындалу неге пайдалы?',opts:[{e:'❌',l:'Пайдасыз'},{e:'💪',l:'Денсаулыққа жақсы'},{e:'😴',l:'Ұйықтатады'},{e:'😢',l:'Мұңды қылады'}],ans:1},
+        {em:'🏫',q:'Мектепке бару ұнайды ма?',opts:[{e:'😤',l:'Жоқ, ұнамайды'},{e:'😊',l:'Иә, ұнайды'},{e:'😴',l:'Маған бәрібір'},{e:'😭',l:'Қорқамын'}],ans:1},
       ]
     },
     {
-      day:5, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 5-бөлім', ep:'5-бөлім', xp:40,
+      day:5, youtubeId:'IkAR7o_Ah9U',
+      title:'Күншіктер — 5-серия', ep:'2-маусым · 5-бөлім', xp:35,
       qs:[
-        {em:'🤝',q:'Дос дегеніміз кім?',opts:[{e:'😠',l:'Ұрысатын'},{e:'🤝',l:'Көмектесетін'},{e:'🏃',l:'Қашатын'},{e:'😴',l:'Елемейтін'}],ans:1},
-        {em:'💝',q:'Досыңа қалай қарайсың?',opts:[{e:'😤',l:'Ренжітемін'},{e:'❤️',l:'Жақсы көремін'},{e:'🏃',l:'Қашамын'},{e:'😴',l:'Елемеймін'}],ans:1},
-        {em:'🎁',q:'Досыңның туған күнінде не жасайсың?',opts:[{e:'😴',l:'Ұйықтаймын'},{e:'🎁',l:'Сыйлық беремін'},{e:'😡',l:'Ашуланамын'},{e:'🏃',l:'Кетемін'}],ans:1},
-        {em:'😢',q:'Досың жыласа не жасайсың?',opts:[{e:'😂',l:'Күлемін'},{e:'🏃',l:'Кетемін'},{e:'🤗',l:'Жұбатамын'},{e:'😴',l:'Елемеймін'}],ans:2},
+        {em:'🌿',q:'Табиғатқа шыққанда не байқайды?',opts:[{e:'📱',l:'Телефон'},{e:'🌿',l:'Гүлдер мен өсімдіктер'},{e:'🚗',l:'Машина'},{e:'🏢',l:'Ғимарат'}],ans:1},
+        {em:'🦋',q:'Табиғатта нені қорғау керек?',opts:[{e:'💰',l:'Ақша'},{e:'🦋',l:'Жануарлар мен өсімдіктер'},{e:'📱',l:'Телефонды'},{e:'🏆',l:'Кубок'}],ans:1},
+        {em:'🌳',q:'Ағаш не береді бізге?',opts:[{e:'💰',l:'Ақша'},{e:'🔥',l:'От'},{e:'🌳',l:'Таза ауа'},{e:'💧',l:'Су'}],ans:2},
+        {em:'🌍',q:'Табиғатты қалай сақтаймыз?',opts:[{e:'🗑️',l:'Қоқыс тастаймыз'},{e:'🌱',l:'Ағаш отырғызамыз'},{e:'💨',l:'Ластаймыз'},{e:'🔥',l:'Өртейміз'}],ans:1},
       ]
     },
     {
-      day:6, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 6-бөлім', ep:'6-бөлім', xp:35,
+      day:6, youtubeId:'-BES43eQalU',
+      title:'Күншіктер — 6-серия', ep:'2-маусым · 6-бөлім', xp:35,
       qs:[
-        {em:'🏫',q:'Мектепте не үйренеміз?',opts:[{e:'😴',l:'Ұйықтауды'},{e:'📚',l:'Оқуды'},{e:'🎮',l:'Ойнауды'},{e:'🍔',l:'Тамақ жеуді'}],ans:1},
-        {em:'✏️',q:'Сабақта не керек?',opts:[{e:'🎮',l:'Ойыншық'},{e:'✏️',l:'Қарандаш'},{e:'🍕',l:'Тамақ'},{e:'📱',l:'Телефон'}],ans:1},
-        {em:'👩‍🏫',q:'Мұғалім кім?',opts:[{e:'👨‍⚕️',l:'Дәрігер'},{e:'👮',l:'Полиция'},{e:'👩‍🏫',l:'Сабақ береді'},{e:'👨‍🍳',l:'Аспазшы'}],ans:2},
-        {em:'🎒',q:'Мектепке не алып барамыз?',opts:[{e:'🎮',l:'Ойыншық'},{e:'🎒',l:'Сөмке'},{e:'🛏️',l:'Жастық'},{e:'🍕',l:'Пицца'}],ans:1},
+        {em:'🎵',q:'Күншіктер не жасайды?',opts:[{e:'😴',l:'Ұйықтайды'},{e:'🎵',l:'Ән айтады'},{e:'😡',l:'Ұрысады'},{e:'🏃',l:'Жүгіреді'}],ans:1},
+        {em:'🎸',q:'Музыка тыңдау қалай сезіндіреді?',opts:[{e:'😡',l:'Ашулы'},{e:'😢',l:'Мұңды'},{e:'😊',l:'Қуанышты'},{e:'😴',l:'Ұйқышыл'}],ans:2},
+        {em:'👨‍👩‍👧',q:'Отбасымен бірге не жасайды?',opts:[{e:'😤',l:'Ұрысады'},{e:'👨‍👩‍👧',l:'Бірге ән айтады'},{e:'🏃',l:'Кетеді'},{e:'😴',l:'Ұйықтайды'}],ans:1},
+        {em:'❤️',q:'Отбасын жақсы көру керек пе?',opts:[{e:'❌',l:'Жоқ'},{e:'🤔',l:'Білмеймін'},{e:'❤️',l:'Иә, міндетті түрде!'},{e:'😐',l:'Маған бәрібір'}],ans:2},
       ]
     },
     {
-      day:7, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — 7-бөлім', ep:'7-бөлім', xp:40,
+      day:7, youtubeId:'wid-WirTCos',
+      title:'Күншіктер — 7-серия', ep:'2-маусым · 7-бөлім', xp:40,
       qs:[
-        {em:'🧠',q:'Ойын ойнасақ не болады?',opts:[{e:'😴',l:'Ұйқы келеді'},{e:'🧠',l:'Ақыл ашылады'},{e:'😡',l:'Ашуланамыз'},{e:'🏃',l:'Шаршаймыз'}],ans:1},
-        {em:'🎯',q:'Жаттығу не береді?',opts:[{e:'❌',l:'Ештеңе'},{e:'🎯',l:'Шеберлік'},{e:'😴',l:'Ұйқы'},{e:'😢',l:'Қайғы'}],ans:1},
-        {em:'💪',q:'Күн сайын жаттықсақ не болады?',opts:[{e:'😴',l:'Шаршаймыз'},{e:'💪',l:'Күшті боламыз'},{e:'😡',l:'Ашуланамыз'},{e:'😭',l:'Жылаймыз'}],ans:1},
-        {em:'🌟',q:'Күншіктерден не үйрендік?',opts:[{e:'😤',l:'Ұрысуды'},{e:'🌟',l:'Достықты'},{e:'🏃',l:'Қашуды'},{e:'😴',l:'Ұйықтауды'}],ans:1},
+        {em:'🏫',q:'Мектепке не алып барамыз?',opts:[{e:'🎮',l:'Ойыншық'},{e:'🎒',l:'Сөмке мен кітаптар'},{e:'🛏️',l:'Жастық'},{e:'🍕',l:'Пицца'}],ans:1},
+        {em:'✏️',q:'Сабақта не жасаймыз?',opts:[{e:'😴',l:'Ұйықтаймыз'},{e:'✏️',l:'Жазып, үйренеміз'},{e:'🎮',l:'Ойнаймыз'},{e:'🏃',l:'Жүгіреміз'}],ans:1},
+        {em:'👩‍🏫',q:'Мұғалім кім?',opts:[{e:'👮',l:'Полицей'},{e:'👨‍⚕️',l:'Дәрігер'},{e:'👩‍🏫',l:'Бізді оқытатын адам'},{e:'👨‍🍳',l:'Аспазшы'}],ans:2},
+        {em:'📚',q:'Мектепте оқу неге маңызды?',opts:[{e:'❌',l:'Маңызды емес'},{e:'📚',l:'Білім алу үшін'},{e:'😴',l:'Ұйықтау үшін'},{e:'🎮',l:'Ойнау үшін'}],ans:1},
+      ]
+    },
+    {
+      day:8, youtubeId:'5mNuqnntlL4',
+      title:'Динозаврлар · Маманың кружкасы · Құрылыс', ep:'2-маусым · 1-3-бөлім жинағы', xp:40,
+      qs:[
+        {em:'🦕',q:'Динозаврлар қашан өмір сүрген?',opts:[{e:'📅',l:'Бүгін'},{e:'🦕',l:'Өте ертеде'},{e:'🚀',l:'Болашақта'},{e:'😴',l:'Ешқашан'}],ans:1},
+        {em:'☕',q:'Маманың кружкасы неліктен маңызды?',opts:[{e:'💰',l:'Қымбат болғандықтан'},{e:'☕',l:'Ол маманың сүйікті заты'},{e:'🎮',l:'Ойыншық болғандықтан'},{e:'❓',l:'Білмеймін'}],ans:1},
+        {em:'🔨',q:'Құрылыс кезінде не керек?',opts:[{e:'😴',l:'Ұйқы'},{e:'🔨',l:'Еңбек пен шыдамдылық'},{e:'🎮',l:'Ойыншық'},{e:'💰',l:'Ақша ғана'}],ans:1},
+        {em:'🤲',q:'Заттарға ұқыпты болу керек пе?',opts:[{e:'❌',l:'Жоқ'},{e:'🤲',l:'Иә, ұқыпты болу керек'},{e:'🤔',l:'Кейде ғана'},{e:'😐',l:'Маған бәрібір'}],ans:1},
+      ]
+    },
+    {
+      day:9, youtubeId:'7xlXKdv0Bt8',
+      title:'Күншіктер — 9-серия', ep:'2-маусым · 9-бөлім', xp:35,
+      qs:[
+        {em:'🎁',q:'Сыйлық берген кезде не сезінеді?',opts:[{e:'😡',l:'Ашу'},{e:'🎁',l:'Қуаныш'},{e:'😴',l:'Ұйқы'},{e:'😢',l:'Қайғы'}],ans:1},
+        {em:'🤗',q:'Дос болу үшін не жасау керек?',opts:[{e:'😤',l:'Ренжіту'},{e:'🤗',l:'Мейірімді болу'},{e:'🏃',l:'Қашу'},{e:'😴',l:'Елемеу'}],ans:1},
+        {em:'👐',q:'Бөлісу деген не?',opts:[{e:'😤',l:'Алып қою'},{e:'👐',l:'Басқаға беру'},{e:'🏃',l:'Қашу'},{e:'❌',l:'Жоқ деу'}],ans:1},
+        {em:'💝',q:'Жақсы іс жасағанда не болады?',opts:[{e:'😢',l:'Жылайсың'},{e:'💝',l:'Жүрегің жылынады'},{e:'😴',l:'Ұйықтайсың'},{e:'😡',l:'Ашуланасың'}],ans:1},
+      ]
+    },
+    {
+      day:10, youtubeId:'nnVSlN5HFlA',
+      title:'Күншіктер — 10-серия', ep:'2-маусым · 10-бөлім', xp:35,
+      qs:[
+        {em:'🌙',q:'Кешкі мезгілде не жасайды?',opts:[{e:'🏃',l:'Жүгіреді'},{e:'🌙',l:'Дайындалып ұйықтайды'},{e:'🎮',l:'Ойнай береді'},{e:'😡',l:'Ашуланады'}],ans:1},
+        {em:'🛁',q:'Ұйықтар алдында не жасайды?',opts:[{e:'🎮',l:'Ойнайды'},{e:'🛁',l:'Жуынады, тісін тазалайды'},{e:'🍕',l:'Тамақ жейді'},{e:'📱',l:'Телефон қарайды'}],ans:1},
+        {em:'😴',q:'Ұйықтау неге пайдалы?',opts:[{e:'❌',l:'Пайдасыз'},{e:'😴',l:'Денені демалдырады'},{e:'🤔',l:'Білмеймін'},{e:'😐',l:'Маған бәрібір'}],ans:1},
+        {em:'⭐',q:'Таңертең жақсы тұру үшін не керек?',opts:[{e:'🎮',l:'Кеш ұйықтамау'},{e:'⭐',l:'Ерте ұйықтап, ерте тұру'},{e:'📱',l:'Телефон қарау'},{e:'🍕',l:'Тамақ жеу'}],ans:1},
+      ]
+    },
+    {
+      day:11, youtubeId:'yYPIhWtdQXI',
+      title:'Күншіктер — 11-серия', ep:'2-маусым · 11-бөлім', xp:40,
+      qs:[
+        {em:'🏋️',q:'Дене жаттығулары неге пайдалы?',opts:[{e:'❌',l:'Пайдасыз'},{e:'🏋️',l:'Денені күшейтеді'},{e:'😴',l:'Шаршатады'},{e:'🤔',l:'Білмеймін'}],ans:1},
+        {em:'🥗',q:'Дұрыс тамақтану деген не?',opts:[{e:'🍕',l:'Күнде пицца'},{e:'🥗',l:'Жеміс-жидек, көкөніс жеу'},{e:'🍦',l:'Тек балмұздақ'},{e:'🍫',l:'Тек шоколад'}],ans:1},
+        {em:'💪',q:'Сау болу үшін не жасаймыз?',opts:[{e:'😴',l:'Тек ұйықтаймыз'},{e:'💪',l:'Жаттығып, дұрыс тамақтанамыз'},{e:'🎮',l:'Ойнай береміз'},{e:'📱',l:'Телефон қараймыз'}],ans:1},
+        {em:'😊',q:'Сау болсақ қандай боламыз?',opts:[{e:'😢',l:'Мұңды'},{e:'😡',l:'Ашулы'},{e:'😊',l:'Қуанышты, белсенді'},{e:'😴',l:'Ұйқышыл'}],ans:2},
+      ]
+    },
+    {
+      day:12, youtubeId:'PE_hEEgOD5A',
+      title:'Күншіктер — 12-серия', ep:'2-маусым · 12-бөлім', xp:40,
+      qs:[
+        {em:'🌟',q:'Күншіктер 2-маусымнан не үйрендік?',opts:[{e:'😤',l:'Ұрысуды'},{e:'🌟',l:'Достықты, мейірімділікті'},{e:'🏃',l:'Жүгіруді'},{e:'😴',l:'Ұйықтауды'}],ans:1},
+        {em:'❤️',q:'Отбасы деген не?',opts:[{e:'💰',l:'Байлық'},{e:'❤️',l:'Сүйіспеншілік пен қолдау'},{e:'🏆',l:'Жеңіс'},{e:'🎮',l:'Ойын'}],ans:1},
+        {em:'🤝',q:'Жақсы дос болу үшін не керек?',opts:[{e:'💰',l:'Ақша'},{e:'🤝',l:'Адалдық пен мейірім'},{e:'🏆',l:'Жеңіс'},{e:'😤',l:'Күш'}],ans:1},
+        {em:'🚀',q:'Келесі маусымда не болады?',opts:[{e:'❌',l:'Ештеңе'},{e:'🚀',l:'Жаңа қызықты оқиғалар'},{e:'😴',l:'Барлығы ұйықтайды'},{e:'😢',l:'Барлығы жылайды'}],ans:1},
       ]
     },
   ],
   ru: [
     {
-      day:1, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 1', ep:'Серия 1', xp:30,
+      day:1, youtubeId:'-XwMY9MUFqU',
+      title:'Күншіктер — серия 1', ep:'Сезон 2 · Серия 1', xp:30,
       qs:[
-        {em:'☀️',q:'Какие Күншіктер?',opts:[{e:'😡',l:'Злые'},{e:'😊',l:'Радостные'},{e:'😢',l:'Грустные'},{e:'😴',l:'Сонные'}],ans:1},
-        {em:'🎨',q:'Какого цвета Күншіктер?',opts:[{e:'🔵',l:'Синие'},{e:'🔴',l:'Красные'},{e:'💛',l:'Жёлтые'},{e:'💚',l:'Зелёные'}],ans:2},
-        {em:'🏡',q:'Где они живут?',opts:[{e:'🌊',l:'В море'},{e:'🌻',l:'В степи'},{e:'🏙️',l:'В городе'},{e:'❄️',l:'Во льду'}],ans:1},
-        {em:'❤️',q:'Как они относятся друг к другу?',opts:[{e:'😤',l:'Ругаются'},{e:'🤝',l:'Дружат'},{e:'🏃',l:'Убегают'},{e:'😴',l:'Игнорируют'}],ans:1},
+        {em:'🐾',q:'Кто такие Күншіктер?',opts:[{e:'🐱',l:'Кошки'},{e:'🐶',l:'Щенята'},{e:'🐰',l:'Зайцы'},{e:'🐸',l:'Лягушки'}],ans:1},
+        {em:'👫',q:'Что есть между ними?',opts:[{e:'😤',l:'Ссора'},{e:'❤️',l:'Дружба'},{e:'😴',l:'Ничего'},{e:'😢',l:'Слёзы'}],ans:1},
+        {em:'🏡',q:'Где живут Күншіктер?',opts:[{e:'🏙️',l:'В большом городе'},{e:'🌻',l:'В тёплом доме'},{e:'🌊',l:'У моря'},{e:'❄️',l:'На севере'}],ans:1},
+        {em:'🌟',q:'О чём этот мультфильм?',opts:[{e:'😠',l:'О ссорах'},{e:'🌟',l:'О дружбе и приключениях'},{e:'😴',l:'О сне'},{e:'🏃',l:'О беге'}],ans:1},
       ]
     },
     {
-      day:2, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 2', ep:'Серия 2', xp:30,
+      day:2, youtubeId:'eWFfBoLVbv4',
+      title:'Күншіктер — серия 2', ep:'Сезон 2 · Серия 2', xp:30,
       qs:[
-        {em:'🌅',q:'Когда просыпаются Күншіктер?',opts:[{e:'🌙',l:'Вечером'},{e:'☀️',l:'Утром'},{e:'🌧️',l:'В дождь'},{e:'❄️',l:'Зимой'}],ans:1},
-        {em:'🍽️',q:'Что едят утром?',opts:[{e:'🍕',l:'Пицца'},{e:'🥣',l:'Кашу'},{e:'🍔',l:'Бургер'},{e:'🍦',l:'Мороженое'}],ans:1},
-        {em:'🎒',q:'Куда они идут?',opts:[{e:'🏖️',l:'На пляж'},{e:'🏫',l:'В школу'},{e:'🎪',l:'В цирк'},{e:'🏥',l:'В больницу'}],ans:1},
-        {em:'👫',q:'С кем они идут?',opts:[{e:'🐺',l:'С волком'},{e:'👫',l:'С друзьями'},{e:'🤖',l:'С роботом'},{e:'👻',l:'С призраком'}],ans:1},
+        {em:'🎮',q:'Во что играют дети?',opts:[{e:'📚',l:'Читают книги'},{e:'🎮',l:'Играют вместе'},{e:'😴',l:'Спят'},{e:'🏃',l:'Бегают'}],ans:1},
+        {em:'🤝',q:'Что нужно для дружбы?',opts:[{e:'💰',l:'Деньги'},{e:'🤝',l:'Доверие и уважение'},{e:'🏆',l:'Победа'},{e:'😤',l:'Сила'}],ans:1},
+        {em:'😊',q:'Как Күншіктер относятся друг к другу?',opts:[{e:'😤',l:'Обижают'},{e:'😊',l:'Любят'},{e:'😴',l:'Игнорируют'},{e:'😡',l:'Злятся'}],ans:1},
+        {em:'🌈',q:'Как быть с друзьями?',opts:[{e:'😢',l:'Плохо'},{e:'😴',l:'Никак'},{e:'🌈',l:'Радостно'},{e:'😡',l:'Злобно'}],ans:2},
       ]
     },
     {
-      day:3, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 3', ep:'Серия 3', xp:35,
+      day:3, youtubeId:'XKqGaA0KtOI',
+      title:'Ой-Қарағай', ep:'Сезон 2 · Серии 10-12', xp:35,
       qs:[
-        {em:'🌿',q:'Что есть в природе?',opts:[{e:'💻',l:'Компьютер'},{e:'🌸',l:'Цветы'},{e:'📱',l:'Телефон'},{e:'🚗',l:'Машина'}],ans:1},
-        {em:'🦋',q:'Кого видят Күншіктер?',opts:[{e:'✈️',l:'Самолёт'},{e:'🦋',l:'Бабочку'},{e:'🚂',l:'Поезд'},{e:'⛵',l:'Лодку'}],ans:1},
-        {em:'🌳',q:'Что даёт дерево?',opts:[{e:'🔥',l:'Огонь'},{e:'❄️',l:'Лёд'},{e:'🍎',l:'Фрукты'},{e:'💧',l:'Воду'}],ans:2},
+        {em:'🏔️',q:'Куда едут Күншіктер?',opts:[{e:'🏖️',l:'На море'},{e:'🏔️',l:'В Ой-Қарағай'},{e:'🏙️',l:'В город'},{e:'🌊',l:'На реку'}],ans:1},
+        {em:'☃️',q:'Какая погода в Ой-Қарағай?',opts:[{e:'☀️',l:'Жарко'},{e:'🌧️',l:'Дождливо'},{e:'☃️',l:'Снежно, холодно'},{e:'🌪️',l:'Буран'}],ans:2},
+        {em:'👨‍👩‍👧‍👦',q:'Кто едет с ними?',opts:[{e:'🤖',l:'Робот'},{e:'👨‍👩‍👧‍👦',l:'Бота и сестра Аля'},{e:'🦁',l:'Лев'},{e:'👻',l:'Призрак'}],ans:1},
+        {em:'❄️',q:'Что делают когда идёт снег?',opts:[{e:'😢',l:'Плачут'},{e:'🏠',l:'Сидят дома'},{e:'❄️',l:'Играют в снегу'},{e:'😴',l:'Спят'}],ans:2},
+      ]
+    },
+    {
+      day:4, youtubeId:'Z2aKZL5cjLI',
+      title:'Күншіктер — серия 4', ep:'Сезон 2 · Серия 4', xp:30,
+      qs:[
+        {em:'🌅',q:'Что делают утром?',opts:[{e:'😴',l:'Спят дальше'},{e:'🌅',l:'Просыпаются, готовятся'},{e:'😡',l:'Злятся'},{e:'🏃',l:'Убегают'}],ans:1},
+        {em:'🍽️',q:'Что едят на завтрак?',opts:[{e:'🍕',l:'Пиццу'},{e:'🥣',l:'Полезную еду'},{e:'🍦',l:'Мороженое'},{e:'🍫',l:'Шоколад'}],ans:1},
+        {em:'💪',q:'Почему полезно готовиться каждый день?',opts:[{e:'❌',l:'Бесполезно'},{e:'💪',l:'Полезно для здоровья'},{e:'😴',l:'Усыпляет'},{e:'😢',l:'Грустит'}],ans:1},
+        {em:'🏫',q:'Нравится ли идти в школу?',opts:[{e:'😤',l:'Нет'},{e:'😊',l:'Да, нравится'},{e:'😴',l:'Всё равно'},{e:'😭',l:'Боюсь'}],ans:1},
+      ]
+    },
+    {
+      day:5, youtubeId:'IkAR7o_Ah9U',
+      title:'Күншіктер — серия 5', ep:'Сезон 2 · Серия 5', xp:35,
+      qs:[
+        {em:'🌿',q:'Что замечают на природе?',opts:[{e:'📱',l:'Телефон'},{e:'🌿',l:'Цветы и растения'},{e:'🚗',l:'Машину'},{e:'🏢',l:'Здание'}],ans:1},
+        {em:'🦋',q:'Что нужно защищать в природе?',opts:[{e:'💰',l:'Деньги'},{e:'🦋',l:'Животных и растения'},{e:'📱',l:'Телефон'},{e:'🏆',l:'Кубок'}],ans:1},
+        {em:'🌳',q:'Что даёт нам дерево?',opts:[{e:'💰',l:'Деньги'},{e:'🔥',l:'Огонь'},{e:'🌳',l:'Чистый воздух'},{e:'💧',l:'Воду'}],ans:2},
         {em:'🌍',q:'Как беречь природу?',opts:[{e:'🗑️',l:'Мусорить'},{e:'🌱',l:'Сажать деревья'},{e:'💨',l:'Загрязнять'},{e:'🔥',l:'Жечь'}],ans:1},
       ]
     },
     {
-      day:4, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 4', ep:'Серия 4', xp:35,
+      day:6, youtubeId:'-BES43eQalU',
+      title:'Күншіктер — серия 6', ep:'Сезон 2 · Серия 6', xp:35,
       qs:[
-        {em:'🎵',q:'Что делают Күншіктер?',opts:[{e:'😤',l:'Кричат'},{e:'🎵',l:'Поют'},{e:'😴',l:'Молчат'},{e:'😭',l:'Плачут'}],ans:1},
-        {em:'🎸',q:'На чём играют?',opts:[{e:'🥁',l:'Барабан'},{e:'🎸',l:'Домбыра'},{e:'🎺',l:'Труба'},{e:'🎻',l:'Скрипка'}],ans:1},
-        {em:'👏',q:'Что чувствуем слушая песню?',opts:[{e:'😡',l:'Злость'},{e:'😢',l:'Грусть'},{e:'😊',l:'Радость'},{e:'😴',l:'Сон'}],ans:2},
-        {em:'🎤',q:'Петь — полезно?',opts:[{e:'❌',l:'Нет'},{e:'🤔',l:'Не знаю'},{e:'✅',l:'Да, полезно!'},{e:'😐',l:'Неважно'}],ans:2},
+        {em:'🎵',q:'Что делают Күншіктер?',opts:[{e:'😴',l:'Спят'},{e:'🎵',l:'Поют'},{e:'😡',l:'Ссорятся'},{e:'🏃',l:'Бегут'}],ans:1},
+        {em:'🎸',q:'Как музыка влияет на нас?',opts:[{e:'😡',l:'Злит'},{e:'😢',l:'Грустит'},{e:'😊',l:'Радует'},{e:'😴',l:'Усыпляет'}],ans:2},
+        {em:'👨‍👩‍👧',q:'Что делают с семьёй?',opts:[{e:'😤',l:'Ссорятся'},{e:'👨‍👩‍👧',l:'Поют вместе'},{e:'🏃',l:'Уходят'},{e:'😴',l:'Спят'}],ans:1},
+        {em:'❤️',q:'Нужно ли любить семью?',opts:[{e:'❌',l:'Нет'},{e:'🤔',l:'Не знаю'},{e:'❤️',l:'Да, обязательно!'},{e:'😐',l:'Всё равно'}],ans:2},
       ]
     },
     {
-      day:5, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 5', ep:'Серия 5', xp:40,
+      day:7, youtubeId:'wid-WirTCos',
+      title:'Күншіктер — серия 7', ep:'Сезон 2 · Серия 7', xp:40,
       qs:[
-        {em:'🤝',q:'Кто такой друг?',opts:[{e:'😠',l:'Кто ругается'},{e:'🤝',l:'Кто помогает'},{e:'🏃',l:'Кто убегает'},{e:'😴',l:'Кто игнорирует'}],ans:1},
-        {em:'💝',q:'Как относиться к другу?',opts:[{e:'😤',l:'Обижать'},{e:'❤️',l:'Любить'},{e:'🏃',l:'Убегать'},{e:'😴',l:'Игнорировать'}],ans:1},
-        {em:'🎁',q:'В день рождения друга что делаешь?',opts:[{e:'😴',l:'Сплю'},{e:'🎁',l:'Дарю подарок'},{e:'😡',l:'Злюсь'},{e:'🏃',l:'Ухожу'}],ans:1},
-        {em:'😢',q:'Если друг плачет что делаешь?',opts:[{e:'😂',l:'Смеюсь'},{e:'🏃',l:'Ухожу'},{e:'🤗',l:'Утешаю'},{e:'😴',l:'Игнорирую'}],ans:2},
+        {em:'🏫',q:'Что берём в школу?',opts:[{e:'🎮',l:'Игрушку'},{e:'🎒',l:'Рюкзак и книги'},{e:'🛏️',l:'Подушку'},{e:'🍕',l:'Пиццу'}],ans:1},
+        {em:'✏️',q:'Что делаем на уроке?',opts:[{e:'😴',l:'Спим'},{e:'✏️',l:'Пишем и учимся'},{e:'🎮',l:'Играем'},{e:'🏃',l:'Бегаем'}],ans:1},
+        {em:'👩‍🏫',q:'Кто такой учитель?',opts:[{e:'👮',l:'Полицейский'},{e:'👨‍⚕️',l:'Врач'},{e:'👩‍🏫',l:'Тот кто нас учит'},{e:'👨‍🍳',l:'Повар'}],ans:2},
+        {em:'📚',q:'Зачем важно учиться?',opts:[{e:'❌',l:'Неважно'},{e:'📚',l:'Чтобы получать знания'},{e:'😴',l:'Чтобы спать'},{e:'🎮',l:'Чтобы играть'}],ans:1},
       ]
     },
     {
-      day:6, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 6', ep:'Серия 6', xp:35,
+      day:8, youtubeId:'5mNuqnntlL4',
+      title:'Динозавры · Мамина кружка · Стройка', ep:'Сезон 2 · Серии 1-3', xp:40,
       qs:[
-        {em:'🏫',q:'Чему учимся в школе?',opts:[{e:'😴',l:'Спать'},{e:'📚',l:'Читать'},{e:'🎮',l:'Играть'},{e:'🍔',l:'Есть'}],ans:1},
-        {em:'✏️',q:'Что нужно на уроке?',opts:[{e:'🎮',l:'Игрушка'},{e:'✏️',l:'Карандаш'},{e:'🍕',l:'Еда'},{e:'📱',l:'Телефон'}],ans:1},
-        {em:'👩‍🏫',q:'Учитель — кто это?',opts:[{e:'👨‍⚕️',l:'Врач'},{e:'👮',l:'Полиция'},{e:'👩‍🏫',l:'Учит нас'},{e:'👨‍🍳',l:'Повар'}],ans:2},
-        {em:'🎒',q:'Что берём в школу?',opts:[{e:'🎮',l:'Игрушку'},{e:'🎒',l:'Рюкзак'},{e:'🛏️',l:'Подушку'},{e:'🍕',l:'Пиццу'}],ans:1},
+        {em:'🦕',q:'Когда жили динозавры?',opts:[{e:'📅',l:'Сегодня'},{e:'🦕',l:'Очень давно'},{e:'🚀',l:'В будущем'},{e:'😴',l:'Никогда'}],ans:1},
+        {em:'☕',q:'Почему мамина кружка важна?',opts:[{e:'💰',l:'Дорогая'},{e:'☕',l:'Это мамина любимая вещь'},{e:'🎮',l:'Игрушка'},{e:'❓',l:'Не знаю'}],ans:1},
+        {em:'🔨',q:'Что нужно при строительстве?',opts:[{e:'😴',l:'Сон'},{e:'🔨',l:'Труд и терпение'},{e:'🎮',l:'Игрушки'},{e:'💰',l:'Только деньги'}],ans:1},
+        {em:'🤲',q:'Нужно ли бережно относиться к вещам?',opts:[{e:'❌',l:'Нет'},{e:'🤲',l:'Да, нужно беречь'},{e:'🤔',l:'Иногда'},{e:'😐',l:'Всё равно'}],ans:1},
       ]
     },
     {
-      day:7, youtubeId:'dYALq5iCvxw',
-      title:'Күншіктер — серия 7', ep:'Серия 7', xp:40,
+      day:9, youtubeId:'7xlXKdv0Bt8',
+      title:'Күншіктер — серия 9', ep:'Сезон 2 · Серия 9', xp:35,
       qs:[
-        {em:'🧠',q:'Что даёт игра?',opts:[{e:'😴',l:'Сон'},{e:'🧠',l:'Ум развивает'},{e:'😡',l:'Злость'},{e:'🏃',l:'Усталость'}],ans:1},
-        {em:'🎯',q:'Что даёт тренировка?',opts:[{e:'❌',l:'Ничего'},{e:'🎯',l:'Мастерство'},{e:'😴',l:'Сон'},{e:'😢',l:'Грусть'}],ans:1},
-        {em:'💪',q:'Если заниматься каждый день?',opts:[{e:'😴',l:'Устанем'},{e:'💪',l:'Станем сильными'},{e:'😡',l:'Разозлимся'},{e:'😭',l:'Заплачем'}],ans:1},
-        {em:'🌟',q:'Что мы узнали от Күншіктер?',opts:[{e:'😤',l:'Ссориться'},{e:'🌟',l:'Дружить'},{e:'🏃',l:'Убегать'},{e:'😴',l:'Спать'}],ans:1},
+        {em:'🎁',q:'Что чувствуешь когда дарят подарок?',opts:[{e:'😡',l:'Злость'},{e:'🎁',l:'Радость'},{e:'😴',l:'Сон'},{e:'😢',l:'Грусть'}],ans:1},
+        {em:'🤗',q:'Что нужно делать чтобы дружить?',opts:[{e:'😤',l:'Обижать'},{e:'🤗',l:'Быть добрым'},{e:'🏃',l:'Убегать'},{e:'😴',l:'Игнорировать'}],ans:1},
+        {em:'👐',q:'Что значит делиться?',opts:[{e:'😤',l:'Забирать'},{e:'👐',l:'Давать другому'},{e:'🏃',l:'Убегать'},{e:'❌',l:'Отказывать'}],ans:1},
+        {em:'💝',q:'Что происходит когда делаешь добро?',opts:[{e:'😢',l:'Плачешь'},{e:'💝',l:'На сердце тепло'},{e:'😴',l:'Спишь'},{e:'😡',l:'Злишься'}],ans:1},
+      ]
+    },
+    {
+      day:10, youtubeId:'nnVSlN5HFlA',
+      title:'Күншіктер — серия 10', ep:'Сезон 2 · Серия 10', xp:35,
+      qs:[
+        {em:'🌙',q:'Что делают вечером?',opts:[{e:'🏃',l:'Бегают'},{e:'🌙',l:'Готовятся ко сну'},{e:'🎮',l:'Играют'},{e:'😡',l:'Злятся'}],ans:1},
+        {em:'🛁',q:'Что делают перед сном?',opts:[{e:'🎮',l:'Играют'},{e:'🛁',l:'Моются, чистят зубы'},{e:'🍕',l:'Едят'},{e:'📱',l:'Смотрят телефон'}],ans:1},
+        {em:'😴',q:'Почему полезно спать?',opts:[{e:'❌',l:'Бесполезно'},{e:'😴',l:'Тело отдыхает'},{e:'🤔',l:'Не знаю'},{e:'😐',l:'Всё равно'}],ans:1},
+        {em:'⭐',q:'Что нужно чтобы хорошо вставать?',opts:[{e:'🎮',l:'Поздно не спать'},{e:'⭐',l:'Рано лечь и рано встать'},{e:'📱',l:'Смотреть телефон'},{e:'🍕',l:'Есть'}],ans:1},
+      ]
+    },
+    {
+      day:11, youtubeId:'yYPIhWtdQXI',
+      title:'Күншіктер — серия 11', ep:'Сезон 2 · Серия 11', xp:40,
+      qs:[
+        {em:'🏋️',q:'Зачем нужны упражнения?',opts:[{e:'❌',l:'Ни зачем'},{e:'🏋️',l:'Укрепляют тело'},{e:'😴',l:'Устаёшь'},{e:'🤔',l:'Не знаю'}],ans:1},
+        {em:'🥗',q:'Что значит правильно питаться?',opts:[{e:'🍕',l:'Пицца каждый день'},{e:'🥗',l:'Есть фрукты и овощи'},{e:'🍦',l:'Только мороженое'},{e:'🍫',l:'Только шоколад'}],ans:1},
+        {em:'💪',q:'Что делаем чтобы быть здоровым?',opts:[{e:'😴',l:'Только спим'},{e:'💪',l:'Занимаемся и питаемся правильно'},{e:'🎮',l:'Играем'},{e:'📱',l:'Смотрим телефон'}],ans:1},
+        {em:'😊',q:'Каким становишься когда здоров?',opts:[{e:'😢',l:'Грустным'},{e:'😡',l:'Злым'},{e:'😊',l:'Радостным, активным'},{e:'😴',l:'Сонным'}],ans:2},
+      ]
+    },
+    {
+      day:12, youtubeId:'PE_hEEgOD5A',
+      title:'Күншіктер — серия 12', ep:'Сезон 2 · Серия 12', xp:40,
+      qs:[
+        {em:'🌟',q:'Что узнали из 2 сезона?',opts:[{e:'😤',l:'Ссориться'},{e:'🌟',l:'Дружить и быть добрым'},{e:'🏃',l:'Бегать'},{e:'😴',l:'Спать'}],ans:1},
+        {em:'❤️',q:'Что такое семья?',opts:[{e:'💰',l:'Богатство'},{e:'❤️',l:'Любовь и поддержка'},{e:'🏆',l:'Победа'},{e:'🎮',l:'Игра'}],ans:1},
+        {em:'🤝',q:'Что нужно чтобы быть хорошим другом?',opts:[{e:'💰',l:'Деньги'},{e:'🤝',l:'Честность и доброта'},{e:'🏆',l:'Победа'},{e:'😤',l:'Сила'}],ans:1},
+        {em:'🚀',q:'Что будет в следующем сезоне?',opts:[{e:'❌',l:'Ничего'},{e:'🚀',l:'Новые приключения'},{e:'😴',l:'Все спят'},{e:'😢',l:'Все плачут'}],ans:1},
       ]
     },
   ]
