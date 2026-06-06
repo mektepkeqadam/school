@@ -391,6 +391,13 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
     <div id="dr-cats"></div>
     <div class="dr-adv"><div class="dr-at">AI кеңесі:</div><div class="dr-ax" id="dr-adv">-</div></div>
   </div>
+  <div class="dr-card hidden" id="zr-card">
+    <div style="font-size:12px;font-weight:700;margin-bottom:11px;">🧠 Зейінді бала нәтижесі</div>
+    <div class="dr-pct" id="zr-pct">-</div>
+    <div class="dr-label" id="zr-lbl">-</div>
+    <div id="zr-cats"></div>
+    <div class="dr-adv"><div class="dr-at" id="zr-at">Ата-анаға кеңес:</div><div class="dr-ax" id="zr-adv">-</div></div>
+  </div>
   <div class="pcard">
     <div style="font-size:12px;font-weight:700;margin-bottom:11px;" id="pr-pay-t">💳 Байланыс</div>
     <button style="background:#25d366;color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;" onclick="goWA()">💬 WhatsApp →</button>
@@ -456,12 +463,13 @@ const T={
     correct:'Дұрыс! 🎉',wrong:'Дұрыс жауап: ',startBtn:'Бастау →',
     days:['Жк','Дс','Сс','Ср','Бс','Жм','Сн'],
     levels:['🌱 Жаңадан бастаушы','⭐ Үміткер','📚 Оқушы','🎓 Білімгер','🏆 Чемпион'],
-    catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология'},
+    catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология',zlogic:'🧩 Логикалық ойлау',zthink:'🧠 Зейін & Ойлау',zphys:'🏃 Физикалық дайындық'},
     mods:{
       alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
       math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:true,color:'#fff8e1'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI психологиялық анализ',free:true,color:'#fce4ec'},
       animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
+      zeyin:{icon:'🧠',title:'Зейінді бала',desc:'Логика · Зейін · Физика',free:true,color:'#ede7f6'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
@@ -469,6 +477,13 @@ const T={
       if(p>=65)return{icon:'⭐',title:'Негізінен дайын',color:'#1d9e75',adv:`${W?'Назар: '+W+'.':''} Күн сайын жаттығыңыз.`};
       if(p>=45)return{icon:'📚',title:'Дайындалу керек',color:'#ef9f27',adv:`${W?W+' бағыттарына назар.':''} 15 мин/күн жеткілікті.`};
       return{icon:'💪',title:'Жедел дайындық керек',color:'#e53935',adv:`${W?'Кемшіліктер: '+W+'.':''} Онлайн курс ұсынамыз.`};
+    },
+    zeyinAdvice(p,c){
+      const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
+      if(p>=85)return{icon:'🏆',title:'Зейіні өте жақсы!',color:'#085041',adv:'Балаңыздың зейіні мен ойлауы тамаша дамыған. Күрделірек логикалық ойындармен қолдаңыз.'};
+      if(p>=65)return{icon:'⭐',title:'Жақсы дамыған',color:'#1d9e75',adv:`${W?'Назар аударыңыз: '+W+'. ':''}Күн сайын 15 мин логика мен зейін жаттығуларын жасаңыз.`};
+      if(p>=45)return{icon:'📚',title:'Дамыту керек',color:'#ef9f27',adv:`${W?W+' бағыттарына көбірек көңіл бөліңіз. ':''}Пазл, лабиринт, «артық затты тап» ойындарын ойнаңыз.`};
+      return{icon:'💪',title:'Белсенді дамыту керек',color:'#e53935',adv:`${W?'Әлсіз бағыттар: '+W+'. ':''}Күнделікті қарапайым тапсырмалардан бастап, біртіндеп күрделендіріңіз.`};
     }
   },
   ru:{
@@ -486,12 +501,13 @@ const T={
     correct:'Правильно! 🎉',wrong:'Правильный ответ: ',startBtn:'Начать →',
     days:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
     levels:['🌱 Новичок','⭐ Претендент','📚 Ученик','🎓 Знаток','🏆 Чемпион'],
-    catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.'},
+    catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.',zlogic:'🧩 Логическое мышление',zthink:'🧠 Внимание и мышление',zphys:'🏃 Физическая готовность'},
     mods:{
       alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
       math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:true,color:'#fff8e1'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI психологический анализ',free:true,color:'#fce4ec'},
       animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
+      zeyin:{icon:'🧠',title:'Внимательный ребёнок',desc:'Логика · Внимание · Физика',free:true,color:'#ede7f6'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
@@ -499,6 +515,13 @@ const T={
       if(p>=65)return{icon:'⭐',title:'В основном готов',color:'#1d9e75',adv:`${W?'Внимание: '+W+'.':''}`};
       if(p>=45)return{icon:'📚',title:'Нужна подготовка',color:'#ef9f27',adv:`${W?'Обратите внимание: '+W+'.':''}`};
       return{icon:'💪',title:'Срочная подготовка',color:'#e53935',adv:`${W?'Слабые места: '+W+'.':''}`};
+    },
+    zeyinAdvice(p,c){
+      const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
+      if(p>=85)return{icon:'🏆',title:'Внимание отличное!',color:'#085041',adv:'Внимание и мышление ребёнка прекрасно развиты. Поддержите более сложными логическими играми.'};
+      if(p>=65)return{icon:'⭐',title:'Хорошо развито',color:'#1d9e75',adv:`${W?'Обратите внимание: '+W+'. ':''}Занимайтесь логикой и вниманием по 15 мин в день.`};
+      if(p>=45)return{icon:'📚',title:'Нужно развивать',color:'#ef9f27',adv:`${W?'Уделите внимание: '+W+'. ':''}Играйте в пазлы, лабиринты, «найди лишнее».`};
+      return{icon:'💪',title:'Активно развивать',color:'#e53935',adv:`${W?'Слабые направления: '+W+'. ':''}Начните с простых заданий, постепенно усложняя.`};
     }
   }
 };
@@ -545,6 +568,41 @@ const LESSONS={
         {q:'Жеңілістен кейін тынышталады ма?',img:'😢',opts:['Иә','2-3 мин','Ұзақ жылайды','Ашуланады'],cat:'emotion',sc:[10,6,3,0]},
         {q:'Жаңа ережелерге бейімделеді ме?',img:'📋',opts:['Иә, оңай','Бірте-бірте','Қиналады','Жоқ'],cat:'emotion',sc:[10,6,3,0]},
       ]}
+    ]},
+    zeyin:{icon:'🧠',maxXP:60,lessons:[
+      {t:'Зейінді бала тесті',xp:60,diag:true,zeyin:true,qs:[
+        {type:'intro',em:'🧠',ti:'Зейінді бала',ds:'30 сұрақ · 3 бағыт. Балаңызды бақылап жауап беріңіз. Соңында бағыт бойынша % және ата-анаға кеңес.',bs:['30 сұрақ','3 бағыт','Кеңес']},
+        {q:'Заттарды түсі мен пішіні бойынша топтай ала ма?',img:'🟦🔺',opts:['Иә, оңай','Кейде','Қиналады','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'4 заттың ішінен артығын таба ма?',img:'🍎🍌🍇⚽',opts:['Иә, тез','Кейде','Қиналады','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Заттарды үлкендігі бойынша рет-ретімен қоя ма?',img:'📊',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Биік стақандағы су көп емес, тең екенін түсіне ме?',img:'🥛',opts:['Иә, түсінеді','Кейде','Шатасады','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'«Себеп-салдарды» түсіне ме (жаңбыр → жер су болады)?',img:'🌧️',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Суреттерді оқиға ретімен орналастыра ма?',img:'🖼️',opts:['Иә, дұрыс','Кейде','Қиналады','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Қарама-қарсы ұғымдарды біле ме (үлкен–кіші)?',img:'↔️',opts:['Иә, барлығын','Көбін','Аздап','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Қарапайым жұмбақты шеше ме?',img:'❓',opts:['Иә','Кейде','Көмекпен','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Аналогия таба ма (құс–ұя, ит–?)?',img:'🐦',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Бөлшек пен бүтінді түсіне ме (жарты алма)?',img:'🍎',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Бір іске қанша уақыт зейін қояды?',img:'⏱️',opts:['15+ мин','10 мин','5 мин','1-2 мин'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Бастаған тапсырманы соңына дейін орындай ма?',img:'✅',opts:['Иә, әрқашан','Көбіне','Кейде','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'2-3 қадамдық нұсқауды есте сақтай ма?',img:'📋',opts:['Иә','Кейде','Біреуін ғана','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Екі суреттің айырмашылығын таба ма?',img:'🔍',opts:['Иә, барлығын','Көбін','Аздап','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Үлгі бойынша өрнекті жалғастыра ма?',img:'🔷🔶🔷',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Бір істен екіншіге зейінін ауыстыра ма?',img:'🔄',opts:['Иә, оңай','Кейде','Қиналады','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Алаңдамай нұсқауды тыңдай ма?',img:'👂',opts:['Иә','Көбіне','Кейде','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Жұптарды табу (есте сақтау) ойынын ойнай ма?',img:'🃏',opts:['Иә, жақсы','Кейде','Аздап','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Лабиринт/нүктелерді қосуды орындай ма?',img:'🌀',opts:['Иә','Кейде','Көмекпен','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Көрген затын біраздан соң есте сақтай ма?',img:'🧩',opts:['Иә','Кейде','Аздап','Жоқ'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Қарындашты дұрыс ұстай ма?',img:'✏️',opts:['Иә, дұрыс','Кейде','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Қайшымен қия ма?',img:'✂️',opts:['Иә, жақсы','Кейде','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Бір аяқпен тұра ала ма (тепе-теңдік)?',img:'🦩',opts:['Иә, ұзақ','Аздап','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Допты лақтырып, қағып ала ма?',img:'⚽',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Сызық бойымен қия/сыза ма?',img:'➖',opts:['Иә, дәл','Кейде','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Жүгіру мен секіру координациясы қалай?',img:'🏃',opts:['Өте жақсы','Жақсы','Орташа','Нашар'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Түйме/сыдырманы өзі іле ме?',img:'🧥',opts:['Иә, өзі','Кейде','Көмекпен','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Ұсақ моторика (моншақ тізу) қалай?',img:'📿',opts:['Жақсы','Орташа','Қиналады','Нашар'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Шаршамай 20-30 мин үстелде отыра ма?',img:'🪑',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Ұзақ сурет салғанда қолы талмай ма?',img:'🎨',opts:['Иә','Кейде','Тез талады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
+      ]}
     ]}
   },
   ru:{
@@ -587,6 +645,41 @@ const LESSONS={
         {q:'Успокаивается после неудачи?',img:'😢',opts:['Да','2-3 мин','Долго плачет','Злится'],cat:'emotion',sc:[10,6,3,0]},
         {q:'Адаптируется к правилам?',img:'📋',opts:['Да, легко','Постепенно','Затрудняется','Нет'],cat:'emotion',sc:[10,6,3,0]},
       ]}
+    ]},
+    zeyin:{icon:'🧠',maxXP:60,lessons:[
+      {t:'Тест «Внимательный ребёнок»',xp:60,diag:true,zeyin:true,qs:[
+        {type:'intro',em:'🧠',ti:'Внимательный ребёнок',ds:'30 вопросов · 3 направления. Отвечайте, наблюдая за ребёнком. В конце — % по направлениям и совет родителям.',bs:['30 вопросов','3 направления','Совет']},
+        {q:'Группирует предметы по цвету и форме?',img:'🟦🔺',opts:['Да, легко','Иногда','Затрудняется','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Находит лишний предмет из 4?',img:'🍎🍌🍇⚽',opts:['Да, быстро','Иногда','Затрудняется','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Расставляет предметы по размеру?',img:'📊',opts:['Да','Иногда','Затрудняется','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Понимает, что воды поровну (даже в высоком стакане)?',img:'🥛',opts:['Да, понимает','Иногда','Путается','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Понимает причину-следствие (дождь → лужи)?',img:'🌧️',opts:['Да','Иногда','Немного','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Раскладывает картинки по порядку событий?',img:'🖼️',opts:['Да, верно','Иногда','Затрудняется','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Знает противоположности (большой–маленький)?',img:'↔️',opts:['Да, все','Большинство','Немного','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Решает простые загадки?',img:'❓',opts:['Да','Иногда','С помощью','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Находит аналогию (птица–гнездо, собака–?)?',img:'🐦',opts:['Да','Иногда','Затрудняется','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Понимает часть и целое (половина яблока)?',img:'🍎',opts:['Да','Иногда','Немного','Нет'],cat:'zlogic',sc:[10,6,3,0]},
+        {q:'Сколько удерживает внимание на одном деле?',img:'⏱️',opts:['15+ мин','10 мин','5 мин','1-2 мин'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Доводит начатое дело до конца?',img:'✅',opts:['Да, всегда','Чаще да','Иногда','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Запоминает инструкцию из 2-3 шагов?',img:'📋',opts:['Да','Иногда','Только один','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Находит отличия на двух картинках?',img:'🔍',opts:['Да, все','Большинство','Немного','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Продолжает узор по образцу?',img:'🔷🔶🔷',opts:['Да','Иногда','Затрудняется','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Переключает внимание с одного на другое?',img:'🔄',opts:['Да, легко','Иногда','Затрудняется','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Слушает инструкцию не отвлекаясь?',img:'👂',opts:['Да','Чаще да','Иногда','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Играет в игру на память (найди пары)?',img:'🃏',opts:['Да, хорошо','Иногда','Немного','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Проходит лабиринт / соединяет точки?',img:'🌀',opts:['Да','Иногда','С помощью','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Запоминает увиденное спустя время?',img:'🧩',opts:['Да','Иногда','Немного','Нет'],cat:'zthink',sc:[10,6,3,0]},
+        {q:'Правильно держит карандаш?',img:'✏️',opts:['Да, верно','Иногда','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Режет ножницами?',img:'✂️',opts:['Да, хорошо','Иногда','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Стоит на одной ноге (равновесие)?',img:'🦩',opts:['Да, долго','Немного','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Бросает и ловит мяч?',img:'⚽',opts:['Да','Иногда','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Режет/рисует по линии?',img:'➖',opts:['Да, точно','Иногда','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Как с координацией бега и прыжков?',img:'🏃',opts:['Отлично','Хорошо','Средне','Слабо'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Сам застёгивает пуговицы/молнию?',img:'🧥',opts:['Да, сам','Иногда','С помощью','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Мелкая моторика (нанизывает бусины)?',img:'📿',opts:['Хорошо','Средне','Затрудняется','Слабо'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Сидит за столом 20-30 мин не уставая?',img:'🪑',opts:['Да','Иногда','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
+        {q:'Рука не устаёт при долгом рисовании?',img:'🎨',opts:['Да','Иногда','Быстро устаёт','Нет'],cat:'zphys',sc:[10,6,3,0]},
+      ]}
     ]}
   }
 };
@@ -598,10 +691,11 @@ let ST={
   id:'',name:'',age:6,lang:'kk',
   activated:false,promoCode:'',
   xp:0,streak:0,lastDate:'',done:0,correct:0,
-  prog:{alifbe:0,math:0,diag:0,animasabaq:0},
-  xpMod:{alifbe:0,math:0,diag:0,animasabaq:0},
+  prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+  xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
   animaDone:[],
-  diagResult:null
+  diagResult:null,
+  zeyinResult:null
 };
 let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag=false,prevScr='s-home';
 
@@ -654,10 +748,11 @@ async function loadFromServer(id){
         activated:result.activated||false, promoCode:result.promoCode||'',
         xp:result.xp||0, streak:result.streak||0, lastDate:ST.lastDate,
         done:result.done||0, correct:result.correct||0,
-        prog:result.prog||{alifbe:0,math:0,diag:0,animasabaq:0},
-        xpMod:result.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0},
+        prog:result.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+        xpMod:result.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
         animaDone:result.animaDone||[],
-        diagResult:result.diagResult||null
+        diagResult:result.diagResult||null,
+        zeyinResult:result.zeyinResult||null
       };
       lang=ST.lang;
       localStorage.setItem('mq_v4',JSON.stringify(ST));
@@ -754,9 +849,9 @@ async function doLogin(){
         activated:fbData.activated||false, promoCode:fbData.promoCode||'',
         xp:fbData.xp||0, streak:fbData.streak||0, lastDate:'',
         done:fbData.done||0, correct:fbData.correct||0,
-        prog:fbData.prog||{alifbe:0,math:0,diag:0,animasabaq:0},
-        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0},
-        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null
+        prog:fbData.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null, zeyinResult:fbData.zeyinResult||null
       };
       lang=ST.lang;
       updateUI(); updateStreak(); saveState();
@@ -768,8 +863,8 @@ async function doLogin(){
 
   // 3. Жаңа оқушы
   ST.id=id; ST.name=name; ST.age=age; ST.lang=lang;
-  ST.prog={alifbe:0,math:0,diag:0,animasabaq:0};
-  ST.xpMod={alifbe:0,math:0,diag:0,animasabaq:0};
+  ST.prog={alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0};
+  ST.xpMod={alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0};
   ST.animaDone=[];
   if(!ST.startDate)ST.startDate=Date.now();
   updateStreak(); saveState();
@@ -997,6 +1092,18 @@ function finishLesson(){
     let tot=0,mx=0;Object.keys(cats).forEach(k=>{tot+=cats[k];mx+=catMax[k];});
     const pct=mx>0?Math.round((tot/mx)*100):0;
     const catPcts={};Object.keys(cats).forEach(k=>{catPcts[k]=Math.round((cats[k]/catMax[k])*100);});
+    const isZeyin=LESSONS[lang][cMod].lessons[cLes].zeyin;
+    if(isZeyin){
+      ST.zeyinResult={pct,catPcts};
+      scheduleSave();
+      const res=T[lang].zeyinAdvice(pct,catPcts);
+      const colors={zlogic:'#1976d2',zthink:'#7b1fa2',zphys:'#f57c00'};
+      const bars=Object.entries(catPcts).map(([k,v])=>`<div class="dbar" style="margin-bottom:7px;text-align:left;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${colors[k]||'#666'}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${colors[k]||'#666'}"></div></div></div>`).join('');
+      document.getElementById('c-ic').textContent=res.icon;document.getElementById('c-ti').textContent=res.title;
+      document.getElementById('c-xp').textContent=pct+'%';
+      document.getElementById('c-su').innerHTML=`<div style="margin:10px 0 14px;">${bars}</div><div style="text-align:left;font-size:13px;line-height:1.5;background:var(--gl);border-radius:10px;padding:11px 13px;"><b>${lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:'}</b><br>${res.adv}</div>`;
+      showScr('s-cmp');return;
+    }
     ST.diagResult={pct,catPcts};
     scheduleSave();
     const res=T[lang].diagAdvice(pct,catPcts);
@@ -1088,6 +1195,16 @@ function initProfile(){
     const cc=document.getElementById('dr-cats');cc.innerHTML='';
     const colors={attention:'#1976d2',speech:'#388e3c',motor:'#f57c00',math:'#7b1fa2',self:'#0097a7',social:'#e91e63',emotion:'#c62828'};
     Object.entries(r.catPcts).forEach(([k,v])=>{cc.innerHTML+=`<div class="dbar" style="margin-bottom:7px;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${colors[k]||'#666'}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${colors[k]||'#666'}"></div></div></div>`;});
+  }
+  if(ST.zeyinResult){
+    document.getElementById('zr-card').classList.remove('hidden');
+    const r=ST.zeyinResult;const res=T[lang].zeyinAdvice(r.pct,r.catPcts);
+    document.getElementById('zr-pct').textContent=r.pct+'%';document.getElementById('zr-pct').style.color=res.color;
+    document.getElementById('zr-lbl').textContent=res.icon+' '+res.title;document.getElementById('zr-adv').textContent=res.adv;
+    document.getElementById('zr-at').textContent=lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:';
+    const zc=document.getElementById('zr-cats');zc.innerHTML='';
+    const zcolors={zlogic:'#1976d2',zthink:'#7b1fa2',zphys:'#f57c00'};
+    Object.entries(r.catPcts).forEach(([k,v])=>{zc.innerHTML+=`<div class="dbar" style="margin-bottom:7px;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${zcolors[k]||'#666'}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${zcolors[k]||'#666'}"></div></div></div>`;});
   }
 }
 
@@ -1298,9 +1415,9 @@ async function adminResetStudent(idx){
   const resetData = {
     ...s,
     xp:0, streak:0, correct:0, done:0,
-    prog:{alifbe:0,math:0,diag:0,animasabaq:0},
-    xpMod:{alifbe:0,math:0,diag:0,animasabaq:0},
-    animaDone:[], diagResult:null,
+    prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+    xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+    animaDone:[], diagResult:null, zeyinResult:null,
     updatedAt: Date.now()
   };
 
@@ -1443,6 +1560,10 @@ async function fbSaveStudent(st){
     correct: st.correct||0,
     done: st.done||0,
     prog: st.prog||{},
+    xpMod: st.xpMod||{},
+    animaDone: st.animaDone||[],
+    diagResult: st.diagResult||null,
+    zeyinResult: st.zeyinResult||null,
     activated: st.activated||false,
     updatedAt: Date.now()
   });
