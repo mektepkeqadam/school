@@ -335,7 +335,8 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
   <div class="c-title" id="c-ti">Жарайсың!</div>
   <div class="c-xp" id="c-xp">+10 XP</div>
   <div class="c-sub" id="c-su">Керемет!</div>
-  <button class="c-btn" onclick="goHome()"><span id="cm-h">Басты бетке →</span></button>
+  <button class="c-btn" id="cm-next-btn" onclick="continueLesson()" style="display:none;"><span id="cm-next">Жалғастыру →</span></button>
+  <button class="c-btn out" onclick="goHome()"><span id="cm-h">Басты бетке →</span></button>
   <button class="c-btn out" onclick="replay()"><span id="cm-r">Қайталау ↺</span></button>
 </div>
 </div>
@@ -465,19 +466,19 @@ const T={
     stTitle:'%s күн қатарынан',stSub:'Күн сайын жаттық!',
     navH:'Басты',navL:'Сабақтар',navP:'Профиль',
     lesT:'📚 Барлық сабақтар',mdBackT:'Артқа',nxtT:'Жалғастыру →',
-    cmH:'Басты бетке →',cmR:'Қайталау ↺',
+    cmH:'Басты бетке →',cmR:'Қайталау ↺',cmNext:'Жалғастыру →',
     prT:'👤 Профиль',prProgT:'📊 Прогрес',prResetT:'🚪 Шығу',prCrL:'✅ Дұрыс',prStL:'🔥 Күн',
     correct:'Дұрыс! 🎉',wrong:'Дұрыс жауап: ',startBtn:'Бастау →',
     days:['Жк','Дс','Сс','Ср','Бс','Жм','Сн'],
     levels:['🌱 Жаңадан бастаушы','⭐ Үміткер','📚 Оқушы','🎓 Білімгер','🏆 Чемпион'],
     catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология',zlogic:'🧩 Логикалық ойлау',zthink:'🧠 Зейін & Ойлау',zphys:'🏃 Физикалық дайындық',kfon:'🔤 Фонематикалық есту',kvis:'👁️ Көру қабылдау',kmot:'✋ Ұсақ моторика',kspace:'🧭 Кеңістік бағдар',kmem:'🧠 Есте сақтау',katt:'🎯 Зейін',kthink:'💡 Ойлау',kspeech:'🗣️ Сөйлеу'},
     mods:{
-      alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
-      math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:true,color:'#fff8e1'},
-      animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI · Зейінді бала · Кешенді',free:true,color:'#fce4ec'},
-      kalligraf:{icon:'✍️',title:'Каллиграфия',desc:'13 әріп · Әріп элементтері',free:true,color:'#e0f7fa'},
+      alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
       oqu:{icon:'📖',title:'Оқу сабағы',desc:'18 тақырып · Буынсыз оқу',free:true,color:'#e8f5e9'},
+      math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:true,color:'#fff8e1'},
+      kalligraf:{icon:'✍️',title:'Каллиграфия',desc:'13 әріп · Әріп элементтері',free:true,color:'#e0f7fa'},
+      animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
@@ -511,19 +512,19 @@ const T={
     stTitle:'%s дней подряд',stSub:'Занимайся каждый день!',
     navH:'Главная',navL:'Уроки',navP:'Профиль',
     lesT:'📚 Все уроки',mdBackT:'Назад',nxtT:'Продолжить →',
-    cmH:'На главную →',cmR:'Повторить ↺',
+    cmH:'На главную →',cmR:'Повторить ↺',cmNext:'Продолжить →',
     prT:'👤 Профиль',prProgT:'📊 Прогресс',prResetT:'🚪 Выйти',prCrL:'✅ Верно',prStL:'🔥 Дней',
     correct:'Правильно! 🎉',wrong:'Правильный ответ: ',startBtn:'Начать →',
     days:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
     levels:['🌱 Новичок','⭐ Претендент','📚 Ученик','🎓 Знаток','🏆 Чемпион'],
     catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.',zlogic:'🧩 Логическое мышление',zthink:'🧠 Внимание и мышление',zphys:'🏃 Физическая готовность',kfon:'🔤 Фонематический слух',kvis:'👁️ Зрит. восприятие',kmot:'✋ Мелкая моторика',kspace:'🧭 Ориентация',kmem:'🧠 Память',katt:'🎯 Внимание',kthink:'💡 Мышление',kspeech:'🗣️ Речь'},
     mods:{
-      alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
-      math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:true,color:'#fff8e1'},
-      animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI · Внимательный · Комплекс',free:true,color:'#fce4ec'},
-      kalligraf:{icon:'✍️',title:'Каллиграфия',desc:'13 букв · Элементы букв',free:true,color:'#e0f7fa'},
+      alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
       oqu:{icon:'📖',title:'Урок чтения',desc:'18 тем · Читаем без слогов',free:true,color:'#e8f5e9'},
+      math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:true,color:'#fff8e1'},
+      kalligraf:{icon:'✍️',title:'Каллиграфия',desc:'13 букв · Элементы букв',free:true,color:'#e0f7fa'},
+      animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
@@ -825,7 +826,8 @@ let ST={
   animaDone:[],
   diagResult:null,
   zeyinResult:null,
-  kompleksResult:null
+  kompleksResult:null,
+  unlk:{},unlkDate:{},lp:{}
 };
 let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag=false,prevScr='s-home';
 
@@ -883,7 +885,8 @@ async function loadFromServer(id){
         animaDone:result.animaDone||[],
         diagResult:result.diagResult||null,
         zeyinResult:result.zeyinResult||null,
-        kompleksResult:result.kompleksResult||null
+        kompleksResult:result.kompleksResult||null,
+        unlk:result.unlk||{},unlkDate:result.unlkDate||{},lp:result.lp||{}
       };
       lang=ST.lang;
       localStorage.setItem('mq_v4',JSON.stringify(ST));
@@ -929,7 +932,7 @@ function updateUI(){
   setT('h-kun',t.hKun);setT('h-den',t.hDen);
   setT('ht-lvl',t.htLvl);setT('ht-mod',t.htMod);setT('ht-str',t.htStr);
   setT('st-s',t.stSub);setT('les-t',t.lesT);setT('md-back-t',t.mdBackT);
-  setT('nxt-t',t.nxtT);setT('cm-h',t.cmH);setT('cm-r',t.cmR);
+  setT('nxt-t',t.nxtT);setT('cm-h',t.cmH);setT('cm-r',t.cmR);setT('cm-next',t.cmNext);
   setT('pr-t',t.prT);setT('pr-prog-t',t.prProgT);setT('pr-reset-t',t.prResetT);
   setT('pr-cr-l',t.prCrL);setT('pr-st-l',t.prStL);
   ['h','l','p'].forEach(k=>{
@@ -982,7 +985,8 @@ async function doLogin(){
         done:fbData.done||0, correct:fbData.correct||0,
         prog:fbData.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
         xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
-        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null, zeyinResult:fbData.zeyinResult||null, kompleksResult:fbData.kompleksResult||null
+        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null, zeyinResult:fbData.zeyinResult||null, kompleksResult:fbData.kompleksResult||null,
+        unlk:fbData.unlk||{}, unlkDate:fbData.unlkDate||{}, lp:fbData.lp||{}
       };
       lang=ST.lang;
       updateUI(); updateStreak(); saveState();
@@ -1104,7 +1108,57 @@ function goKaspi(){const c=JSON.parse(localStorage.getItem('mq_cfg')||'{}');wind
 function goWA(){const c=JSON.parse(localStorage.getItem('mq_cfg')||'{}');const n=(c.waNumber||'77000000000').replace(/\D/g,'');window.open(`https://wa.me/${n}`,'_blank');}
 
 // ═══ САБАҚ ЛОГИКАСЫ ═══
-function canAccessLesson(idx){return true;} // Барлығы тегін ашық
+// ═══ КҮНДЕЛІКТІ АШЫЛУ ЖҮЙЕСІ ═══
+function todayStr(){return new Date().toDateString();}
+function dayDiff(dateStr){
+  if(!dateStr)return 0;
+  const d=new Date(dateStr),now=new Date();
+  if(isNaN(d))return 0;
+  const a=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const b=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return Math.max(0,Math.round((b-a)/86400000));
+}
+// Күн сайын 1 жаңа сабақ ашылады (алдыңғысы 100% болмаса да)
+function applyDailyUnlock(mod){
+  const M=LESSONS[lang]&&LESSONS[lang][mod];
+  if(!M)return;
+  const n=M.lessons.length;
+  if(!ST.unlk)ST.unlk={};if(!ST.unlkDate)ST.unlkDate={};
+  if(ST.unlk[mod]==null)ST.unlk[mod]=1;
+  if(!ST.unlkDate[mod])ST.unlkDate[mod]=todayStr();
+  if(ST.unlk[mod]<n){
+    const dd=dayDiff(ST.unlkDate[mod]);
+    if(dd>0){ST.unlk[mod]=Math.min(n,ST.unlk[mod]+dd);ST.unlkDate[mod]=todayStr();scheduleSave();}
+  }
+}
+function canAccessLesson(mod,idx){
+  if(idx===0)return true;
+  if(!ST.unlk||ST.unlk[mod]==null)return false;
+  return idx<ST.unlk[mod];
+}
+// Сабақ нәтижесін сақтау + 100% болса келесісін ашу
+function recordLessonProgress(pct){
+  const mod=cMod,idx=cLes,M=LESSONS[lang][mod];
+  if(!M)return;
+  if(!ST.lp)ST.lp={};if(!ST.lp[mod])ST.lp[mod]={};
+  ST.lp[mod][idx]=Math.max(ST.lp[mod][idx]||0,pct);
+  if(!ST.unlk)ST.unlk={};if(ST.unlk[mod]==null)ST.unlk[mod]=1;
+  if(!ST.unlkDate)ST.unlkDate={};if(!ST.unlkDate[mod])ST.unlkDate[mod]=todayStr();
+  if(pct>=100&&idx===ST.unlk[mod]-1&&ST.unlk[mod]<M.lessons.length){
+    ST.unlk[mod]++;ST.unlkDate[mod]=todayStr();
+  }
+}
+// «Жалғастыру →» батырмасын көрсету (келесі сабақ ашық болса)
+function setupContinueBtn(){
+  const M=LESSONS[lang][cMod];const btn=document.getElementById('cm-next-btn');if(!btn||!M){if(btn)btn.style.display='none';return;}
+  const nextUnlocked=(cLes+1<M.lessons.length)&&canAccessLesson(cMod,cLes+1);
+  btn.style.display=nextUnlocked?'block':'none';
+}
+function continueLesson(){
+  const M=LESSONS[lang][cMod];
+  if(M&&cLes+1<M.lessons.length&&canAccessLesson(cMod,cLes+1))startLesson(cMod,cLes+1);
+  else goHome();
+}
 
 function getMods(){
   return Object.entries(T[lang].mods).map(([k,v])=>({key:k,...v}));
@@ -1140,16 +1194,20 @@ function openMod(mod){
   document.getElementById('md-icon').textContent=M.icon;
   document.getElementById('md-title').textContent=m?.title||'-';
   document.getElementById('md-sub').textContent=`${M.lessons.length} ${lang==='kk'?'сабақ':'урок'} · ${M.maxXP} XP`;
+  applyDailyUnlock(mod);
   const list=document.getElementById('md-list');list.innerHTML='';
-  const doneCount=Math.floor((ST.prog[mod]/100)*M.lessons.length);
+  const lp=(ST.lp&&ST.lp[mod])||{};
   M.lessons.forEach((l,i)=>{
-    const done=i<doneCount,isCur=i===doneCount;
-    const canAccess=canAccessLesson(i)||done;
+    const score=lp[i];
+    const done=score!=null;
+    const unlocked=canAccessLesson(mod,i);
     const div=document.createElement('div');div.className='les-row';
-    div.innerHTML=`<div class="les-num ${done?'done':isCur?'cur':''}">${done?'✓':i+1}</div><div class="les-info"><div class="les-title">${l.t}</div><div class="les-xp">+${l.xp} XP</div></div><div class="les-lock">${done?'✅':isCur?'▶️':canAccess?'▶️':'🔒'}</div>`;
-    if(canAccess)div.onclick=()=>startLesson(mod,i);
-    else div.onclick=()=>showScr('s-promo');
-    if(!canAccess)div.style.opacity='0.55';
+    const numCls=done?'done':(unlocked?'cur':'');
+    const lockIcon=done?'✅':(unlocked?'▶️':'🔒');
+    const full=(done&&score>=100)?' · 100%':'';
+    div.innerHTML=`<div class="les-num ${numCls}">${done?'✓':i+1}</div><div class="les-info"><div class="les-title">${l.t}</div><div class="les-xp">+${l.xp} XP${full}</div></div><div class="les-lock">${lockIcon}</div>`;
+    if(unlocked)div.onclick=()=>startLesson(mod,i);
+    else{div.onclick=()=>showToast(lang==='kk'?'🔒 Алдыңғы сабақты 100% орында немесе келесі күні ашылады':'🔒 Пройди предыдущий на 100% или жди следующего дня');div.style.opacity='0.55';}
     list.appendChild(div);
   });
   prevScr=document.querySelector('.scr.on')?.id||'s-home';
@@ -1228,27 +1286,30 @@ function finishLesson(){
     const grp=ls.zeyin?'zeyin':(ls.kompleks?'kompleks':'');
     if(grp){
       ST[grp+'Result']={pct,catPcts};
+      recordLessonProgress(100);
       scheduleSave();
       const res=T[lang][grp+'Advice'](pct,catPcts);
       const bars=Object.entries(catPcts).map(([k,v],i)=>`<div class="dbar" style="margin-bottom:7px;text-align:left;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${diagPalette(i)}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${diagPalette(i)}"></div></div></div>`).join('');
       document.getElementById('c-ic').textContent=res.icon;document.getElementById('c-ti').textContent=res.title;
       document.getElementById('c-xp').textContent=pct+'%';
       document.getElementById('c-su').innerHTML=`<div style="margin:10px 0 14px;">${bars}</div><div style="text-align:left;font-size:13px;line-height:1.5;background:var(--gl);border-radius:10px;padding:11px 13px;"><b>${lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:'}</b><br>${res.adv}</div>`;
-      showScr('s-cmp');return;
+      setupContinueBtn();showScr('s-cmp');return;
     }
     ST.diagResult={pct,catPcts};
+    recordLessonProgress(100);
     scheduleSave();
     const res=T[lang].diagAdvice(pct,catPcts);
     document.getElementById('c-ic').textContent=res.icon;document.getElementById('c-ti').textContent=res.title;
     document.getElementById('c-xp').textContent=pct+'%';document.getElementById('c-su').textContent=res.adv;
-    showScr('s-cmp');return;
+    setupContinueBtn();showScr('s-cmp');return;
   }
   const pct=cTotal>0?Math.round((cScore/cTotal)*100):100;
   document.getElementById('c-ic').textContent=pct===100?'🏆':pct>=70?'⭐':'💪';
   document.getElementById('c-ti').textContent=pct===100?(lang==='kk'?'Мінсіз!':'Отлично!'):pct>=70?(lang==='kk'?'Жарайсың!':'Молодец!'):lang==='kk'?'Жалғастыр!':'Продолжай!';
   document.getElementById('c-xp').textContent=`+${lXP} XP`;
   document.getElementById('c-su').textContent=`${cScore}/${cTotal} · ${pct}%`;
-  scheduleSave();showScr('s-cmp');
+  recordLessonProgress(pct);
+  scheduleSave();setupContinueBtn();showScr('s-cmp');
 }
 
 function backLesson(){showScr('s-mdet');}
@@ -1559,6 +1620,7 @@ async function adminResetStudent(idx){
     prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
     xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
     animaDone:[], diagResult:null, zeyinResult:null, kompleksResult:null,
+    unlk:{}, unlkDate:{}, lp:{},
     updatedAt: Date.now()
   };
 
@@ -1706,6 +1768,7 @@ async function fbSaveStudent(st){
     diagResult: st.diagResult||null,
     zeyinResult: st.zeyinResult||null,
     kompleksResult: st.kompleksResult||null,
+    unlk: st.unlk||{}, unlkDate: st.unlkDate||{}, lp: st.lp||{},
     activated: st.activated||false,
     updatedAt: Date.now()
   });
