@@ -398,6 +398,13 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
     <div id="zr-cats"></div>
     <div class="dr-adv"><div class="dr-at" id="zr-at">Ата-анаға кеңес:</div><div class="dr-ax" id="zr-adv">-</div></div>
   </div>
+  <div class="dr-card hidden" id="kr-card">
+    <div style="font-size:12px;font-weight:700;margin-bottom:11px;" id="kr-title">🔬 Кешенді диагностика нәтижесі</div>
+    <div class="dr-pct" id="kr-pct">-</div>
+    <div class="dr-label" id="kr-lbl">-</div>
+    <div id="kr-cats"></div>
+    <div class="dr-adv"><div class="dr-at" id="kr-at">Ата-анаға кеңес:</div><div class="dr-ax" id="kr-adv">-</div></div>
+  </div>
   <div class="pcard">
     <div style="font-size:12px;font-weight:700;margin-bottom:11px;" id="pr-pay-t">💳 Байланыс</div>
     <button style="background:#25d366;color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;" onclick="goWA()">💬 WhatsApp →</button>
@@ -463,13 +470,16 @@ const T={
     correct:'Дұрыс! 🎉',wrong:'Дұрыс жауап: ',startBtn:'Бастау →',
     days:['Жк','Дс','Сс','Ср','Бс','Жм','Сн'],
     levels:['🌱 Жаңадан бастаушы','⭐ Үміткер','📚 Оқушы','🎓 Білімгер','🏆 Чемпион'],
-    catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология',zlogic:'🧩 Логикалық ойлау',zthink:'🧠 Зейін & Ойлау',zphys:'🏃 Физикалық дайындық'},
+    catNames:{attention:'🧠 Зейін',speech:'🗣️ Тіл',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Дербестік',social:'👫 Әлеуметтік',emotion:'❤️ Психология',zlogic:'🧩 Логикалық ойлау',zthink:'🧠 Зейін & Ойлау',zphys:'🏃 Физикалық дайындық',kfon:'🔤 Фонематикалық есту',kvis:'👁️ Көру қабылдау',kmot:'✋ Ұсақ моторика',kspace:'🧭 Кеңістік бағдар',kmem:'🧠 Есте сақтау',katt:'🎯 Зейін',kthink:'💡 Ойлау',kspeech:'🗣️ Сөйлеу'},
     mods:{
       alifbe:{icon:'📖',title:'Қазақ Әліппесі',desc:'42 әріп · Буын · Сөз оқу',free:true,color:'#e8f5e9'},
       math:{icon:'🔢',title:'Математика',desc:'Санау · Есептер · Пішіндер',free:true,color:'#fff8e1'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI психологиялық анализ',free:true,color:'#fce4ec'},
       animasabaq:{icon:'🚀',title:'Анимасабақ',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
       zeyin:{icon:'🧠',title:'Зейінді бала',desc:'Логика · Зейін · Физика',free:true,color:'#ede7f6'},
+      kalligraf:{icon:'✍️',title:'Каллиграфия',desc:'13 әріп · Лысенко әдісі',free:true,color:'#e0f7fa'},
+      kompleks:{icon:'🔬',title:'Кешенді Диагностика',desc:'8 тест · Лысенко әдісі',free:true,color:'#f3e5f5'},
+      oqu:{icon:'📖',title:'Оқу сабағы',desc:'18 тақырып · Буынсыз оқу',free:true,color:'#e8f5e9'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
@@ -484,6 +494,13 @@ const T={
       if(p>=65)return{icon:'⭐',title:'Жақсы дамыған',color:'#1d9e75',adv:`${W?'Назар аударыңыз: '+W+'. ':''}Күн сайын 15 мин логика мен зейін жаттығуларын жасаңыз.`};
       if(p>=45)return{icon:'📚',title:'Дамыту керек',color:'#ef9f27',adv:`${W?W+' бағыттарына көбірек көңіл бөліңіз. ':''}Пазл, лабиринт, «артық затты тап» ойындарын ойнаңыз.`};
       return{icon:'💪',title:'Белсенді дамыту керек',color:'#e53935',adv:`${W?'Әлсіз бағыттар: '+W+'. ':''}Күнделікті қарапайым тапсырмалардан бастап, біртіндеп күрделендіріңіз.`};
+    },
+    kompleksAdvice(p,c){
+      const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.kk.catNames[k]).join(', ');
+      if(p>=85)return{icon:'🏆',title:'Мектепке толық дайын!',color:'#085041',adv:'Лысенко әдісі бойынша барлық 8 көрсеткіш жоғары. Балаңыз оқуға дайын!'};
+      if(p>=65)return{icon:'⭐',title:'Дайындығы жақсы',color:'#1d9e75',adv:`${W?'Назар аударыңыз: '+W+'. ':''}Әлсіз салаларды күн сайын 15-20 мин жаттықтырыңыз.`};
+      if(p>=45)return{icon:'📚',title:'Дайындау қажет',color:'#ef9f27',adv:`${W?W+' салалары әлсіз. ':''}Лысенко әдісі бойынша кезең-кезеңмен дамытыңыз.`};
+      return{icon:'💪',title:'Кешенді дайындық керек',color:'#e53935',adv:`${W?'Әлсіз салалар: '+W+'. ':''}Маманмен кеңесіп, кешенді даму бағдарламасын бастаңыз.`};
     }
   },
   ru:{
@@ -501,13 +518,16 @@ const T={
     correct:'Правильно! 🎉',wrong:'Правильный ответ: ',startBtn:'Начать →',
     days:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
     levels:['🌱 Новичок','⭐ Претендент','📚 Ученик','🎓 Знаток','🏆 Чемпион'],
-    catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.',zlogic:'🧩 Логическое мышление',zthink:'🧠 Внимание и мышление',zphys:'🏃 Физическая готовность'},
+    catNames:{attention:'🧠 Внимание',speech:'🗣️ Речь',motor:'✋ Моторика',math:'🔢 Математика',self:'💪 Самост.',social:'👫 Соц.',emotion:'❤️ Психол.',zlogic:'🧩 Логическое мышление',zthink:'🧠 Внимание и мышление',zphys:'🏃 Физическая готовность',kfon:'🔤 Фонематический слух',kvis:'👁️ Зрит. восприятие',kmot:'✋ Мелкая моторика',kspace:'🧭 Ориентация',kmem:'🧠 Память',katt:'🎯 Внимание',kthink:'💡 Мышление',kspeech:'🗣️ Речь'},
     mods:{
       alifbe:{icon:'📖',title:'Русская Азбука',desc:'33 буквы · Слоги · Чтение',free:true,color:'#e3f2fd'},
       math:{icon:'🔢',title:'Математика',desc:'Счёт · Примеры · Фигуры',free:true,color:'#fff8e1'},
       diag:{icon:'🩺',title:'Диагностика',desc:'AI психологический анализ',free:true,color:'#fce4ec'},
       animasabaq:{icon:'🚀',title:'АниmaУрок',desc:'Күншіктер · Видео · Тест',free:true,color:'#FFF3E0'},
       zeyin:{icon:'🧠',title:'Внимательный ребёнок',desc:'Логика · Внимание · Физика',free:true,color:'#ede7f6'},
+      kalligraf:{icon:'✍️',title:'Каллиграфия',desc:'13 букв · Метод Лысенко',free:true,color:'#e0f7fa'},
+      kompleks:{icon:'🔬',title:'Комплексная диагностика',desc:'8 тестов · Метод Лысенко',free:true,color:'#f3e5f5'},
+      oqu:{icon:'📖',title:'Урок чтения',desc:'18 тем · Читаем без слогов',free:true,color:'#e8f5e9'},
     },
     diagAdvice(p,c){
       const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
@@ -522,6 +542,13 @@ const T={
       if(p>=65)return{icon:'⭐',title:'Хорошо развито',color:'#1d9e75',adv:`${W?'Обратите внимание: '+W+'. ':''}Занимайтесь логикой и вниманием по 15 мин в день.`};
       if(p>=45)return{icon:'📚',title:'Нужно развивать',color:'#ef9f27',adv:`${W?'Уделите внимание: '+W+'. ':''}Играйте в пазлы, лабиринты, «найди лишнее».`};
       return{icon:'💪',title:'Активно развивать',color:'#e53935',adv:`${W?'Слабые направления: '+W+'. ':''}Начните с простых заданий, постепенно усложняя.`};
+    },
+    kompleksAdvice(p,c){
+      const W=Object.entries(c).filter(([k,v])=>v<60).map(([k])=>T.ru.catNames[k]).join(', ');
+      if(p>=85)return{icon:'🏆',title:'Полностью готов к школе!',color:'#085041',adv:'По методике Лысенко все 8 показателей высокие. Ребёнок готов к обучению!'};
+      if(p>=65)return{icon:'⭐',title:'Хорошая готовность',color:'#1d9e75',adv:`${W?'Обратите внимание: '+W+'. ':''}Тренируйте слабые зоны по 15-20 мин в день.`};
+      if(p>=45)return{icon:'📚',title:'Нужна подготовка',color:'#ef9f27',adv:`${W?'Слабые зоны: '+W+'. ':''}Развивайте поэтапно по методике Лысенко.`};
+      return{icon:'💪',title:'Нужна комплексная подготовка',color:'#e53935',adv:`${W?'Слабые зоны: '+W+'. ':''}Проконсультируйтесь со специалистом и начните программу развития.`};
     }
   }
 };
@@ -603,6 +630,63 @@ const LESSONS={
         {q:'Шаршамай 20-30 мин үстелде отыра ма?',img:'🪑',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
         {q:'Ұзақ сурет салғанда қолы талмай ма?',img:'🎨',opts:['Иә','Кейде','Тез талады','Жоқ'],cat:'zphys',sc:[10,6,3,0]},
       ]}
+    ]},
+    kalligraf:{icon:'✍️',maxXP:270,lessons:[
+      {t:'Кіріспе',xp:10,diag:false,qs:[{type:'intro',em:'✍️',ti:'Каллиграфия',ds:'Лысенко әдісі. Әріп элементтерін (таяқша, ілмек, сопақша) меңгеріп, 13 әріпті дұрыс жазамыз.',bs:['13 әріп','Элементтер','Лысенко']}]},
+      {t:'и әрпі',xp:20,diag:false,qs:[{q:'«и» әрпі қандай элементтерден тұрады?',img:'и',opts:['Қысқа ілмектер','Сопақша','Үш таяқша','Доға'],ans:'Қысқа ілмектер'},{q:'Қай сөз «и» дыбысынан басталады?',img:'🔤',opts:['Ит','Көл','Аю','Доп'],ans:'Ит'}]},
+      {t:'ш әрпі',xp:20,diag:false,qs:[{q:'«ш» әрпі қандай элементтерден тұрады?',img:'ш',opts:['Үш таяқша','Сопақша','Екі ілмек','Доға'],ans:'Үш таяқша'},{q:'Қай сөз «ш» дыбысынан басталады?',img:'🔤',opts:['Шар','Нан','Көл','Ат'],ans:'Шар'}]},
+      {t:'й әрпі',xp:20,diag:false,qs:[{q:'«й» әрпі қандай элементтерден тұрады?',img:'й',opts:['и мен доға','Сопақша','Үш таяқша','Тек таяқша'],ans:'и мен доға'},{q:'Қай сөзде «й» әрпі бар?',img:'🔤',opts:['Той','Көл','Аю','Нан'],ans:'Той'}]},
+      {t:'л әрпі',xp:20,diag:false,qs:[{q:'«л» әрпі қандай элементтерден тұрады?',img:'л',opts:['Көлбеу таяқшалар','Сопақша','Үш ілмек','Доға'],ans:'Көлбеу таяқшалар'},{q:'Қай сөз «л» дыбысынан басталады?',img:'🔤',opts:['Лимон','Нан','Көл','Ат'],ans:'Лимон'}]},
+      {t:'м әрпі',xp:20,diag:false,qs:[{q:'«м» әрпі қандай элементтерден тұрады?',img:'м',opts:['Үш таяқша','Сопақша','Екі ілмек','Доға'],ans:'Үш таяқша'},{q:'Қай сөз «м» дыбысынан басталады?',img:'🔤',opts:['Мысық','Доп','Көл','Ат'],ans:'Мысық'}]},
+      {t:'н әрпі',xp:20,diag:false,qs:[{q:'«н» әрпі қандай элементтерден тұрады?',img:'н',opts:['Таяқша мен қосқыш','Сопақша','Үш ілмек','Доға'],ans:'Таяқша мен қосқыш'},{q:'Қай сөз «н» дыбысынан басталады?',img:'🔤',opts:['Нан','Көл','Аю','Доп'],ans:'Нан'}]},
+      {t:'а әрпі',xp:20,diag:false,qs:[{q:'«а» әрпі қандай элементтерден тұрады?',img:'а',opts:['Сопақша мен таяқша','Үш таяқша','Екі ілмек','Доға'],ans:'Сопақша мен таяқша'},{q:'Қай сөз «а» дыбысынан басталады?',img:'🔤',opts:['Алма','Көл','Доп','Үй'],ans:'Алма'}]},
+      {t:'о әрпі',xp:20,diag:false,qs:[{q:'«о» әрпі қандай элементтен тұрады?',img:'о',opts:['Сопақша','Таяқша','Ілмек','Доға'],ans:'Сопақша'},{q:'Қай сөз «о» дыбысынан басталады?',img:'🔤',opts:['Орман','Көл','Доп','Үй'],ans:'Орман'}]},
+      {t:'ұ әрпі',xp:20,diag:false,qs:[{q:'«ұ» әрпі қандай элементтерден тұрады?',img:'ұ',opts:['Таяқша мен құйрық','Сопақша','Үш ілмек','Доға'],ans:'Таяқша мен құйрық'},{q:'Қай сөз «ұ» дыбысынан басталады?',img:'🔤',opts:['Ұшақ','Кітап','Доп','Гүл'],ans:'Ұшақ'}]},
+      {t:'с әрпі',xp:20,diag:false,qs:[{q:'«с» әрпі қандай элементтен тұрады?',img:'с',opts:['Жарты сопақша','Толық сопақша','Үш таяқша','Ілмек'],ans:'Жарты сопақша'},{q:'Қай сөз «с» дыбысынан басталады?',img:'🔤',opts:['Сағат','Нан','Көл','Ат'],ans:'Сағат'}]},
+      {t:'е әрпі',xp:20,diag:false,qs:[{q:'«е» әрпі қандай элементтерден тұрады?',img:'е',opts:['Ілмек пен сызық','Сопақша','Үш таяқша','Доға'],ans:'Ілмек пен сызық'},{q:'Қай сөз «е» дыбысынан басталады?',img:'🔤',opts:['Есік','Доп','Көл','Ат'],ans:'Есік'}]},
+      {t:'р әрпі',xp:20,diag:false,qs:[{q:'«р» әрпі қандай элементтерден тұрады?',img:'р',opts:['Таяқша мен жарты сопақша','Үш таяқша','Екі ілмек','Доға'],ans:'Таяқша мен жарты сопақша'},{q:'Қай сөз «р» дыбысынан басталады?',img:'🔤',opts:['Раушан','Нан','Көл','Ат'],ans:'Раушан'}]},
+      {t:'т әрпі',xp:20,diag:false,qs:[{q:'«т» әрпі қандай элементтерден тұрады?',img:'т',opts:['Таяқшалар','Сопақша','Ілмек','Доға'],ans:'Таяқшалар'},{q:'Қай сөз «т» дыбысынан басталады?',img:'🔤',opts:['Тау','Көл','Аю','Доп'],ans:'Тау'}]},
+    ]},
+    kompleks:{icon:'🔬',maxXP:80,lessons:[
+      {t:'Кешенді диагностика',xp:80,diag:true,kompleks:true,qs:[
+        {type:'intro',em:'🔬',ti:'Кешенді Диагностика',ds:'Лысенко әдісі бойынша 8 бағыт: фонематикалық есту, көру, моторика, кеңістік, есте сақтау, зейін, ойлау, сөйлеу. 16 сұрақ.',bs:['8 тест','16 сұрақ','Лысенко']},
+        {q:'Сөздің бірінші дыбысын ажырата ма?',img:'🔤',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kfon',sc:[10,6,3,0]},
+        {q:'Ұқсас дыбыстарды (б-п, д-т) ажырата ма?',img:'👂',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kfon',sc:[10,6,3,0]},
+        {q:'Әріптер мен сандарды ажырата ма?',img:'🔡',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kvis',sc:[10,6,3,0]},
+        {q:'Ұқсас пішіндерді салыстыра ма?',img:'🔺',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kvis',sc:[10,6,3,0]},
+        {q:'Қарындашты дұрыс ұстай ма?',img:'✏️',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kmot',sc:[10,6,3,0]},
+        {q:'Сызық бойымен дәл сыза ма?',img:'➖',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kmot',sc:[10,6,3,0]},
+        {q:'Оң/сол, жоғары/төменді ажырата ма?',img:'🧭',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kspace',sc:[10,6,3,0]},
+        {q:'«Үстінде», «астында» ұғымдарын түсіне ме?',img:'📦',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kspace',sc:[10,6,3,0]},
+        {q:'5-6 сөзді есте сақтай ма?',img:'🧠',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kmem',sc:[10,6,3,0]},
+        {q:'Өлең/тақпақ жаттай ма?',img:'📜',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kmem',sc:[10,6,3,0]},
+        {q:'10-15 минут зейінін сақтай ма?',img:'⏱️',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'katt',sc:[10,6,3,0]},
+        {q:'Тапсырманы алаңдамай орындай ма?',img:'🎯',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'katt',sc:[10,6,3,0]},
+        {q:'Артық затты таба ма?',img:'💡',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kthink',sc:[10,6,3,0]},
+        {q:'Заттарды белгісі бойынша топтай ма?',img:'🧩',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kthink',sc:[10,6,3,0]},
+        {q:'Сөйлемді дұрыс құрай ма?',img:'🗣️',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kspeech',sc:[10,6,3,0]},
+        {q:'Барлық дыбыстарды анық айта ма?',img:'💬',opts:['Иә','Кейде','Қиналады','Жоқ'],cat:'kspeech',sc:[10,6,3,0]},
+      ]}
+    ]},
+    oqu:{icon:'📖',maxXP:350,lessons:[
+      {t:'Кіріспе',xp:10,diag:false,qs:[{type:'intro',em:'📖',ti:'Оқу сабағы',ds:'«Читаем без слогов» әдісі — сөзді буынға бөлмей, бірден тұтас оқимыз. 18 тақырып.',bs:['18 тақырып','Буынсыз оқу','Сөйлемдер']}]},
+      {t:'АЛ',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'АЛ',opts:['АЛ','ОЛ','ҰЛ','ЕЛ'],ans:'АЛ'}]},
+      {t:'ОЛ',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'ОЛ',opts:['ОЛ','АЛ','ҰЛ','ЕЛ'],ans:'ОЛ'}]},
+      {t:'АТ',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'АТ',opts:['АТ','ОТ','ҰТ','ЕТ'],ans:'АТ'}]},
+      {t:'КӨЛ',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'КӨЛ',opts:['КӨЛ','КОЛ','КҮЛ','КЕЛ'],ans:'КӨЛ'}]},
+      {t:'ТАУ',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'ТАУ',opts:['ТАУ','ТОУ','ТҰУ','ТЕУ'],ans:'ТАУ'}]},
+      {t:'АНА',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'АНА',opts:['АНА','ОНА','ҰНА','ЕНЕ'],ans:'АНА'}]},
+      {t:'АТА',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'АТА',opts:['АТА','ОТА','ҰТА','ЕТЕ'],ans:'АТА'}]},
+      {t:'НАН',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'НАН',opts:['НАН','НОН','НҰН','НЕН'],ans:'НАН'}]},
+      {t:'БАЛА',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'БАЛА',opts:['БАЛА','БОЛА','БҰЛА','БЕЛА'],ans:'БАЛА'}]},
+      {t:'ДАЛА',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'ДАЛА',opts:['ДАЛА','ДОЛА','ДҰЛА','ДЕЛА'],ans:'ДАЛА'}]},
+      {t:'ҚАЛА',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'ҚАЛА',opts:['ҚАЛА','КАЛА','ҚОЛА','ҚҰЛА'],ans:'ҚАЛА'}]},
+      {t:'ҚАЛАМ',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'ҚАЛАМ',opts:['ҚАЛАМ','КАЛАМ','ҚОЛАМ','ҚАЛЫМ'],ans:'ҚАЛАМ'}]},
+      {t:'КІТАП',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'КІТАП',opts:['КІТАП','КИТАП','КІТЕП','КЫТАП'],ans:'КІТАП'}]},
+      {t:'МЕКТЕП',xp:20,diag:false,qs:[{q:'Сөзді буынсыз оқы',img:'МЕКТЕП',opts:['МЕКТЕП','МЕКТЭП','МАКТЕП','МЕКТАП'],ans:'МЕКТЕП'}]},
+      {t:'Сөйлем 1',xp:20,diag:false,qs:[{q:'Сөйлемді оқы',img:'📖',opts:['Мен оқимын','Мен ойнаймын','Сен оқисың','Ол оқиды'],ans:'Мен оқимын'}]},
+      {t:'Сөйлем 2',xp:20,diag:false,qs:[{q:'Сөйлемді оқы',img:'📖',opts:['Ана нан әкелді','Ана нан жеді','Ата нан әкелді','Ана су әкелді'],ans:'Ана нан әкелді'}]},
+      {t:'Сөйлем 3',xp:20,diag:false,qs:[{q:'Сөйлемді оқы',img:'📖',opts:['Бала доп ойнайды','Бала доп тебеді','Қыз доп ойнайды','Бала үй салады'],ans:'Бала доп ойнайды'}]},
     ]}
   },
   ru:{
@@ -680,6 +764,63 @@ const LESSONS={
         {q:'Сидит за столом 20-30 мин не уставая?',img:'🪑',opts:['Да','Иногда','Затрудняется','Нет'],cat:'zphys',sc:[10,6,3,0]},
         {q:'Рука не устаёт при долгом рисовании?',img:'🎨',opts:['Да','Иногда','Быстро устаёт','Нет'],cat:'zphys',sc:[10,6,3,0]},
       ]}
+    ]},
+    kalligraf:{icon:'✍️',maxXP:270,lessons:[
+      {t:'Введение',xp:10,diag:false,qs:[{type:'intro',em:'✍️',ti:'Каллиграфия',ds:'Метод Лысенко. Осваиваем элементы букв (палочка, крючок, овал) и учимся правильно писать 13 букв.',bs:['13 букв','Элементы','Лысенко']}]},
+      {t:'Буква и',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «и»?',img:'и',opts:['Два крючка','Овал','Три палочки','Дужка'],ans:'Два крючка'},{q:'Какое слово начинается со звука «и»?',img:'🔤',opts:['Игла','Кот','Дом','Мяч'],ans:'Игла'}]},
+      {t:'Буква ш',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «ш»?',img:'ш',opts:['Три палочки','Овал','Два крючка','Дужка'],ans:'Три палочки'},{q:'Какое слово начинается со звука «ш»?',img:'🔤',opts:['Шар','Дом','Кот','Мяч'],ans:'Шар'}]},
+      {t:'Буква й',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «й»?',img:'й',opts:['и с дужкой','Овал','Три палочки','Только палочка'],ans:'и с дужкой'},{q:'В каком слове есть «й»?',img:'🔤',opts:['Чай','Дом','Кот','Мяч'],ans:'Чай'}]},
+      {t:'Буква л',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «л»?',img:'л',opts:['Наклонные палочки','Овал','Три крючка','Дужка'],ans:'Наклонные палочки'},{q:'Какое слово начинается со звука «л»?',img:'🔤',opts:['Лиса','Дом','Кот','Мяч'],ans:'Лиса'}]},
+      {t:'Буква м',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «м»?',img:'м',opts:['Три палочки','Овал','Два крючка','Дужка'],ans:'Три палочки'},{q:'Какое слово начинается со звука «м»?',img:'🔤',opts:['Мама','Дом','Кот','Шар'],ans:'Мама'}]},
+      {t:'Буква н',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «н»?',img:'н',opts:['Палочка и перекладина','Овал','Три крючка','Дужка'],ans:'Палочка и перекладина'},{q:'Какое слово начинается со звука «н»?',img:'🔤',opts:['Нос','Дом','Кот','Мяч'],ans:'Нос'}]},
+      {t:'Буква а',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «а»?',img:'а',opts:['Овал и палочка','Три палочки','Два крючка','Дужка'],ans:'Овал и палочка'},{q:'Какое слово начинается со звука «а»?',img:'🔤',opts:['Арбуз','Дом','Кот','Мяч'],ans:'Арбуз'}]},
+      {t:'Буква о',xp:20,diag:false,qs:[{q:'Из какого элемента состоит «о»?',img:'о',opts:['Овал','Палочка','Крючок','Дужка'],ans:'Овал'},{q:'Какое слово начинается со звука «о»?',img:'🔤',opts:['Облако','Дом','Кот','Мяч'],ans:'Облако'}]},
+      {t:'Буква у',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «у»?',img:'у',opts:['Палочка с петлёй','Овал','Три крючка','Дужка'],ans:'Палочка с петлёй'},{q:'Какое слово начинается со звука «у»?',img:'🔤',opts:['Утка','Дом','Кот','Мяч'],ans:'Утка'}]},
+      {t:'Буква с',xp:20,diag:false,qs:[{q:'Из какого элемента состоит «с»?',img:'с',opts:['Полуовал','Полный овал','Три палочки','Крючок'],ans:'Полуовал'},{q:'Какое слово начинается со звука «с»?',img:'🔤',opts:['Слон','Дом','Кот','Мяч'],ans:'Слон'}]},
+      {t:'Буква е',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «е»?',img:'е',opts:['Петля с линией','Овал','Три палочки','Дужка'],ans:'Петля с линией'},{q:'Какое слово начинается со звука «е»?',img:'🔤',opts:['Енот','Дом','Кот','Мяч'],ans:'Енот'}]},
+      {t:'Буква р',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «р»?',img:'р',opts:['Палочка и полуовал','Три палочки','Два крючка','Дужка'],ans:'Палочка и полуовал'},{q:'Какое слово начинается со звука «р»?',img:'🔤',opts:['Роза','Дом','Кот','Мяч'],ans:'Роза'}]},
+      {t:'Буква т',xp:20,diag:false,qs:[{q:'Из каких элементов состоит «т»?',img:'т',opts:['Палочки','Овал','Крючок','Дужка'],ans:'Палочки'},{q:'Какое слово начинается со звука «т»?',img:'🔤',opts:['Тигр','Дом','Кот','Мяч'],ans:'Тигр'}]},
+    ]},
+    kompleks:{icon:'🔬',maxXP:80,lessons:[
+      {t:'Комплексная диагностика',xp:80,diag:true,kompleks:true,qs:[
+        {type:'intro',em:'🔬',ti:'Комплексная диагностика',ds:'8 направлений по методу Лысенко: фонематический слух, зрение, моторика, ориентация, память, внимание, мышление, речь. 16 вопросов.',bs:['8 тестов','16 вопросов','Лысенко']},
+        {q:'Различает первый звук в слове?',img:'🔤',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kfon',sc:[10,6,3,0]},
+        {q:'Различает похожие звуки (б-п, д-т)?',img:'👂',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kfon',sc:[10,6,3,0]},
+        {q:'Различает буквы и цифры?',img:'🔡',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kvis',sc:[10,6,3,0]},
+        {q:'Сравнивает похожие фигуры?',img:'🔺',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kvis',sc:[10,6,3,0]},
+        {q:'Правильно держит карандаш?',img:'✏️',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kmot',sc:[10,6,3,0]},
+        {q:'Точно рисует по линии?',img:'➖',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kmot',sc:[10,6,3,0]},
+        {q:'Различает право/лево, верх/низ?',img:'🧭',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kspace',sc:[10,6,3,0]},
+        {q:'Понимает «над», «под»?',img:'📦',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kspace',sc:[10,6,3,0]},
+        {q:'Запоминает 5-6 слов?',img:'🧠',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kmem',sc:[10,6,3,0]},
+        {q:'Учит стихи наизусть?',img:'📜',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kmem',sc:[10,6,3,0]},
+        {q:'Удерживает внимание 10-15 мин?',img:'⏱️',opts:['Да','Иногда','Затрудняется','Нет'],cat:'katt',sc:[10,6,3,0]},
+        {q:'Выполняет задание не отвлекаясь?',img:'🎯',opts:['Да','Иногда','Затрудняется','Нет'],cat:'katt',sc:[10,6,3,0]},
+        {q:'Находит лишний предмет?',img:'💡',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kthink',sc:[10,6,3,0]},
+        {q:'Группирует предметы по признаку?',img:'🧩',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kthink',sc:[10,6,3,0]},
+        {q:'Правильно строит предложения?',img:'🗣️',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kspeech',sc:[10,6,3,0]},
+        {q:'Чётко произносит все звуки?',img:'💬',opts:['Да','Иногда','Затрудняется','Нет'],cat:'kspeech',sc:[10,6,3,0]},
+      ]}
+    ]},
+    oqu:{icon:'📖',maxXP:350,lessons:[
+      {t:'Введение',xp:10,diag:false,qs:[{type:'intro',em:'📖',ti:'Урок чтения',ds:'Метод «Читаем без слогов» — читаем слово целиком, не деля на слоги. 18 тем.',bs:['18 тем','Без слогов','Предложения']}]},
+      {t:'УМ',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'УМ',opts:['УМ','ОМ','АМ','ЭМ'],ans:'УМ'}]},
+      {t:'ОН',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'ОН',opts:['ОН','АН','УН','ЭН'],ans:'ОН'}]},
+      {t:'КОТ',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'КОТ',opts:['КОТ','КИТ','КУТ','КАТ'],ans:'КОТ'}]},
+      {t:'ДОМ',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'ДОМ',opts:['ДОМ','ДЫМ','ДАМ','ДУМ'],ans:'ДОМ'}]},
+      {t:'ЛЕС',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'ЛЕС',opts:['ЛЕС','ЛИС','ЛОС','ЛАС'],ans:'ЛЕС'}]},
+      {t:'МАМА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'МАМА',opts:['МАМА','МЫМА','МОМА','МУМА'],ans:'МАМА'}]},
+      {t:'ПАПА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'ПАПА',opts:['ПАПА','ПОПА','ПУПА','ПЫПА'],ans:'ПАПА'}]},
+      {t:'РОЗА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'РОЗА',opts:['РОЗА','РЫЗА','РАЗА','РУЗА'],ans:'РОЗА'}]},
+      {t:'РУКА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'РУКА',opts:['РУКА','РОКА','РЫКА','РАКА'],ans:'РУКА'}]},
+      {t:'НОГА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'НОГА',opts:['НОГА','НЫГА','НАГА','НУГА'],ans:'НОГА'}]},
+      {t:'ШКОЛА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'ШКОЛА',opts:['ШКОЛА','ШКАЛА','ШКОЛЫ','ШКУЛА'],ans:'ШКОЛА'}]},
+      {t:'КНИГА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'КНИГА',opts:['КНИГА','КНЫГА','КНОГА','КНЕГА'],ans:'КНИГА'}]},
+      {t:'СОБАКА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'СОБАКА',opts:['СОБАКА','САБАКА','СОБОКА','СУБАКА'],ans:'СОБАКА'}]},
+      {t:'МАШИНА',xp:20,diag:false,qs:[{q:'Прочитай слово целиком',img:'МАШИНА',opts:['МАШИНА','МОШИНА','МАШЫНА','МУШИНА'],ans:'МАШИНА'}]},
+      {t:'Предложение 1',xp:20,diag:false,qs:[{q:'Прочитай предложение',img:'📖',opts:['Я читаю','Я играю','Ты читаешь','Он читает'],ans:'Я читаю'}]},
+      {t:'Предложение 2',xp:20,diag:false,qs:[{q:'Прочитай предложение',img:'📖',opts:['Мама мыла раму','Мама мыла пол','Папа мыл раму','Мама ела кашу'],ans:'Мама мыла раму'}]},
+      {t:'Предложение 3',xp:20,diag:false,qs:[{q:'Прочитай предложение',img:'📖',opts:['Кот пьёт молоко','Кот ест рыбу','Пёс пьёт молоко','Кот спит дома'],ans:'Кот пьёт молоко'}]},
     ]}
   }
 };
@@ -691,11 +832,12 @@ let ST={
   id:'',name:'',age:6,lang:'kk',
   activated:false,promoCode:'',
   xp:0,streak:0,lastDate:'',done:0,correct:0,
-  prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
-  xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+  prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
+  xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
   animaDone:[],
   diagResult:null,
-  zeyinResult:null
+  zeyinResult:null,
+  kompleksResult:null
 };
 let cMod='',cLes=0,cQ=0,cScore=0,cTotal=0,cXP=0,answered=false,diagAns=[],isDiag=false,prevScr='s-home';
 
@@ -748,11 +890,12 @@ async function loadFromServer(id){
         activated:result.activated||false, promoCode:result.promoCode||'',
         xp:result.xp||0, streak:result.streak||0, lastDate:ST.lastDate,
         done:result.done||0, correct:result.correct||0,
-        prog:result.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
-        xpMod:result.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
+        prog:result.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
+        xpMod:result.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
         animaDone:result.animaDone||[],
         diagResult:result.diagResult||null,
-        zeyinResult:result.zeyinResult||null
+        zeyinResult:result.zeyinResult||null,
+        kompleksResult:result.kompleksResult||null
       };
       lang=ST.lang;
       localStorage.setItem('mq_v4',JSON.stringify(ST));
@@ -849,9 +992,9 @@ async function doLogin(){
         activated:fbData.activated||false, promoCode:fbData.promoCode||'',
         xp:fbData.xp||0, streak:fbData.streak||0, lastDate:'',
         done:fbData.done||0, correct:fbData.correct||0,
-        prog:fbData.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
-        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
-        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null, zeyinResult:fbData.zeyinResult||null
+        prog:fbData.prog||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
+        xpMod:fbData.xpMod||{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
+        animaDone:fbData.animaDone||[], diagResult:fbData.diagResult||null, zeyinResult:fbData.zeyinResult||null, kompleksResult:fbData.kompleksResult||null
       };
       lang=ST.lang;
       updateUI(); updateStreak(); saveState();
@@ -863,8 +1006,8 @@ async function doLogin(){
 
   // 3. Жаңа оқушы
   ST.id=id; ST.name=name; ST.age=age; ST.lang=lang;
-  ST.prog={alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0};
-  ST.xpMod={alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0};
+  ST.prog={alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0};
+  ST.xpMod={alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0};
   ST.animaDone=[];
   if(!ST.startDate)ST.startDate=Date.now();
   updateStreak(); saveState();
@@ -1082,6 +1225,7 @@ function nextQ(){
   cQ++;if(cQ>=qs.length)finishLesson();else renderQ();
 }
 
+function diagPalette(i){const P=['#1976d2','#7b1fa2','#f57c00','#388e3c','#e91e63','#0097a7','#c62828','#5d4037'];return P[i%P.length];}
 function finishLesson(){
   const lXP=LESSONS[lang][cMod].lessons[cLes].xp;
   ST.xpMod[cMod]=(ST.xpMod[cMod]||0)+lXP;
@@ -1092,13 +1236,13 @@ function finishLesson(){
     let tot=0,mx=0;Object.keys(cats).forEach(k=>{tot+=cats[k];mx+=catMax[k];});
     const pct=mx>0?Math.round((tot/mx)*100):0;
     const catPcts={};Object.keys(cats).forEach(k=>{catPcts[k]=Math.round((cats[k]/catMax[k])*100);});
-    const isZeyin=LESSONS[lang][cMod].lessons[cLes].zeyin;
-    if(isZeyin){
-      ST.zeyinResult={pct,catPcts};
+    const ls=LESSONS[lang][cMod].lessons[cLes];
+    const grp=ls.zeyin?'zeyin':(ls.kompleks?'kompleks':'');
+    if(grp){
+      ST[grp+'Result']={pct,catPcts};
       scheduleSave();
-      const res=T[lang].zeyinAdvice(pct,catPcts);
-      const colors={zlogic:'#1976d2',zthink:'#7b1fa2',zphys:'#f57c00'};
-      const bars=Object.entries(catPcts).map(([k,v])=>`<div class="dbar" style="margin-bottom:7px;text-align:left;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${colors[k]||'#666'}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${colors[k]||'#666'}"></div></div></div>`).join('');
+      const res=T[lang][grp+'Advice'](pct,catPcts);
+      const bars=Object.entries(catPcts).map(([k,v],i)=>`<div class="dbar" style="margin-bottom:7px;text-align:left;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${diagPalette(i)}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${diagPalette(i)}"></div></div></div>`).join('');
       document.getElementById('c-ic').textContent=res.icon;document.getElementById('c-ti').textContent=res.title;
       document.getElementById('c-xp').textContent=pct+'%';
       document.getElementById('c-su').innerHTML=`<div style="margin:10px 0 14px;">${bars}</div><div style="text-align:left;font-size:13px;line-height:1.5;background:var(--gl);border-radius:10px;padding:11px 13px;"><b>${lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:'}</b><br>${res.adv}</div>`;
@@ -1203,8 +1347,17 @@ function initProfile(){
     document.getElementById('zr-lbl').textContent=res.icon+' '+res.title;document.getElementById('zr-adv').textContent=res.adv;
     document.getElementById('zr-at').textContent=lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:';
     const zc=document.getElementById('zr-cats');zc.innerHTML='';
-    const zcolors={zlogic:'#1976d2',zthink:'#7b1fa2',zphys:'#f57c00'};
-    Object.entries(r.catPcts).forEach(([k,v])=>{zc.innerHTML+=`<div class="dbar" style="margin-bottom:7px;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${zcolors[k]||'#666'}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${zcolors[k]||'#666'}"></div></div></div>`;});
+    Object.entries(r.catPcts).forEach(([k,v],i)=>{zc.innerHTML+=`<div class="dbar" style="margin-bottom:7px;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${diagPalette(i)}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${diagPalette(i)}"></div></div></div>`;});
+  }
+  if(ST.kompleksResult){
+    document.getElementById('kr-card').classList.remove('hidden');
+    const r=ST.kompleksResult;const res=T[lang].kompleksAdvice(r.pct,r.catPcts);
+    document.getElementById('kr-title').textContent=lang==='kk'?'🔬 Кешенді диагностика нәтижесі':'🔬 Результат комплексной диагностики';
+    document.getElementById('kr-pct').textContent=r.pct+'%';document.getElementById('kr-pct').style.color=res.color;
+    document.getElementById('kr-lbl').textContent=res.icon+' '+res.title;document.getElementById('kr-adv').textContent=res.adv;
+    document.getElementById('kr-at').textContent=lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:';
+    const kc=document.getElementById('kr-cats');kc.innerHTML='';
+    Object.entries(r.catPcts).forEach(([k,v],i)=>{kc.innerHTML+=`<div class="dbar" style="margin-bottom:7px;"><div class="dbar-r"><span>${T[lang].catNames[k]||k}</span><span style="color:${diagPalette(i)}">${v}%</span></div><div class="dbar-bg"><div class="dbar-f" style="width:${v}%;background:${diagPalette(i)}"></div></div></div>`;});
   }
 }
 
@@ -1415,9 +1568,9 @@ async function adminResetStudent(idx){
   const resetData = {
     ...s,
     xp:0, streak:0, correct:0, done:0,
-    prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
-    xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0},
-    animaDone:[], diagResult:null, zeyinResult:null,
+    prog:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
+    xpMod:{alifbe:0,math:0,diag:0,animasabaq:0,zeyin:0,kalligraf:0,kompleks:0,oqu:0},
+    animaDone:[], diagResult:null, zeyinResult:null, kompleksResult:null,
     updatedAt: Date.now()
   };
 
@@ -1564,6 +1717,7 @@ async function fbSaveStudent(st){
     animaDone: st.animaDone||[],
     diagResult: st.diagResult||null,
     zeyinResult: st.zeyinResult||null,
+    kompleksResult: st.kompleksResult||null,
     activated: st.activated||false,
     updatedAt: Date.now()
   });
