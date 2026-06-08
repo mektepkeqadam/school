@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- MektepkeQadam v8 -->
 <html lang="kk">
 <head>
 <meta charset="UTF-8">
@@ -93,6 +94,7 @@ body{font-family:-apple-system,'SF Pro Display','Segoe UI',sans-serif;background
 .les-num.done{background:var(--gm);color:#fff;}.les-num.cur{background:var(--gold);color:#fff;}
 .les-title{flex:1;font-size:13px;font-weight:600;}.les-xp{font-size:10px;color:var(--gold);margin-top:2px;}
 .les-lock{font-size:18px;color:var(--bd);}
+.snd-btn{background:var(--gl);border:none;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer;vertical-align:middle;margin-left:8px;line-height:1;}
 .lhdr{background:var(--g);padding:12px 15px 13px;}
 .lhdr-r{display:flex;align-items:center;gap:9px;}
 .lhdr-x{font-size:19px;color:#9fe1cb;cursor:pointer;padding:3px;}
@@ -1203,9 +1205,10 @@ function openMod(mod){
     const unlocked=canAccessLesson(mod,i);
     const div=document.createElement('div');div.className='les-row';
     const numCls=done?'done':(unlocked?'cur':'');
-    const lockIcon=done?'✅':(unlocked?'▶️':'🔒');
     const full=(done&&score>=100)?' · 100%':'';
-    div.innerHTML=`<div class="les-num ${numCls}">${done?'✓':i+1}</div><div class="les-info"><div class="les-title">${l.t}</div><div class="les-xp">+${l.xp} XP${full}</div></div><div class="les-lock">${lockIcon}</div>`;
+    const label=done?(lang==='kk'?'✅ Өтілді':'✅ Пройдено'):(unlocked?(lang==='kk'?'▶️ Бастау':'▶️ Начать'):(lang==='kk'?'🔒 Ертең':'🔒 Завтра'));
+    const labelColor=done?'var(--gm)':(unlocked?'var(--gold)':'var(--gr)');
+    div.innerHTML=`<div class="les-num ${numCls}">${done?'✓':i+1}</div><div class="les-info" style="min-width:0;flex:1;"><div class="les-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.t}</div><div class="les-xp">+${l.xp} XP${full}</div></div><div class="les-lock" style="flex-shrink:0;font-size:11px;font-weight:700;white-space:nowrap;color:${labelColor};">${label}</div>`;
     if(unlocked)div.onclick=()=>startLesson(mod,i);
     else{div.onclick=()=>showToast(lang==='kk'?'🔒 Алдыңғы сабақты 100% орында немесе келесі күні ашылады':'🔒 Пройди предыдущий на 100% или жди следующего дня');div.style.opacity='0.55';}
     list.appendChild(div);
@@ -1225,9 +1228,25 @@ function startLesson(mod,li){
   showScr('s-lesson');renderQ();
 }
 
+// ═══ ДЫБЫС / ОЗВУЧКА (Web Speech API) ═══
+let curSpeakText='';
+function speak(text){
+  if(!window.speechSynthesis||!text)return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance((''+text).replace(/[«»]/g,'').trim());
+    u.lang='ru-RU';u.rate=0.75;u.pitch=1.1;u.volume=1;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function speakCurrent(){speak(curSpeakText);}
+
 function renderQ(){
   const qs=LESSONS[lang][cMod].lessons[cLes].qs;
   const q=qs[cQ];answered=false;
+  const sndOn=(cMod==='alifbe'||cMod==='math');
+  curSpeakText=(q.type==='reading')?(q.display||q.q||''):(q.q||'');
+  const sndBtn=sndOn?`<button class="snd-btn" onclick="speakCurrent()" aria-label="Дыбыс">🔊</button>`:'';
   document.getElementById('l-rbar').classList.add('hidden');
   document.getElementById('l-nw').classList.add('hidden');
   document.getElementById('l-pf').style.width=(((cQ+1)/qs.length)*100)+'%';
@@ -1239,10 +1258,12 @@ function renderQ(){
     return;
   }
   if(q.type==='reading'){
-    document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}</div><div class="read-card"><div class="syl-big">${q.display}</div><div class="syl-parts"><span class="syl-p">${q.p1}</span><span class="syl-plus">+</span><span class="syl-p">${q.p2}</span><span class="syl-plus">= ${q.display}</span></div><div class="lhint">${q.hint}</div></div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+    document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="read-card"><div class="syl-big">${q.display}</div><div class="syl-parts"><span class="syl-p">${q.p1}</span><span class="syl-plus">+</span><span class="syl-p">${q.p2}</span><span class="syl-plus">= ${q.display}</span></div><div class="lhint">${q.hint}</div></div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+    if(sndOn)setTimeout(speakCurrent,400);
     return;
   }
-  document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}</div><div class="limg">${q.img}</div>${q.hint?`<div class="lhint">${q.hint}</div>`:''}<div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+  document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="limg">${q.img}</div>${q.hint?`<div class="lhint">${q.hint}</div>`:''}<div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+  if(sndOn)setTimeout(speakCurrent,400);
 }
 
 function ansQ(btn,optIdx){
@@ -1258,8 +1279,9 @@ function ansQ(btn,optIdx){
   }
   const rb=document.getElementById('l-rbar'),rt=document.getElementById('l-rt'),ri=document.getElementById('l-ri');
   const ok=q.opts[optIdx]===q.ans;
-  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;}
-  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;}
+  const snd=(cMod==='alifbe'||cMod==='math');
+  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;if(snd)speak(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!');}
+  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;if(snd)speak((lang==='kk'?'Дұрыс жауап: ':'Правильный ответ: ')+q.ans);}
   ST.done++;
   document.getElementById('l-xp').textContent=`+${cXP} XP`;
   updateStreak();scheduleSave();
