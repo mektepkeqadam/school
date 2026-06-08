@@ -1230,22 +1230,32 @@ function startLesson(mod,li){
 
 // ═══ ДЫБЫС / ОЗВУЧКА (Web Speech API) ═══
 let curSpeakText='';
+// Қазақ дауысын таңдау (болса), әйтпесе орыс дауысы (кириллицаға жақын)
+function pickVoice(){
+  const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[];
+  return vs.find(v=>/(^|[^a-z])kk([^a-z]|$)|kaz/i.test(v.lang||''))||vs.find(v=>/(^|[^a-z])ru([^a-z]|$)/i.test(v.lang||''))||null;
+}
 function speak(text){
   if(!window.speechSynthesis||!text)return;
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance((''+text).replace(/[«»]/g,'').trim());
-    u.lang='ru-RU';u.rate=0.75;u.pitch=1.1;u.volume=1;
+    const v=pickVoice();
+    if(v){u.voice=v;u.lang=v.lang;}else{u.lang='ru-RU';}
+    u.rate=0.75;u.pitch=1.1;u.volume=1;
     speechSynthesis.speak(u);
   }catch(e){}
 }
 function speakCurrent(){speak(curSpeakText);}
+// Дауыстар тізімін алдын ала жүктеу (кейбір браузерлерде кешігеді)
+if(window.speechSynthesis){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=function(){try{speechSynthesis.getVoices();}catch(e){}};}catch(e){}}
 
 function renderQ(){
   const qs=LESSONS[lang][cMod].lessons[cLes].qs;
   const q=qs[cQ];answered=false;
-  const sndOn=(cMod==='alifbe'||cMod==='math');
-  curSpeakText=(q.type==='reading')?(q.display||q.q||''):(q.q||'');
+  const sndOn=(cMod==='alifbe'||cMod==='math'||cMod==='oqu');
+  const autoSpeak=(cMod==='alifbe'||cMod==='math'); // Оқу-да автоозвучка жоқ (жауапты ашып қоймау үшін)
+  curSpeakText=(q.type==='reading')?(q.display||q.q||''):(cMod==='oqu'?(q.ans||q.img||q.q||''):(q.q||''));
   const sndBtn=sndOn?`<button class="snd-btn" onclick="speakCurrent()" aria-label="Дыбыс">🔊</button>`:'';
   document.getElementById('l-rbar').classList.add('hidden');
   document.getElementById('l-nw').classList.add('hidden');
@@ -1259,11 +1269,11 @@ function renderQ(){
   }
   if(q.type==='reading'){
     document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="read-card"><div class="syl-big">${q.display}</div><div class="syl-parts"><span class="syl-p">${q.p1}</span><span class="syl-plus">+</span><span class="syl-p">${q.p2}</span><span class="syl-plus">= ${q.display}</span></div><div class="lhint">${q.hint}</div></div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
-    if(sndOn)setTimeout(speakCurrent,400);
+    if(autoSpeak)setTimeout(speakCurrent,400);
     return;
   }
   document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="limg">${q.img}</div>${q.hint?`<div class="lhint">${q.hint}</div>`:''}<div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
-  if(sndOn)setTimeout(speakCurrent,400);
+  if(autoSpeak)setTimeout(speakCurrent,400);
 }
 
 function ansQ(btn,optIdx){
@@ -1280,8 +1290,9 @@ function ansQ(btn,optIdx){
   const rb=document.getElementById('l-rbar'),rt=document.getElementById('l-rt'),ri=document.getElementById('l-ri');
   const ok=q.opts[optIdx]===q.ans;
   const snd=(cMod==='alifbe'||cMod==='math');
-  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;if(snd)speak(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!');}
-  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;if(snd)speak((lang==='kk'?'Дұрыс жауап: ':'Правильный ответ: ')+q.ans);}
+  const sndOqu=(cMod==='oqu'); // Оқу-да жауаптан кейін дұрыс сөзді дауыстау
+  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;if(snd)speak(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!');else if(sndOqu)speak(q.ans);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;if(snd)speak((lang==='kk'?'Дұрыс жауап: ':'Правильный ответ: ')+q.ans);else if(sndOqu)speak(q.ans);}
   ST.done++;
   document.getElementById('l-xp').textContent=`+${cXP} XP`;
   updateStreak();scheduleSave();
