@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- MektepkeQadam v8 -->
+<!-- MektepkeQadam v8.1 — Kazakh audio (MP3 + Web Speech fallback) -->
 <html lang="kk">
 <head>
 <meta charset="UTF-8">
@@ -1246,7 +1246,15 @@ function speak(text){
     speechSynthesis.speak(u);
   }catch(e){}
 }
-function speakCurrent(){speak(curSpeakText);}
+const AUDIO={"А":"l_a","Б":"l_b","Г":"l_g","Д":"l_d","Е":"l_e","Ж":"l_zh","З":"l_z","К":"l_k","Л":"l_l","М":"l_m","Н":"l_n","О":"l_o","П":"l_p","С":"l_s","Т":"l_t","Қ":"l_q","Ұ":"l_ux","Ә":"l_ae","Ө":"l_oe","БА":"s_ba","БО":"s_bo","ДА":"s_da","МА":"s_ma","МО":"s_mo","ТО":"s_to","АЛ":"w_al","АНА":"w_ana","АТ":"w_at","АТА":"w_ata","Алма":"w_alma","Аю":"w_ayu","БАЛА":"w_bala","Балық":"w_balyq","Бұлбұл":"w_buxlbuxl","Гүл":"w_guel","ДАЛА":"w_dala","Дала":"w_dala2","Ешкі":"w_eshkii","Жұлдыз":"w_zhuxldyz","Зымыран":"w_zymyran","КІТАП":"w_kiitap","Кірпі":"w_kiirpii","КӨЛ":"w_koel","Лала":"w_lala","МЕКТЕП":"w_mektep","Мысық":"w_mysyq","МҰЗ":"w_muxz","НАН":"w_nan","Нан":"w_nan2","ОЛ":"w_ol","Ойыншық":"w_ojynshyq","Піл":"w_piil","Сиыр":"w_siyr","ТАУ":"w_tau","Тиін":"w_tiiin","ҚАЛА":"w_qala","ҚАЛАМ":"w_qalam","ҚОЛ":"w_qol","Қой":"w_qoj","Ұшақ":"w_uxshaq","Ән":"w_aen","Өрік":"w_oeriik","Ана нан әкелді":"p_anananaekeldii","Бала доп ойнайды":"p_baladopojnajdy","Мен оқимын":"p_menoqimyn","Дұрыс! Жарайсың!":"f_duxryszharajsyng","Жарайсың!":"f_zharajsyng","Қайталап көр!":"f_qajtalapkoer","Тамаша!":"f_tamasha"};
+function playSound(text){
+  if(!text)return;
+  const f=AUDIO[text];
+  if(!f){speak(text);return;}
+  let fell=false;const fb=()=>{if(fell)return;fell=true;speak(text);};
+  try{const a=new Audio('audio/'+f+'.mp3');a.onerror=fb;const pr=a.play();if(pr&&pr.catch)pr.catch(fb);}catch(e){fb();}
+}
+function speakCurrent(){playSound(curSpeakText);}
 // Дауыстар тізімін алдын ала жүктеу (кейбір браузерлерде кешігеді)
 if(window.speechSynthesis){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=function(){try{speechSynthesis.getVoices();}catch(e){}};}catch(e){}}
 
@@ -1255,7 +1263,7 @@ function renderQ(){
   const q=qs[cQ];answered=false;
   const sndOn=(cMod==='alifbe'||cMod==='math'||cMod==='oqu');
   const autoSpeak=(cMod==='alifbe'||cMod==='math'); // Оқу-да автоозвучка жоқ (жауапты ашып қоймау үшін)
-  curSpeakText=(q.type==='reading')?(q.display||q.q||''):(cMod==='oqu'?(q.ans||q.img||q.q||''):(q.q||''));
+  curSpeakText=(q.type==='reading')?(q.display||q.q||''):(cMod==='oqu'?(q.ans||q.img||q.q||''):(cMod==='alifbe'?((q.q||'').split(/\s[—-]\s/)[0]||q.q||''):(q.q||'')));
   const sndBtn=sndOn?`<button class="snd-btn" onclick="speakCurrent()" aria-label="Дыбыс">🔊</button>`:'';
   document.getElementById('l-rbar').classList.add('hidden');
   document.getElementById('l-nw').classList.add('hidden');
@@ -1291,8 +1299,8 @@ function ansQ(btn,optIdx){
   const ok=q.opts[optIdx]===q.ans;
   const snd=(cMod==='alifbe'||cMod==='math');
   const sndOqu=(cMod==='oqu'); // Оқу-да жауаптан кейін дұрыс сөзді дауыстау
-  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;if(snd)speak(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!');else if(sndOqu)speak(q.ans);}
-  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;if(snd)speak((lang==='kk'?'Дұрыс жауап: ':'Правильный ответ: ')+q.ans);else if(sndOqu)speak(q.ans);}
+  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;if(snd)playSound(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!');else if(sndOqu)playSound(q.ans);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;if(snd||sndOqu)playSound(q.ans);}
   ST.done++;
   document.getElementById('l-xp').textContent=`+${cXP} XP`;
   updateStreak();scheduleSave();
