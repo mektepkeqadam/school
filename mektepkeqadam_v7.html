@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- MektepkeQadam v8.1 — Kazakh audio (MP3 + Web Speech fallback) -->
+<!-- MektepkeQadam v8.2 — full Kazakh alphabet audio (MP3 + Web Speech fallback) -->
 <html lang="kk">
 <head>
 <meta charset="UTF-8">
@@ -1246,7 +1246,7 @@ function speak(text){
     speechSynthesis.speak(u);
   }catch(e){}
 }
-const AUDIO={"А":"l_a","Б":"l_b","Г":"l_g","Д":"l_d","Е":"l_e","Ж":"l_zh","З":"l_z","К":"l_k","Л":"l_l","М":"l_m","Н":"l_n","О":"l_o","П":"l_p","С":"l_s","Т":"l_t","Қ":"l_q","Ұ":"l_ux","Ә":"l_ae","Ө":"l_oe","БА":"s_ba","БО":"s_bo","ДА":"s_da","МА":"s_ma","МО":"s_mo","ТО":"s_to","АЛ":"w_al","АНА":"w_ana","АТ":"w_at","АТА":"w_ata","Алма":"w_alma","Аю":"w_ayu","БАЛА":"w_bala","Балық":"w_balyq","Бұлбұл":"w_buxlbuxl","Гүл":"w_guel","ДАЛА":"w_dala","Дала":"w_dala2","Ешкі":"w_eshkii","Жұлдыз":"w_zhuxldyz","Зымыран":"w_zymyran","КІТАП":"w_kiitap","Кірпі":"w_kiirpii","КӨЛ":"w_koel","Лала":"w_lala","МЕКТЕП":"w_mektep","Мысық":"w_mysyq","МҰЗ":"w_muxz","НАН":"w_nan","Нан":"w_nan2","ОЛ":"w_ol","Ойыншық":"w_ojynshyq","Піл":"w_piil","Сиыр":"w_siyr","ТАУ":"w_tau","Тиін":"w_tiiin","ҚАЛА":"w_qala","ҚАЛАМ":"w_qalam","ҚОЛ":"w_qol","Қой":"w_qoj","Ұшақ":"w_uxshaq","Ән":"w_aen","Өрік":"w_oeriik","Ана нан әкелді":"p_anananaekeldii","Бала доп ойнайды":"p_baladopojnajdy","Мен оқимын":"p_menoqimyn","Дұрыс! Жарайсың!":"f_duxryszharajsyng","Жарайсың!":"f_zharajsyng","Қайталап көр!":"f_qajtalapkoer","Тамаша!":"f_tamasha"};
+const AUDIO={"Ё":"l_yo","І":"l_ii","А":"l_a","Б":"l_b","В":"l_v","Г":"l_g","Д":"l_d","Е":"l_e","Ж":"l_zh","З":"l_z","И":"l_i","Й":"l_j","К":"l_k","Л":"l_l","М":"l_m","Н":"l_n","О":"l_o","П":"l_p","Р":"l_r","С":"l_s","Т":"l_t","У":"l_u","Ф":"l_f","Х":"l_x","Ц":"l_c","Ч":"l_ch","Ш":"l_sh","Щ":"l_sch","Ы":"l_y","Э":"l_eh","Ю":"l_yu","Я":"l_ya","Ғ":"l_gh","Қ":"l_q","Ң":"l_ng","Ү":"l_ue","Ұ":"l_ux","Һ":"l_h","Ә":"l_ae","Ө":"l_oe","БА":"s_ba","БО":"s_bo","ДА":"s_da","МА":"s_ma","МО":"s_mo","ТО":"s_to","АЛ":"w_al","АНА":"w_ana","АТ":"w_at","АТА":"w_ata","Алма":"w_alma","Аю":"w_ayu","БАЛА":"w_bala","Балық":"w_balyq","Бұлбұл":"w_buxlbuxl","Гүл":"w_guel","ДАЛА":"w_dala","Дала":"w_dala2","Ешкі":"w_eshkii","Жұлдыз":"w_zhuxldyz","Зымыран":"w_zymyran","КІТАП":"w_kiitap","Кірпі":"w_kiirpii","КӨЛ":"w_koel","Лала":"w_lala","МЕКТЕП":"w_mektep","Мысық":"w_mysyq","МҰЗ":"w_muxz","НАН":"w_nan","Нан":"w_nan2","ОЛ":"w_ol","Ойыншық":"w_ojynshyq","Піл":"w_piil","Сиыр":"w_siyr","ТАУ":"w_tau","Тиін":"w_tiiin","ҚАЛА":"w_qala","ҚАЛАМ":"w_qalam","ҚОЛ":"w_qol","Қой":"w_qoj","Ұшақ":"w_uxshaq","Ән":"w_aen","Өрік":"w_oeriik","Ана нан әкелді":"p_anananaekeldii","Бала доп ойнайды":"p_baladopojnajdy","Мен оқимын":"p_menoqimyn","Дұрыс! Жарайсың!":"f_duxryszharajsyng","Жарайсың!":"f_zharajsyng","Қайталап көр!":"f_qajtalapkoer","Тамаша!":"f_tamasha","Өте жақсы!":"f_oetezhaqsy"};
 function playSound(text){
   if(!text)return;
   const f=AUDIO[text];
