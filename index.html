@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- MektepkeQadam v8.3 — sound effects (correct/wrong/reward) + Kazakh audio -->
+<!-- MektepkeQadam v8.4 — Kazakh letter MP3 (audio/letters/) + sound effects -->
 <html lang="kk">
 <head>
 <meta charset="UTF-8">
@@ -1229,7 +1229,6 @@ function startLesson(mod,li){
 }
 
 // ═══ ДЫБЫС / ОЗВУЧКА (Web Speech API) ═══
-let curSpeakText='';
 // Қазақ дауысын таңдау (болса), әйтпесе орыс дауысы (кириллицаға жақын)
 function pickVoice(){
   const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[];
@@ -1246,15 +1245,30 @@ function speak(text){
     speechSynthesis.speak(u);
   }catch(e){}
 }
-const AUDIO={"Ё":"l_yo","І":"l_ii","А":"l_a","Б":"l_b","В":"l_v","Г":"l_g","Д":"l_d","Е":"l_e","Ж":"l_zh","З":"l_z","И":"l_i","Й":"l_j","К":"l_k","Л":"l_l","М":"l_m","Н":"l_n","О":"l_o","П":"l_p","Р":"l_r","С":"l_s","Т":"l_t","У":"l_u","Ф":"l_f","Х":"l_x","Ц":"l_c","Ч":"l_ch","Ш":"l_sh","Щ":"l_sch","Ы":"l_y","Э":"l_eh","Ю":"l_yu","Я":"l_ya","Ғ":"l_gh","Қ":"l_q","Ң":"l_ng","Ү":"l_ue","Ұ":"l_ux","Һ":"l_h","Ә":"l_ae","Ө":"l_oe","БА":"s_ba","БО":"s_bo","ДА":"s_da","МА":"s_ma","МО":"s_mo","ТО":"s_to","АЛ":"w_al","АНА":"w_ana","АТ":"w_at","АТА":"w_ata","Алма":"w_alma","Аю":"w_ayu","БАЛА":"w_bala","Балық":"w_balyq","Бұлбұл":"w_buxlbuxl","Гүл":"w_guel","ДАЛА":"w_dala","Дала":"w_dala2","Ешкі":"w_eshkii","Жұлдыз":"w_zhuxldyz","Зымыран":"w_zymyran","КІТАП":"w_kiitap","Кірпі":"w_kiirpii","КӨЛ":"w_koel","Лала":"w_lala","МЕКТЕП":"w_mektep","Мысық":"w_mysyq","МҰЗ":"w_muxz","НАН":"w_nan","Нан":"w_nan2","ОЛ":"w_ol","Ойыншық":"w_ojynshyq","Піл":"w_piil","Сиыр":"w_siyr","ТАУ":"w_tau","Тиін":"w_tiiin","ҚАЛА":"w_qala","ҚАЛАМ":"w_qalam","ҚОЛ":"w_qol","Қой":"w_qoj","Ұшақ":"w_uxshaq","Ән":"w_aen","Өрік":"w_oeriik","Ана нан әкелді":"p_anananaekeldii","Бала доп ойнайды":"p_baladopojnajdy","Мен оқимын":"p_menoqimyn","Дұрыс! Жарайсың!":"f_duxryszharajsyng","Жарайсың!":"f_zharajsyng","Қайталап көр!":"f_qajtalapkoer","Тамаша!":"f_tamasha","Өте жақсы!":"f_oetezhaqsy"};
-function playSound(text){
-  if(!text)return;
-  const f=AUDIO[text];
-  if(!f){speak(text);return;}
-  let fell=false;const fb=()=>{if(fell)return;fell=true;speak(text);};
-  try{const a=new Audio('audio/'+f+'.mp3');a.onerror=fb;const pr=a.play();if(pr&&pr.catch)pr.catch(fb);}catch(e){fb();}
+// ═══ АУДИО ЖҮЙЕСІ — қазақша арнайы әріптер MP3-тен (audio/letters/), қалғаны Web Speech ═══
+const AUDIO_BASE='audio/letters/';
+const KK_AUDIO_LETTERS=['а','ә','ғ','қ','ң','ө','ұ','ү'];
+const audioCache={};
+function speakLetter(text){speak(text);}
+function playLetter(letter){
+  const l=(''+letter).toLowerCase().trim();
+  if(!KK_AUDIO_LETTERS.includes(l)){speakLetter(letter);return;}
+  const url=AUDIO_BASE+encodeURIComponent(l)+'.mp3';
+  const fb=()=>speakLetter(letter);
+  try{
+    let a=audioCache[url];
+    if(!a){a=new Audio(url);audioCache[url]=a;}
+    a.onerror=fb;a.currentTime=0;
+    const pr=a.play();if(pr&&pr.catch)pr.catch(fb);
+  }catch(e){fb();}
 }
-function speakCurrent(){playSound(curSpeakText);}
+function playWord(word){if(word)speak(word);}
+function playFeedback(isCorrect){
+  speak(isCorrect?(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!'):(lang==='kk'?'Қайталап көр':'Попробуй ещё раз'));
+}
+function preloadKKAudio(){
+  KK_AUDIO_LETTERS.forEach(l=>{const url=AUDIO_BASE+encodeURIComponent(l)+'.mp3';try{const a=new Audio();a.preload='auto';a.src=url;audioCache[url]=a;}catch(e){}});
+}
 // ═══ ДЫБЫС ЭФФЕКТТЕРІ (Web Audio API — файлсыз, әрқашан жұмыс істейді) ═══
 let _actx=null;
 function actx(){try{if(!_actx)_actx=new (window.AudioContext||window.webkitAudioContext)();if(_actx.state==='suspended')_actx.resume();}catch(e){}return _actx;}
@@ -1288,10 +1302,12 @@ if(window.speechSynthesis){try{speechSynthesis.getVoices();speechSynthesis.onvoi
 function renderQ(){
   const qs=LESSONS[lang][cMod].lessons[cLes].qs;
   const q=qs[cQ];answered=false;
-  const sndOn=(cMod==='alifbe'||cMod==='math'||cMod==='oqu');
-  const autoSpeak=(cMod==='alifbe'||cMod==='math'); // Оқу-да автоозвучка жоқ (жауапты ашып қоймау үшін)
-  curSpeakText=(q.type==='reading')?(q.display||q.q||''):(cMod==='oqu'?(q.ans||q.img||q.q||''):(cMod==='alifbe'?((q.q||'').split(/\s[—-]\s/)[0]||q.q||''):(q.q||'')));
-  const sndBtn=sndOn?`<button class="snd-btn" onclick="speakCurrent()" aria-label="Дыбыс">🔊</button>`:'';
+  const isSoundMod=(cMod==='alifbe'||cMod==='math'||cMod==='oqu');
+  const hasDash=!!(q.q&&/ — /.test(q.q));
+  const word=(cMod==='oqu')?(q.ans||q.img||q.q||''):(hasDash?q.q.split(' — ')[0]:(q.q||''));
+  const speakOpt=(cMod==='alifbe'||cMod==='math');
+  const autoPlay=(cMod==='math')||(cMod==='alifbe'&&hasDash); // alifbe: тек суретті сөз болғанда (жауапты ашпау үшін)
+  const sndBtn=isSoundMod?`<button class="snd-btn" onclick="playWord('${word}')" aria-label="Дыбыс">🔊</button>`:'';
   document.getElementById('l-rbar').classList.add('hidden');
   document.getElementById('l-nw').classList.add('hidden');
   document.getElementById('l-pf').style.width=(((cQ+1)/qs.length)*100)+'%';
@@ -1303,12 +1319,15 @@ function renderQ(){
     return;
   }
   if(q.type==='reading'){
-    document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="read-card"><div class="syl-big">${q.display}</div><div class="syl-parts"><span class="syl-p">${q.p1}</span><span class="syl-plus">+</span><span class="syl-p">${q.p2}</span><span class="syl-plus">= ${q.display}</span></div><div class="lhint">${q.hint}</div></div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
-    if(autoSpeak)setTimeout(speakCurrent,400);
+    const sndBtnR=isSoundMod?`<button class="snd-btn" onclick="playWord('${q.display}')" aria-label="Дыбыс">🔊</button>`:'';
+    document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtnR}</div><div class="read-card"><div class="syl-big">${q.display}</div><div class="syl-parts"><span class="syl-p">${q.p1}</span><span class="syl-plus">+</span><span class="syl-p">${q.p2}</span><span class="syl-plus">= ${q.display}</span></div><div class="lhint">${q.hint}</div></div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+    if(isSoundMod)setTimeout(()=>playWord(q.display),400);
     return;
   }
-  document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="limg">${q.img}</div>${q.hint?`<div class="lhint">${q.hint}</div>`:''}<div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="ansQ(this,${i})">${o}</button>`).join('')}</div>`;
-  if(autoSpeak)setTimeout(speakCurrent,400);
+  const imgClick=isSoundMod?` onclick="playWord('${word}')" style="cursor:pointer;"`:'';
+  const tapHint=isSoundMod?`<div style="font-size:11px;color:var(--gr);margin-top:2px;text-align:center;">👆 ${lang==='kk'?'тыңдау':'послушать'}</div>`:'';
+  document.getElementById('l-body').innerHTML=`<div class="lq">${q.q}${sndBtn}</div><div class="limg"${imgClick}>${q.img}</div>${tapHint}${q.hint?`<div class="lhint">${q.hint}</div>`:''}<div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="${speakOpt?`playLetter('${o}');`:''}ansQ(this,${i})">${o}</button>`).join('')}</div>`;
+  if(autoPlay)setTimeout(()=>playWord(word),600);
 }
 
 function ansQ(btn,optIdx){
@@ -1326,8 +1345,8 @@ function ansQ(btn,optIdx){
   const ok=q.opts[optIdx]===q.ans;
   const snd=(cMod==='alifbe'||cMod==='math');
   const sndOqu=(cMod==='oqu'); // Оқу-да жауаптан кейін дұрыс сөзді дауыстау
-  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;sfx('correct');if(snd)setTimeout(()=>playSound(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!'),450);else if(sndOqu)setTimeout(()=>playSound(q.ans),450);}
-  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;sfx('wrong');if(snd||sndOqu)setTimeout(()=>playSound(q.ans),450);}
+  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;sfx('correct');if(snd)setTimeout(()=>playFeedback(true),350);else if(sndOqu)setTimeout(()=>playWord(q.ans),450);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;sfx('wrong');if(snd){setTimeout(()=>playFeedback(false),350);setTimeout(()=>playLetter(q.ans),1200);}else if(sndOqu)setTimeout(()=>playWord(q.ans),450);}
   ST.done++;
   document.getElementById('l-xp').textContent=`+${cXP} XP`;
   updateStreak();scheduleSave();
@@ -1491,6 +1510,7 @@ async function resetAll(){
 }
 
 window.addEventListener('load',async()=>{
+  preloadKKAudio();
   // Admin route — БАРЛЫҚ УАҚЫТТА тексеру (кіргендер де)
   if(checkAdminRoute())return;
   // Firebase config жүктеу (Kaspi URL, WhatsApp)
