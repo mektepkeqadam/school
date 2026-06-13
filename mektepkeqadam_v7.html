@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- MektepkeQadam v8.2 — full Kazakh alphabet audio (MP3 + Web Speech fallback) -->
+<!-- MektepkeQadam v8.3 — sound effects (correct/wrong/reward) + Kazakh audio -->
 <html lang="kk">
 <head>
 <meta charset="UTF-8">
@@ -1255,6 +1255,33 @@ function playSound(text){
   try{const a=new Audio('audio/'+f+'.mp3');a.onerror=fb;const pr=a.play();if(pr&&pr.catch)pr.catch(fb);}catch(e){fb();}
 }
 function speakCurrent(){playSound(curSpeakText);}
+// ═══ ДЫБЫС ЭФФЕКТТЕРІ (Web Audio API — файлсыз, әрқашан жұмыс істейді) ═══
+let _actx=null;
+function actx(){try{if(!_actx)_actx=new (window.AudioContext||window.webkitAudioContext)();if(_actx.state==='suspended')_actx.resume();}catch(e){}return _actx;}
+function tone(freq,start,dur,type,gain){
+  const ac=actx();if(!ac)return;
+  try{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type=type||'sine';o.frequency.value=freq;
+    const t0=ac.currentTime+start;
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.linearRampToValueAtTime(gain||0.22,t0+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g);g.connect(ac.destination);
+    o.start(t0);o.stop(t0+dur+0.03);
+  }catch(e){}
+}
+function sfx(kind){
+  if(kind==='correct'){ // көңілді өрлеу (дұрыс жауап + ұпай)
+    tone(660,0,0.12,'sine',0.25);tone(880,0.10,0.12,'sine',0.25);tone(1175,0.20,0.20,'sine',0.28);
+  }else if(kind==='wrong'){ // жұмсақ төмендеу (қорқынышты емес)
+    tone(330,0,0.18,'triangle',0.20);tone(247,0.16,0.24,'triangle',0.20);
+  }else if(kind==='win'){ // салтанатты марапат
+    tone(523,0,0.13,'sine',0.26);tone(659,0.12,0.13,'sine',0.26);tone(784,0.24,0.13,'sine',0.26);tone(1047,0.36,0.30,'sine',0.30);
+  }else if(kind==='coin'){ // балаларға арналған «монета»
+    tone(988,0,0.07,'triangle',0.20);tone(1319,0.06,0.16,'triangle',0.22);
+  }
+}
 // Дауыстар тізімін алдын ала жүктеу (кейбір браузерлерде кешігеді)
 if(window.speechSynthesis){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=function(){try{speechSynthesis.getVoices();}catch(e){}};}catch(e){}}
 
@@ -1291,7 +1318,7 @@ function ansQ(btn,optIdx){
   if(isDiag){
     btn.classList.add('selected');
     diagAns.push({cat:q.cat,score:q.sc[optIdx]});
-    cXP+=3;ST.xp+=3;
+    cXP+=3;ST.xp+=3;sfx('coin');
     document.getElementById('l-xp').textContent=`+${cXP} XP`;
     setTimeout(nextQ,700);return;
   }
@@ -1299,8 +1326,8 @@ function ansQ(btn,optIdx){
   const ok=q.opts[optIdx]===q.ans;
   const snd=(cMod==='alifbe'||cMod==='math');
   const sndOqu=(cMod==='oqu'); // Оқу-да жауаптан кейін дұрыс сөзді дауыстау
-  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;if(snd)playSound(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!');else if(sndOqu)playSound(q.ans);}
-  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;if(snd||sndOqu)playSound(q.ans);}
+  if(ok){btn.classList.add('correct');rb.className='rbar ok';rt.className='rb-tx ok';rt.textContent=T[lang].correct;ri.textContent='✅';cScore++;cXP+=10;ST.correct++;ST.xp+=10;sfx('correct');if(snd)setTimeout(()=>playSound(lang==='kk'?'Дұрыс! Жарайсың!':'Правильно! Молодец!'),450);else if(sndOqu)setTimeout(()=>playSound(q.ans),450);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.opt').forEach(b=>{if(b.textContent.trim()===q.ans)b.classList.add('correct');});rb.className='rbar fail';rt.className='rb-tx fail';rt.textContent=T[lang].wrong+q.ans;ri.textContent='❌';cXP+=3;ST.xp+=3;sfx('wrong');if(snd||sndOqu)setTimeout(()=>playSound(q.ans),450);}
   ST.done++;
   document.getElementById('l-xp').textContent=`+${cXP} XP`;
   updateStreak();scheduleSave();
@@ -1334,7 +1361,7 @@ function finishLesson(){
       document.getElementById('c-ic').textContent=res.icon;document.getElementById('c-ti').textContent=res.title;
       document.getElementById('c-xp').textContent=pct+'%';
       document.getElementById('c-su').innerHTML=`<div style="margin:10px 0 14px;">${bars}</div><div style="text-align:left;font-size:13px;line-height:1.5;background:var(--gl);border-radius:10px;padding:11px 13px;"><b>${lang==='kk'?'Ата-анаға кеңес:':'Совет родителям:'}</b><br>${res.adv}</div>`;
-      setupContinueBtn();showScr('s-cmp');return;
+      sfx('win');setupContinueBtn();showScr('s-cmp');return;
     }
     ST.diagResult={pct,catPcts};
     recordLessonProgress(100);
@@ -1342,7 +1369,7 @@ function finishLesson(){
     const res=T[lang].diagAdvice(pct,catPcts);
     document.getElementById('c-ic').textContent=res.icon;document.getElementById('c-ti').textContent=res.title;
     document.getElementById('c-xp').textContent=pct+'%';document.getElementById('c-su').textContent=res.adv;
-    setupContinueBtn();showScr('s-cmp');return;
+    sfx('win');setupContinueBtn();showScr('s-cmp');return;
   }
   const pct=cTotal>0?Math.round((cScore/cTotal)*100):100;
   document.getElementById('c-ic').textContent=pct===100?'🏆':pct>=70?'⭐':'💪';
@@ -1350,6 +1377,7 @@ function finishLesson(){
   document.getElementById('c-xp').textContent=`+${lXP} XP`;
   document.getElementById('c-su').textContent=`${cScore}/${cTotal} · ${pct}%`;
   recordLessonProgress(pct);
+  sfx(pct>=70?'win':'coin');
   scheduleSave();setupContinueBtn();showScr('s-cmp');
 }
 
